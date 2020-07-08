@@ -181,6 +181,125 @@ function Shot_Normal( t )
 	};
 }
 
+function SetEffect_Koishi( t )
+{
+	this.SetMotion(6099, t.keyTake);
+	this.rz = t.rot;
+	this.sx = this.sy = 0.94999999 + this.rand() % 10 * 0.01000000;
+	this.SetSpeed_Vec(15.00000000 * this.sx, this.rz, this.direction);
+	this.stateLabel = function ()
+	{
+		this.Vec_Brake(1.00000000, 0.50000000);
+		this.sx = this.sy *= 0.92000002;
+
+		if (this.sx < 0.50000000)
+		{
+			this.alpha -= 0.05000000;
+		}
+
+		if (this.alpha <= 0.00000000)
+		{
+			this.ReleaseActor();
+		}
+	};
+}
+
+function Shot_Normal_B( t )
+{
+	this.SetMotion(2009, t.keyTake + 3);
+	this.atk_id = 16384;
+	local func_ = function ()
+	{
+		this.ReleaseActor();
+	};
+	local a_ = this.SetTrail(2009, 2, 50, 50);
+
+	if (this.keyTake == 3)
+	{
+		a_.blue = 0.00000000;
+		a_.green = 0.00000000;
+	}
+	else
+	{
+		a_.red = 0.00000000;
+		a_.green = 0.00000000;
+	}
+
+	this.rz = t.rot + t.shotRot;
+	this.SetSpeed_Vec(12.50000000, this.rz, this.direction);
+	this.keyAction = function ()
+	{
+		this.ReleaseActor();
+	};
+	this.cancelCount = 1;
+	this.flag5 = this.Vector3();
+	this.flag4 = this.Vector3();
+	this.flag1 = null;
+	this.flag4.x = 11.50000000 * this.cos(t.rot);
+	this.flag4.y = 18.50000000 * this.sin(t.rot);
+	this.func = function ()
+	{
+		if (this.hitTarget)
+		{
+			local t_ = {};
+			t_.keyTake <- this.keyTake - 3;
+
+			for( local i = 0; i < 9; i++ )
+			{
+				this.SetFreeObject(this.x, this.y, this.direction, this.owner.Shot_NormalHit, t_);
+			}
+
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.callbackGroup = 0;
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy *= 0.89999998;
+				this.linkObject[0].alpha -= 0.10000000;
+				this.linkObject[0].anime.length *= 0.89999998;
+				this.linkObject[0].anime.radius0 *= 0.89999998;
+
+				if (this.linkObject[0].alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	};
+	this.stateLabel = function ()
+	{
+		if (this.grazeCount >= 1)
+		{
+			if (this.flag1)
+			{
+				this.flag1.func();
+				this.flag1 = null;
+			}
+		}
+
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount >= 1 || this.IsScreen(300.00000000) || this.Damage_ConvertOP(this.x, this.y, 4))
+		{
+			this.func();
+			return;
+		}
+
+		if (this.flag5.y < 0)
+		{
+			this.flag4.y += 0.75000000;
+		}
+		else if (this.flag5.y > 0)
+		{
+			this.flag4.y -= 0.75000000;
+		}
+
+		this.flag5 += this.flag4;
+		this.va.x = this.flag4.x;
+		this.va.y = this.flag4.y;
+		this.va.RotateByRadian(this.initTable.shotRot);
+		this.SetSpeed_XY(this.va.x * this.direction, this.va.y);
+		this.rz = this.atan2(this.vy, this.vx * this.direction);
+	};
+}
+
 function Shot_NormalSub( t )
 {
 	this.SetMotion(2009, t.keyTake);
@@ -2063,7 +2182,6 @@ function SPShot_F( t )
 		function ()
 		{
 			this.cancelCount = 3;
-			this.alpha = 1.00000000;
 			this.SetParent(null, 0, 0);
 			this.stateLabel = function ()
 			{
@@ -2141,11 +2259,6 @@ function SPShot_F( t )
 		else if (this.count == 180)
 		{
 			this.SetSpeed_XY(0.00000000, 0.00000000);
-		}
-
-		if (this.count >= 360)
-		{
-			this.func[1].call(this);
 		}
 	};
 }

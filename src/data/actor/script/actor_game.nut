@@ -18,7 +18,7 @@ function HitCycleUpdate( interval = 0 )
 		this.hitTarget = {};
 		this.hitResult = 0;
 		this.hitInterval = 0;
-		return true;
+		return 1;
 	}
 
 	if (interval > 0)
@@ -29,11 +29,11 @@ function HitCycleUpdate( interval = 0 )
 		{
 			this.hitTarget = {};
 			this.hitInterval = 0;
-			return true;
+			return 2;
 		}
 	}
 
-	return false;
+	return 0;
 }
 
 function LabelClear()

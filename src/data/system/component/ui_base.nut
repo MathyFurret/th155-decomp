@@ -501,7 +501,7 @@ class this.UIItemSelectorSingle
 		foreach( v in _ltem_list )
 		{
 			local text = ::font.CreateSystemString(v);
-			text.x = x - text.width / 2;
+			text.x = x - text.width / 2 * 0;
 			text.y = y;
 			text.ConnectRenderSlot(::graphics.slot.overlay, 0);
 			this.item.append(text);
@@ -515,6 +515,11 @@ class this.UIItemSelectorSingle
 			{
 				this.right = text.x + text.width;
 			}
+		}
+
+		foreach( v in this.item )
+		{
+			v.x = this.left;
 		}
 
 		this.left -= 8;
@@ -549,6 +554,14 @@ class this.UIItemSelectorSingle
 			v.red = r;
 			v.green = g;
 			v.blue = b;
+		}
+	}
+
+	function SetString( _ltem_list )
+	{
+		foreach( i, v in _ltem_list )
+		{
+			this.item[i].Set(v);
 		}
 	}
 

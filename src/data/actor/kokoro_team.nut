@@ -3,6 +3,7 @@ function Team_Change_AttackB( t_ )
 	this.LabelClear();
 	this.HitReset();
 	this.ResetSpeed();
+	this.SummonMask();
 	this.cpuState = null;
 	this.SetMotion(3913, 0);
 	this.AjustCenterStop();
@@ -46,6 +47,7 @@ function Team_Change_Attack_AirB( t_ )
 	this.LabelClear();
 	this.HitReset();
 	this.ResetSpeed();
+	this.SummonMask();
 	this.cpuState = null;
 	this.SetMotion(3914, 0);
 	this.AjustCenterStop();
@@ -110,6 +112,7 @@ function Team_Change_ShotB( va_ )
 	this.LabelClear();
 	this.HitReset();
 	this.ResetSpeed();
+	this.SummonMask();
 	this.count = 0;
 	this.subState = function ()
 	{
@@ -291,6 +294,7 @@ function Team_Change_ShotFinB( va_, ky_ )
 
 function Team_Change_SpellB( t )
 {
+	this.SummonMask();
 	this.Spell_C_Init(t);
 	this.keyAction[0] = function ()
 	{

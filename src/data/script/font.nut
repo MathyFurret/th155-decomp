@@ -28,6 +28,18 @@ function CreateSystemStringSmall( str )
 	return text;
 }
 
+function CreateSubtitleString( str )
+{
+	local text = ::manbow.String();
+	text.Initialize(this.system);
+	text.SetSpace(-5, 10);
+	text.SetOutline(true);
+	text.Set(str);
+	text.outline_threshold = 0.16000000;
+	text.outline_scale = 6.00000000;
+	return text;
+}
+
 this.spell <- ::manbow.FontTexture();
 this.spell.Load("data/font/spell_font.bmp");
 function CreateSpellString( str, r, g, b )

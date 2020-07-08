@@ -68,8 +68,9 @@ local func_create_resource = function ()
 	local t = ::manbow.Texture();
 	local name = ::character_name[this.action.master.val];
 	this.item = null;
+	local lang = ::config.lang == 1 ? "en_" : "";
 
-	if (!t.Load("data/system/select/story_title/stage_" + name + ".png"))
+	if (!t.Load("data/system/select/story_title/stage_" + lang + name + ".png"))
 	{
 		return;
 	}

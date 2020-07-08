@@ -1,5 +1,11 @@
 function Func_BeginBattle()
 {
+	if (this.team.master == this && this.team.slave && this.team.slave.type == 8)
+	{
+		this.BeginBattle_Mamizou(null);
+		return;
+	}
+
 	this.BeginBattle(null);
 }
 
@@ -155,6 +161,71 @@ function BeginBattle( t )
 	];
 	this.stateLabel = function ()
 	{
+	};
+}
+
+function BeginBattle_Mamizou( t )
+{
+	this.LabelClear();
+	this.count = 0;
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.LabelClear();
+	this.freeMap = true;
+	this.SetMotion(9001, 0);
+	this.team.slave.BeginBattle_Slave(null);
+	this.freeMap = true;
+	this.Warp(640 - 960 * this.direction, this.y);
+	this.flag1 = this.Vector3();
+	this.flag1.x = ::battle.start_x[this.team.index];
+	this.flag1.y = ::battle.start_y[this.team.index];
+	this.func = function ()
+	{
+		this.SetEffect(this.x, this.y, this.direction, this.EF_DebuffAnimal, {});
+		this.SetMotion(9001, 1);
+		this.centerStop = -3;
+		this.SetSpeed_XY(0.00000000, -6.00000000);
+		this.Warp(this.flag1.x, this.y);
+		this.stateLabel = function ()
+		{
+			this.CenterUpdate(0.50000000, null);
+
+			if (this.centerStop * this.centerStop <= 1)
+			{
+				this.SetMotion(9001, 3);
+				this.Warp(this.flag1.x, this.y);
+				this.SetSpeed_XY(0.00000000, this.va.y);
+				this.count = 0;
+				this.stateLabel = function ()
+				{
+					if (this.count == 120)
+					{
+						this.SetMotion(9001, 5);
+						this.keyAction = function ()
+						{
+							this.CommonBegin();
+						};
+						this.stateLabel = function ()
+						{
+						};
+					}
+				};
+			}
+		};
+	};
+	this.stateLabel = function ()
+	{
+	};
+}
+
+function BeginBattle_Slave( t )
+{
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.LabelClear();
+	this.freeMap = true;
+	this.SetMotion(9001, 0);
+	this.func = function ()
+	{
+		this.SetMotion(3910, 2);
 	};
 }
 
@@ -2228,6 +2299,7 @@ function Okult_Init( t )
 {
 	if (this.occultCount == 0)
 	{
+		this.team.enable_regain = false;
 		this.occultCount = 1;
 		this.occult_level = 0;
 		this.atkRate = 1.04999995;
@@ -2265,6 +2337,7 @@ function OkultB_Init( t )
 			this.occultCount = 0;
 			this.atkRate = 1.00000000;
 			this.occult_level = 0;
+			this.team.enable_regain = true;
 
 			for( local i = 0; i < 360; i = i + (20 + this.rand() % 25) )
 			{
@@ -3545,6 +3618,7 @@ function Spell_A_Init( t )
 					this.occultCount = 0;
 					this.atkRate = 1.00000000;
 					this.occult_level = 0;
+					this.team.enable_regain = true;
 					this.HitTargetReset();
 					this.hitResult = 1;
 					local t_ = {};

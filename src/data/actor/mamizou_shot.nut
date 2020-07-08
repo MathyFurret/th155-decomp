@@ -1,3 +1,140 @@
+function Tanuki_Guage_Back( t )
+{
+	this.SetMotion(9040, 4);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.flag2 = this.SetFreeObjectDynamic(this.x, this.y, this.direction, this.Tanuki_Guage_ChargeLine, {});
+	this.flag3 = this.SetFreeObject(this.x + 48 * this.direction, this.y, 1.00000000, this.Tanuki_Guage_Info, {});
+	this.flag4 = this.Vector3();
+	this.flag5 = {};
+	this.flag5.pos <- this.Vector3();
+	this.flag5.pos.x = this.x;
+	this.flag5.pos.y = this.y;
+	this.flag5.task <- {};
+	this.flag5.task.actor <- this.weakref();
+	this.flag5.task.Update <- function ()
+	{
+		if (this.actor)
+		{
+			::battle.gauge.mat_left_bottom.GetTranslation(this.actor.flag4);
+			this.actor.Warp(this.actor.x, this.actor.flag5.pos.y + this.actor.flag4.y);
+
+			if (this.actor.flag2)
+			{
+				this.actor.flag2.Warp(this.actor.flag2.x, this.actor.y);
+			}
+
+			if (this.actor.flag3)
+			{
+				this.actor.flag3.Warp(this.actor.flag3.x, this.actor.y);
+			}
+		}
+	};
+	::battle.AddTask(this.flag5.task);
+	this.Warp(this.x, this.y + 512);
+	this.func = [
+		function ()
+		{
+			if (this.flag2)
+			{
+				this.flag2.func[0].call(this.flag2);
+			}
+
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			::battle.DeleteTask(this.flag5.task);
+		},
+		function ( val_ )
+		{
+			if (val_ > 4)
+			{
+				val_ = 4;
+			}
+
+			if (val_ < 0)
+			{
+				val_ = 0;
+			}
+
+			if (val_ == 0)
+			{
+				this.SetMotion(9040, val_);
+				this.flag2.anime.width = 100;
+				this.flag3.isVisible = true;
+				this.stateLabel = function ()
+				{
+					this.flag2.anime.width = 100 - 100 * (this.owner.revive / 900.00000000);
+				};
+			}
+			else
+			{
+				this.SetMotion(9040, val_);
+				this.flag2.anime.width = 0;
+				this.flag3.isVisible = false;
+				this.stateLabel = null;
+			}
+		}
+	];
+}
+
+function Tanuki_Guage_Line( t )
+{
+	this.SetMotion(9040, 1);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.Warp(this.x, this.y + 512);
+	this.func = [
+		function ()
+		{
+			this.ReleaseActor();
+		}
+	];
+}
+
+function Tanuki_Guage_ChargeLine( t )
+{
+	this.SetMotion(9040, 5);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.Warp(this.x, this.y + 512);
+	this.anime.width = 0;
+	this.func = [
+		function ()
+		{
+			this.ReleaseActor();
+		}
+	];
+}
+
+function Tanuki_Guage_Info( t )
+{
+	this.SetMotion(9040, ::config.lang == 0 ? 6 : 7);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.Warp(this.x, this.y + 512);
+	this.func = [
+		function ()
+		{
+			this.ReleaseActor();
+		}
+	];
+	this.stateLabel = function ()
+	{
+		if (this.keyTake == 6 && ::config.lang == 1)
+		{
+			this.SetMotion(9040, 7);
+		}
+
+		if (this.keyTake == 7 && ::config.lang == 0)
+		{
+			this.SetMotion(9040, 6);
+		}
+	};
+}
+
 function BeginBattle_Smoke( t )
 {
 	this.SetMotion(9001, 0);
@@ -726,7 +863,7 @@ function Occult_AlienA( t )
 				this.flag1.func[0].call(this.flag1);
 			}
 
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.ReleaseActor();
 		},
 		function ()
@@ -900,7 +1037,7 @@ function Occult_AlienB( t )
 				this.flag1.func[0].call(this.flag1);
 			}
 
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.ReleaseActor();
 		},
 		function ()
@@ -1065,7 +1202,7 @@ function Occult_AlienC( t )
 				this.flag1.func[0].call(this.flag1);
 			}
 
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.ReleaseActor();
 		},
 		function ()
@@ -1669,7 +1806,7 @@ function SPShot_E( t )
 	this.atk_id = 16777216;
 	this.func = function ()
 	{
-		this.owner.ShotRaccoonKO();
+		this.ShotRaccoonKO();
 		this.ReleaseActor();
 	};
 
@@ -1882,7 +2019,7 @@ function SPShot_E2( t )
 	{
 		if (this.life <= 0)
 		{
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.ReleaseActor();
 			return;
 		}
@@ -1932,7 +2069,7 @@ function SPShot_E3( t )
 	{
 		if (this.life <= 0)
 		{
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.ReleaseActor();
 			return;
 		}
@@ -1968,7 +2105,7 @@ function SPShot_E3( t )
 					{
 						if (this.life <= 0)
 						{
-							this.owner.ShotRaccoonKO();
+							this.ShotRaccoonKO();
 							this.ReleaseActor();
 							return;
 						}
@@ -2062,7 +2199,7 @@ function SPShot_G( t )
 	{
 		if (this.life <= 0)
 		{
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.ReleaseActor();
 			return true;
 		}
@@ -2381,7 +2518,7 @@ function SPShot_Taiko( t )
 	{
 		if (this.owner.IsDamage())
 		{
-			this.owner.ShotRaccoonKO();
+			this.ShotRaccoonKO();
 			this.func[0].call(this);
 			return;
 		}

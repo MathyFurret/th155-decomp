@@ -123,7 +123,7 @@ function BeginBattle_Nitori( t )
 {
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.LabelClear();
-	this.SetMotion(9001, 0);
+	this.SetMotion(9001 + this.rand() % 3, 0);
 	this.DrawActorPriority();
 	this.count = 0;
 	this.team.slave.BeginBattle_Slave(null);
@@ -457,6 +457,7 @@ function C_SlideFall_Init( t )
 
 function Team_Change_AirMoveB( t_ )
 {
+	this.SummonMask();
 	this.Team_Change_AirMoveCommon(null);
 	this.flag5.vx = 7.00000000;
 	this.flag5.vy = 6.50000000;
@@ -465,6 +466,7 @@ function Team_Change_AirMoveB( t_ )
 
 function Team_Change_AirBackB( t_ )
 {
+	this.SummonMask();
 	this.Team_Change_AirBackCommon(null);
 	this.flag5.vx = -7.00000000;
 	this.flag5.vy = 6.50000000;
@@ -473,6 +475,7 @@ function Team_Change_AirBackB( t_ )
 
 function Team_Change_AirSlideUpperB( t_ )
 {
+	this.SummonMask();
 	this.Team_Change_AirSlideUpperCommon(null);
 	this.flag5.vx = 0.00000000;
 	this.flag5.vy = -7.50000000;
@@ -481,6 +484,7 @@ function Team_Change_AirSlideUpperB( t_ )
 
 function Team_Change_AirSlideUnderB( t_ )
 {
+	this.SummonMask();
 	this.Team_Change_AirSlideUnderCommon(null);
 	this.flag5.vx = 0.00000000;
 	this.flag5.vy = 7.50000000;
@@ -1489,7 +1493,12 @@ function Atk_Throw( t )
 				if (this.count == 75)
 				{
 					::camera.ResetTarget();
-					this.target.autoCamera = true;
+					this.target.team.master.autoCamera = true;
+
+					if (this.target.team.slave)
+					{
+						this.target.team.slave.autoCamera = true;
+					}
 				}
 			};
 		},

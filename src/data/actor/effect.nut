@@ -527,7 +527,7 @@ function Font_Infomation( t )
 	{
 		this.flag2.alpha += 0.05000000;
 
-		if (this.flag2.alpha <= 1.00000000)
+		if (this.flag2.alpha >= 1.00000000)
 		{
 			this.flag2.alpha = 1.00000000;
 			this.stateLabel = function ()

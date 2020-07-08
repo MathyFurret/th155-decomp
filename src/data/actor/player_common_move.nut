@@ -425,6 +425,8 @@ function PlayerhitAction_Normal( t_ )
 
 			this.team.combo_reset_count = 0;
 			this.endure = 0;
+			t_.stopVecX = 0.00000000;
+			t_.stopVecY = 0.00000000;
 			this.team.master.PlayerhitAction_Normal(t_);
 			return;
 		}
@@ -652,7 +654,7 @@ function PlayerhitAction_Normal( t_ )
 			break;
 
 		case 19:
-			if (this.team.life <= 0 || this.centerStop * this.centerStop > 1 || this.flagState & 8)
+			if (this.team.life <= 0 || this.flagState & 8)
 			{
 				if (this.y <= this.centerY)
 				{
@@ -687,7 +689,7 @@ function PlayerhitAction_Normal( t_ )
 			break;
 
 		case 20:
-			if (this.team.life <= 0 || this.centerStop * this.centerStop > 1 || this.flagState & 8)
+			if (this.team.life <= 0 || this.flagState & 8)
 			{
 				if (this.y <= this.centerY)
 				{
@@ -1702,6 +1704,8 @@ function DashFront_Common( t )
 		this.SetMotion(40, 0);
 		this.PlaySE(801);
 		this.SetSpeed_XY(this.flag1 * this.direction, 0.00000000);
+		this.SetEffect(this.x, this.y, this.direction, this.EF_Dash, {}, this.weakref());
+		this.flag5 = this.SetEffect(this.x, this.y, this.direction, this.EF_DashLine, {}, this.weakref());
 		this.count = 0;
 		this.lavelClearEvent = function ()
 		{
@@ -2172,7 +2176,11 @@ function JustGuard_Init( t )
 	if (this.hitBackFlag == 1.00000000)
 	{
 		this.target.bariaBackFlag = 1.00000000;
-		this.target.vfBaria.x = -this.va.x * 1.50000000;
+
+		if (!this.target.resist_baria)
+		{
+			this.target.vfBaria.x = -this.va.x * 1.50000000;
+		}
 	}
 
 	this.stateLabel = this.Guard;
@@ -2250,7 +2258,7 @@ function BariaGuard_Input( t )
 		local v_ = this.va.x * 0.50000000;
 	}
 
-	if (this.target.vfBaria.x * this.target.vfBaria.x < v_ * v_)
+	if (!this.target.resist_baria && this.target.vfBaria.x * this.target.vfBaria.x < v_ * v_)
 	{
 		this.target.vfBaria.x = -v_;
 	}
@@ -2404,7 +2412,7 @@ function BariaGuard_Init( t )
 		this.SetEffect(this.x, this.y, this.direction, this.EF_JustGuardBaria, {});
 	}
 
-	if (this.target.vfBaria.x * this.target.vfBaria.x < v_ * v_)
+	if (!this.target.resist_baria && this.target.vfBaria.x * this.target.vfBaria.x < v_ * v_)
 	{
 		this.target.vfBaria.x = -v_;
 	}
@@ -2679,7 +2687,7 @@ function Avoid_Fall_Init( t )
 
 function Recover_Init( t )
 {
-	if (this.team.current == this.team.master && this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
+	if (this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
 	{
 		this.Team_ChangeRecover_Init(this.input.x, 0);
 		return;
@@ -2726,7 +2734,7 @@ function Recover_Init( t )
 
 function DownRecover_Init( t )
 {
-	if (this.team.current == this.team.master && this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
+	if (this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
 	{
 		this.Team_DownRecover_Init(null);
 		return;
@@ -4154,22 +4162,11 @@ function DamageDown_Init( t )
 					return;
 				}
 
-				if (this.team.current == this.team.master && this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
+				if (this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
 				{
-					if (this.team.combo_stun >= 100)
-					{
-						if (this.team.op >= 500)
-						{
-							this.stanCount = 0;
-							this.Team_ChangeRecover_Init(this.input.x, 500);
-						}
-					}
-					else
-					{
-						this.stanCount = 0;
-						this.Team_ChangeRecover_Init(this.input.x, 0);
-						return;
-					}
+					this.stanCount = 0;
+					this.Team_ChangeRecover_Init(this.input.x, 0);
+					return;
 				}
 			}
 		}
@@ -4179,6 +4176,12 @@ function DamageDown_Init( t )
 
 		if (this.enableStandUp && this.stanCount <= 0 && this.stanBossCount <= 0 && this.centerStop == 0)
 		{
+			if (this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
+			{
+				this.Team_ChangeStandUp_Init(this.input.x);
+				return;
+			}
+
 			this.StandUp_Init(this.input.x);
 			return;
 		}
@@ -5357,7 +5360,7 @@ function DamageStan_Init( t )
 		{
 			this.stanCount = 0;
 
-			if (this.team.current == this.team.master && this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.input.b3 > 0)
+			if (this.team.slave && this.team.slave.type != 19 && this.team.op_stop == 0 && this.team.slave_ban == 0 && this.team.op >= 1000 && this.input.b3 > 0)
 			{
 				this.Team_ChangeStandUp_Init(this.input.x);
 				return;
@@ -5471,7 +5474,7 @@ function Damage_Slice( t )
 				this.AddSpeed_XY(0.00000000, 0.30000001);
 				this.flag1.Warp(this.x, this.centerY);
 
-				if ((this.flag3 <= this.centerY && this.y >= this.centerY || this.flag3 > this.centerY && this.y >= this.flag3) && this.va.y > 0.00000000)
+				if (this.y >= this.centerY)
 				{
 					this.rz = 0;
 
@@ -5527,6 +5530,7 @@ function DamageFinish( t )
 	this.invinGrab = -1;
 	this.invinObject = -1;
 	this.SetSpeed_XY(-2.50000000 * this.direction, -2.50000000);
+	this.centerStop = -3;
 	this.count = 0;
 	this.func = function ()
 	{
@@ -5647,25 +5651,35 @@ function Atk_Grab_Init( t )
 
 		if (this.hitResult & 1)
 		{
-			if (this.team.current.target.IsGuard())
+			if (this.target.centerStop * this.target.centerStop <= 1)
 			{
-				this.PlaySE(816);
-				this.SetEffect(this.target.x, this.target.y, this.direction, this.EF_StunBreak, {});
-				this.target.team.regain_life = this.target.team.life;
-				this.flag5 = true;
-			}
-			else if (this.team.current.target.IsAttack())
-			{
-				this.flag5 = true;
+				if (this.team.current.target.IsGuard())
+				{
+					this.PlaySE(816);
+					this.SetEffect(this.target.x, this.target.y, this.direction, this.EF_StunBreak, {});
+					this.target.team.regain_life = this.target.team.life;
+					this.flag5 = true;
+				}
+				else if (this.team.current.target.IsAttack())
+				{
+					this.flag5 = true;
+				}
+				else
+				{
+					this.flag5 = false;
+				}
+
+				this.ResetSpeed();
+				this.Atk_Grab_Hit(null);
+				return;
 			}
 			else
 			{
-				this.flag5 = false;
+				this.stateLabel = function ()
+				{
+					this.VX_Brake(0.75000000);
+				};
 			}
-
-			this.ResetSpeed();
-			this.Atk_Grab_Hit(null);
-			return;
 		}
 	};
 }
@@ -5914,11 +5928,11 @@ function Shot_Burrage_Common( t )
 
 				if (this.team.mp <= 0)
 				{
-					this.team.AddMP(0, 120);
+					this.team.AddMP(0, 60);
 				}
 				else
 				{
-					this.team.AddMP(-2, 120);
+					this.team.AddMP(-2, 60);
 					this.flag2.use_total += 2;
 				}
 
@@ -6031,7 +6045,7 @@ function Shot_Burrage_Common( t )
 		}
 		else
 		{
-			this.team.AddMP(-2, 120);
+			this.team.AddMP(-2, 60);
 			this.flag2.use_total += 2;
 		}
 
@@ -6042,7 +6056,39 @@ function Shot_Burrage_Common( t )
 
 		this.VX_Brake(0.25000000);
 		local y_ = 0;
-		this.CenterUpdate(0.40000001, 3.00000000);
+
+		if (this.input.y)
+		{
+			y_ = this.input.y > 0 ? 1.00000000 : -1.00000000;
+		}
+
+		if (y_ == 0)
+		{
+			this.CenterUpdate(0.40000001, 3.00000000);
+		}
+		else if (this.input.y < 0 && this.y < this.centerY - 200 || this.input.y > 0 && this.y > this.centerY + 200)
+		{
+			this.CenterUpdate(0.40000001, 3.00000000);
+		}
+		else
+		{
+			if (this.y < this.centerY)
+			{
+				this.centerStop = -2;
+			}
+
+			if (this.y > this.centerY)
+			{
+				this.centerStop = 2;
+			}
+
+			if (this.input.y < 0 && this.y + this.flag2.vy * y_ <= this.centerY - 200 || this.input.y > 0 && this.y + this.flag2.vy * y_ >= this.centerY + 200)
+			{
+				y_ = 0;
+			}
+
+			this.SetSpeed_XY(null, this.flag2.vy * y_);
+		}
 	};
 }
 

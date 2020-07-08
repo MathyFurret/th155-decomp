@@ -1008,6 +1008,7 @@ function Shot_Change( t )
 			this.rz = this.flag1;
 			this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 			this.SetMotion(3929, 1);
+			this.PlaySE(2006);
 			this.SetSpeed_Vec(30, this.rz, this.direction);
 			this.stateLabel = function ()
 			{
@@ -1274,40 +1275,40 @@ function Okult_SelectEnd( t )
 		{
 			if (t.fake)
 			{
-				this.SetMotion(2505, 2);
+				this.SetMotion(2505, ::config.lang == 0 ? 2 : 6);
 			}
 			else
 			{
-				this.SetMotion(2507, 2);
+				this.SetMotion(2507, ::config.lang == 0 ? 2 : 6);
 			}
 		}
 		else if (t.fake)
 		{
-			this.SetMotion(2505, 3);
+			this.SetMotion(2505, ::config.lang == 0 ? 3 : 7);
 		}
 		else
 		{
-			this.SetMotion(2507, 3);
+			this.SetMotion(2507, ::config.lang == 0 ? 3 : 7);
 		}
 	}
 	else if (this.direction == 1.00000000)
 	{
 		if (t.fake)
 		{
-			this.SetMotion(2506, 2);
+			this.SetMotion(2506, ::config.lang == 0 ? 2 : 6);
 		}
 		else
 		{
-			this.SetMotion(2508, 2);
+			this.SetMotion(2508, ::config.lang == 0 ? 2 : 6);
 		}
 	}
 	else if (t.fake)
 	{
-		this.SetMotion(2506, 3);
+		this.SetMotion(2506, ::config.lang == 0 ? 3 : 7);
 	}
 	else
 	{
-		this.SetMotion(2508, 3);
+		this.SetMotion(2508, ::config.lang == 0 ? 3 : 7);
 	}
 
 	this.stateLabel = function ()
@@ -1330,20 +1331,20 @@ function Okult_Select( t )
 		{
 			if (t.fake)
 			{
-				this.SetMotion(2505, 0);
+				this.SetMotion(2505, ::config.lang == 0 ? 0 : 4);
 			}
 			else
 			{
-				this.SetMotion(2507, 0);
+				this.SetMotion(2507, ::config.lang == 0 ? 0 : 4);
 			}
 		}
 		else
 		{
-			this.SetMotion(2507, 1);
+			this.SetMotion(2507, ::config.lang == 0 ? 1 : 5);
 
 			if (t.fake)
 			{
-				this.SetMotion(2505, 1);
+				this.SetMotion(2505, ::config.lang == 0 ? 1 : 5);
 			}
 		}
 	}
@@ -1351,24 +1352,30 @@ function Okult_Select( t )
 	{
 		if (t.fake)
 		{
-			this.SetMotion(2506, 0);
+			this.SetMotion(2506, ::config.lang == 0 ? 0 : 4);
 		}
 		else
 		{
-			this.SetMotion(2508, 0);
+			this.SetMotion(2508, ::config.lang == 0 ? 0 : 4);
 		}
 	}
 	else
 	{
-		this.SetMotion(2508, 1);
+		this.SetMotion(2508, ::config.lang == 0 ? 1 : 5);
 
 		if (t.fake)
 		{
-			this.SetMotion(2506, 1);
+			this.SetMotion(2506, ::config.lang == 0 ? 1 : 5);
 		}
 	}
 
 	this.DrawActorPriority(300);
+
+	if (this.y < ::battle.scroll_top + 200)
+	{
+		this.Warp(this.x, ::battle.scroll_top + 200);
+	}
+
 	this.SetParent(this.owner, this.x - this.owner.x, this.y - this.owner.y);
 	this.func = [
 		function ()

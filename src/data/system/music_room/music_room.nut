@@ -19,7 +19,6 @@ this.anime <- {};
 ::manbow.CompileFile("data/system/music_room/music_room_animation.nut", this.anime);
 function Initialize()
 {
-	::manbow.CompileFile("data/system/music_room/music_room_animation.nut", this.anime);
 	::loop.Begin(this);
 	this.data = [];
 
@@ -41,6 +40,7 @@ function Initialize()
 			t.title <- v.title;
 			t.author <- v.author;
 			t.comment <- v.comment;
+			t.comment2 <- v.comment2;
 		}
 		else
 		{
@@ -48,6 +48,7 @@ function Initialize()
 			t.title <- "？？？？？？？？？";
 			t.author <- "？？？？？？？？？";
 			t.comment <- "";
+			t.comment2 <- "";
 		}
 
 		this.data.append(t);

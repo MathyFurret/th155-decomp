@@ -72,7 +72,6 @@ function Team_Change_Attack_AirB( t_ )
 		{
 			this.PlaySE(2602);
 		},
-		null,
 		function ()
 		{
 			this.stateLabel = function ()
@@ -80,7 +79,7 @@ function Team_Change_Attack_AirB( t_ )
 				if (this.centerStop * this.centerStop <= 1)
 				{
 					this.GetFront();
-					this.SetMotion(this.motion, 4);
+					this.SetMotion(this.motion, 3);
 					this.stateLabel = function ()
 					{
 						this.VX_Brake(0.50000000);

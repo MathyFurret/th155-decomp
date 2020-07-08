@@ -17,6 +17,10 @@ local help_1 = [
 	"LR",
 	"select"
 ];
+local help_2 = [
+	"KEY",
+	"input_string"
+];
 class this.Dialog 
 {
 	static texture = _texture;
@@ -53,11 +57,17 @@ class this.Dialog
 
 		switch(_type)
 		{
+		case 0:
+			text.y = -text.height / 2 - 8;
+			this.Update = this.UpdateOK;
+			::menu.cursor.Activate();
+			break;
+
 		case 1:
 			text.y = -40;
 			this.item = [];
-			this.item.append(this.AddTextObject("‚\x2550‚¢", -80, 0));
-			this.item.append(this.AddTextObject("‚¢‚¢‚¦", 80, 0));
+			this.item.append(this.AddTextObject(::menu.common.GetMessageText("yes"), -80, 0));
+			this.item.append(this.AddTextObject(::menu.common.GetMessageText("no"), 80, 0));
 			this.cursor = this.Cursor(1, this.item.len(), ::input_all);
 
 			if (arg)
@@ -70,15 +80,15 @@ class this.Dialog
 			break;
 
 		case 2:
-			text.y = -24;
+			text.y = -40;
 			this.item = {};
 			this.item.count <- 0;
 			this.item.pos <- 0;
 			local width = 400;
 			local left = -width / 2;
 			local right = width / 2;
-			local top = 16;
-			local bottom = 16 + 16;
+			local top = 8;
+			local bottom = top + ::font.system_size;
 			local margin = 2;
 			this.item.left <- left;
 			local input_rect = ::manbow.Rectangle();
@@ -87,29 +97,32 @@ class this.Dialog
 			this.item.input_rect <- input_rect;
 			this.obj.append(input_rect);
 			local text = arg ? arg : "";
-			this.item.text <- this.AddTextObject(text, 0, top, 64);
+			this.item.text <- this.AddTextObject(text, 0, top - 12);
 			this.item.text.x = left;
-			local comp_rect = ::manbow.Rectangle();
-			comp_rect.SetPosition(0, top - margin, 0, bottom + margin);
-			comp_rect.SetColor(1, 0.20000000, 0.20000000, 0.20000000);
-			comp_rect.visible = false;
-			this.item.comp_rect <- comp_rect;
-			this.obj.append(comp_rect);
-			this.item.comp <- this.AddTextObject("", 0, 16, 64);
+			this.item.comp <- this.AddTextObject("", 0, top - 12);
 			this.item.comp.red = this.item.comp.blue = 0;
 			local cursor_rect = ::manbow.Rectangle();
 			cursor_rect.SetPosition(0, top, 1, bottom);
 			this.item.cursor <- cursor_rect;
 			this.obj.append(cursor_rect);
+			this.item.message_length_obj <- ::font.CreateSystemString("");
+			this.item.cursor_x <- 0;
 			this.Update = this.UpdateInputText;
 			::manbow.SetIMEText(text);
 			::manbow.SetIMECursor(0);
 			::manbow.BeginIME();
+			::menu.cursor.Activate();
 			break;
 
-		default:
-			text.y = -text.height / 2;
+		case -1:
+			text.y = -text.height / 2 - 8;
 			this.Update = this.UpdateOK;
+
+			if (arg)
+			{
+				arg.call(this);
+			}
+
 			break;
 		}
 
@@ -144,12 +157,13 @@ class this.Dialog
 	{
 		::menu.help.Reset();
 
-		if (this.type == 1)
+		switch(this.type)
 		{
+		case 0:
+		case 1:
+		case 2:
 			::menu.cursor.Deactivate();
-		}
-		else
-		{
+			break;
 		}
 
 		this.task.Set(function ( t )
@@ -203,6 +217,8 @@ class this.Dialog
 				this.callback();
 			}
 		}
+
+		::menu.cursor.SetTarget(this.obj[1].x - 20 + ::graphics.width / 2, this.obj[1].y + 24 + ::graphics.height / 2, 0.69999999);
 	}
 
 	function UpdateSelect()
@@ -248,13 +264,39 @@ class this.Dialog
 
 	function UpdateInputText()
 	{
+		::menu.help.Set(help_2);
 		local im_state = {};
 		::manbow.GetIMEState(im_state);
 
-		if (im_state.text.len() > 32)
+		if (im_state.text.len() > 16)
 		{
-			im_state.text = im_state.text.slice(0, 32);
+			local length = 0;
+
+			for( local i = 0; i < 16; i = ++i )
+			{
+				local c = im_state.text[i];
+
+				if (c < 0)
+				{
+					c = c + 256;
+				}
+
+				if (c >= 129 && c <= 159 || c >= 224 && c <= 255)
+				{
+					if (i >= 15)
+					{
+					}
+
+					i = ++i;
+				}
+
+				length = i + 1;
+			}
+
+			im_state.text = im_state.text.slice(0, length);
 			::manbow.SetIMEText(im_state.text);
+			::manbow.GetIMEState(im_state);
+			this.item.pos = -1;
 		}
 
 		this.item.text.Set(im_state.text);
@@ -262,24 +304,40 @@ class this.Dialog
 		if (im_state.composition != "")
 		{
 			this.item.comp.Set(im_state.composition);
-			this.item.comp.x = this.item.left + im_state.cursor * 8;
-			this.item.comp_rect.x0 = this.item.comp.x;
-			this.item.comp_rect.x1 = this.item.comp.x + im_state.composition.len() * 8;
-			this.item.comp.visible = this.item.comp_rect.visible = true;
+			this.item.comp.x = this.item.left + this.item.cursor_x - 3;
+			this.item.comp.visible = true;
 		}
 		else
 		{
-			this.item.comp.visible = this.item.comp_rect.visible = false;
+			this.item.comp.visible = false;
 		}
 
 		if (this.item.pos != im_state.cursor)
 		{
 			this.item.pos = im_state.cursor;
 			this.item.count = 0;
+
+			if (this.item.pos == 0)
+			{
+				this.item.cursor_x = 0;
+			}
+			else
+			{
+				if (this.item.pos >= im_state.text.len())
+				{
+					this.item.message_length_obj.Set(im_state.text);
+				}
+				else
+				{
+					this.item.message_length_obj.Set(im_state.text.slice(0, this.item.pos));
+				}
+
+				this.item.cursor_x = this.item.message_length_obj.width + (this.item.pos ? -2 : 0);
+			}
 		}
 
 		this.item.cursor.visible = this.item.count++ % 60 < 30;
-		this.item.cursor.x0 = this.item.left + im_state.cursor * 8;
+		this.item.cursor.x0 = this.item.left + this.item.cursor_x;
 		this.item.cursor.x1 = this.item.cursor.x0 + 1;
 
 		if (::manbow.IsFinishedIME())
@@ -307,6 +365,8 @@ class this.Dialog
 				}
 			}
 		}
+
+		::menu.cursor.SetTarget(this.obj[1].x - 20 + ::graphics.width / 2, this.obj[1].y + 24 + ::graphics.height / 2, 0.69999999);
 	}
 
 }

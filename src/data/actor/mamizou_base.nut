@@ -7,6 +7,11 @@ function Lost_Raccoon( t )
 		this.raccoon = 0;
 		this.revive = 900;
 	}
+
+	if (this.tanuki_gauge)
+	{
+		this.tanuki_gauge.func[1].call(this.tanuki_gauge, this.raccoon);
+	}
 }
 
 function DamageLostRaccoon()
@@ -64,6 +69,11 @@ function Update_Normal()
 		{
 			this.revive = 0;
 			this.raccoon = 4;
+
+			if (this.tanuki_gauge)
+			{
+				this.tanuki_gauge.func[1].call(this.tanuki_gauge, this.raccoon);
+			}
 		}
 	}
 
@@ -110,7 +120,7 @@ function Update_Input()
 			return true;
 		}
 
-		if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+		if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 		{
 			if (this.Cancel_Check(60, 200, 0, false))
 			{

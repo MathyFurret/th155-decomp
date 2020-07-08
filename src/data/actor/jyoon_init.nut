@@ -5,6 +5,8 @@ this.player_class.sn <- {};
 this.player_class.shion <- null;
 this.player_class.shion_act <- false;
 this.player_class.shion_ban <- false;
+this.player_class.wait_input <- false;
+this.player_class.stg_mode <- false;
 this.player_class.bag <- null;
 this.player_class.uv <- this.mgr.GetGlobalAnimation(0);
 this.player_class.uv_count <- 0;
@@ -38,6 +40,8 @@ this.player_class.Init <- function ()
 	this.shion = this.SetObject(this.x - 60 * this.direction, this.y - 50, this.direction, this.Shion_Init, {}).weakref();
 	this.resetFunc = function ()
 	{
+		this.stg_mode = false;
+		this.wait_input = false;
 		this.shion_act = false;
 		this.shion = this.SetObject(this.x - 100 * this.direction, this.y - 50, this.direction, this.Shion_Init, {}).weakref();
 		this.bag = null;

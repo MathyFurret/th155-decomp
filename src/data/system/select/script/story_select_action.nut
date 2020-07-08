@@ -53,11 +53,24 @@ function Initialize( _difficulty = 0 )
 	this.count = 0;
 	this.story_list = [];
 
-	foreach( v in this.story_list_base )
+	if (_difficulty == 4)
 	{
-		if (::savedata.story[v].available)
+		foreach( v in this.story_list_base )
 		{
-			this.story_list.push(v);
+			if (::savedata.story[v].overdrive)
+			{
+				this.story_list.push(v);
+			}
+		}
+	}
+	else
+	{
+		foreach( v in this.story_list_base )
+		{
+			if (::savedata.story[v].available)
+			{
+				this.story_list.push(v);
+			}
 		}
 	}
 
@@ -145,7 +158,14 @@ function SelectStory()
 
 		if (name in ::savedata.story)
 		{
-			num = this.savedata.story[name].stage + 1;
+			if (this.difficulty == 4)
+			{
+				num = this.savedata.story[name].stage_overdrive + 1;
+			}
+			else
+			{
+				num = this.savedata.story[name].stage + 1;
+			}
 
 			if (num <= 0)
 			{

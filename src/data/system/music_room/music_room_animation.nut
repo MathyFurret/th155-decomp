@@ -9,10 +9,10 @@ function Initialize()
 	this.title.Initialize(texture, res.left, res.top, res.width, res.height);
 	this.title.ConnectRenderSlot(::graphics.slot.front, 0);
 	this.title.x = ::menu.common.title_x - res.width / 2;
-	this.title.y = ::menu.common.title_y;
+	this.title.y = ::menu.common.title_y - 20;
 	this.pager <- this.UIPager();
 	this.page <- [];
-	this.margin <- 40;
+	this.margin <- 42;
 	local space = 20;
 	local scale = 0.69999999;
 
@@ -37,7 +37,7 @@ function Initialize()
 			local w = 0;
 			local text = ::font.CreateSystemString(v.title);
 			text.ConnectRenderSlot(::graphics.slot.front, 0);
-			text.y = ::menu.common.item_y + i * this.margin - 24;
+			text.y = ::menu.common.item_y + i * this.margin - 24 - 10;
 			obj.push(text);
 			w = text.width + space;
 			local author = ::font.CreateSystemString(v.author);
@@ -46,7 +46,34 @@ function Initialize()
 			author.sy = scale;
 			author.sx = scale * 0.75000000;
 
-			if (v.comment.len())
+			if (v.comment2.len())
+			{
+				local comment = ::font.CreateSystemString(v.comment);
+				comment.ConnectRenderSlot(::graphics.slot.front, 0);
+				obj.push(comment);
+				local comment2 = ::font.CreateSystemString(v.comment2);
+				comment2.ConnectRenderSlot(::graphics.slot.front, 0);
+				obj.push(comment2);
+				comment2.sy = comment.sy = scale;
+				comment2.sx = comment.sx = scale * 0.75000000;
+				author.y = text.y - 8;
+				comment.y = author.y + 18;
+				comment2.y = comment.y + 18;
+				local _w = comment.width * comment.sx;
+
+				if (_w < author.width)
+				{
+					_w = author.width;
+				}
+
+				if (_w < comment2.width * comment2.sx)
+				{
+					_w = comment2.width * comment2.sx;
+				}
+
+				w = w + _w;
+			}
+			else if (v.comment.len())
 			{
 				local comment = ::font.CreateSystemString(v.comment);
 				comment.ConnectRenderSlot(::graphics.slot.front, 0);
@@ -81,9 +108,14 @@ function Initialize()
 			v[0].x = (::graphics.width - w_max1) / 2;
 			v[1].x = v[0].x + w_max0 + space;
 
-			if (v.len() == 3)
+			if (v.len() >= 3)
 			{
 				v[2].x = v[1].x;
+			}
+
+			if (v.len() >= 4)
+			{
+				v[3].x = v[1].x;
 			}
 		}
 	}

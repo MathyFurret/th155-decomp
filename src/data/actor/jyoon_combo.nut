@@ -36,11 +36,13 @@ function Rush_Smash()
 		{
 			if (this.Atk_RushC_Under_Init(null))
 			{
+				this.combo_func = this.Rush_Skill_Under;
 				return true;
 			}
 		}
 		else if (this.Atk_RushC_Front_Init(null))
 		{
+			this.combo_func = this.Rush_Skill_Front;
 			return true;
 		}
 	}
@@ -216,6 +218,7 @@ function Rush_Shot_Front()
 		}
 		else if (this.Shot_Front_Init(null))
 		{
+			this.combo_func = this.Rush_Skill_Front;
 			return true;
 		}
 	}
@@ -272,6 +275,7 @@ function Rush_Shot_Front_Air()
 		}
 		else if (this.Shot_Front_Air_Init(null))
 		{
+			this.combo_func = this.Rush_Skill_Front;
 			return true;
 		}
 	}

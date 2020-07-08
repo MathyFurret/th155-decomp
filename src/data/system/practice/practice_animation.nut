@@ -14,24 +14,25 @@ function Initialize()
 	}
 
 	local item_table = ::menu.common.LoadItemTextArray("data/system/practice/item.csv");
-	local indicator = {};
-	indicator.life <- [
+	this.indicator <- {};
+	this.indicator.life <- [
 		"life",
+		"regain",
 		"life_back"
 	];
-	indicator.sp <- [
+	this.indicator.sp <- [
 		"sp",
 		"sp_back"
 	];
-	indicator.mp <- [
+	this.indicator.mp <- [
 		"mp",
 		"mp_back"
 	];
-	indicator.op <- [
+	this.indicator.op <- [
 		"occult",
 		"occult_back"
 	];
-	indicator.position <- [
+	this.indicator.position <- [
 		"position_cursor_a",
 		"position_cursor_b",
 		"position_back"
@@ -115,6 +116,45 @@ function Initialize()
 			this.back.SetWorldTransform(this.mat_world);
 		}
 	};
+	local update_life_indicator = function ()
+	{
+		if (this.cursor.active || this.cursor2.active)
+		{
+			if (!this.active)
+			{
+				this.highlight.Set(this.text.x - 8, this.text.y + 10, this.text.x + this.res.width + 8, this.text.y + ::font.system_size + 13);
+				this.active = true;
+			}
+		}
+		else if (this.active)
+		{
+			this.highlight.Reset();
+			this.active = false;
+		}
+
+		if (this.cursor.val == 0)
+		{
+			this.text.SetWorldTransform(this.mat_world);
+			this.text.visible = true;
+			this.back.visible = false;
+			this.bar.visible = false;
+			this.bar2.visible = false;
+		}
+		else
+		{
+			this.text.visible = false;
+			this.back.visible = true;
+			this.bar.visible = true;
+			this.bar.SetUV(this.res.left, this.res.top, this.res.width * (this.cursor.val - 1) / (this.cursor.item_num - 2), this.res.height);
+			this.bar.Update();
+			this.bar2.visible = true;
+			this.bar2.SetUV(this.res2.left, this.res2.top, this.res2.width * (this.cursor2.val - 1) / (this.cursor2.item_num - 2), this.res2.height);
+			this.bar2.Update();
+			this.bar.SetWorldTransform(this.mat_world);
+			this.bar2.SetWorldTransform(this.mat_world);
+			this.back.SetWorldTransform(this.mat_world);
+		}
+	};
 	local show = function ()
 	{
 		this.text.visible = true;
@@ -129,7 +169,7 @@ function Initialize()
 		}
 	};
 	local left = ::menu.common.item_x - 240;
-	local top = ::menu.common.item_y;
+	local top = ::menu.common.item_y - 32;
 	local res;
 	this.cursor_x <- left - 20;
 	this.cursor_y <- top + 16;
@@ -150,7 +190,7 @@ function Initialize()
 		p.visible <- true;
 		p.title <- this.create_sprite("title_p" + (i + 1));
 		p.title.x = ::menu.common.title_x - this.anime_set["title_p" + (i + 1)].width / 2;
-		p.title.y = ::menu.common.title_y;
+		p.title.y = ::menu.common.title_y - 32;
 		p.ui <- this.UIBase();
 		p.ui.action = p.weakref();
 		p.ui.target = p.weakref();
@@ -183,13 +223,13 @@ function Initialize()
 				continue;
 			}
 
-			if (v in indicator)
+			if (v in this.indicator)
 			{
 				local t = {};
 				t.obj <- [];
 				t.cursor <- this.action.page[i].cursor[v];
 				t.mat_world <- p.mat_world;
-				t.text <- ::font.CreateSystemString("Žw’è‚\x255a‚\x2561");
+				t.text <- ::font.CreateSystemString(::menu.common.GetMessageText("no_setting"));
 				t.text.ConnectRenderSlot(::graphics.slot.overlay, 0);
 				t.text.x = text.x + 240;
 				t.text.y = text.y;
@@ -213,12 +253,33 @@ function Initialize()
 					t.obj.push(t.obj_a);
 					t.obj.push(t.obj_b);
 				}
+				else if (v == "life")
+				{
+					t.cursor2 <- this.action.page[i].cursor.regain;
+					t.Update <- update_life_indicator;
+					t.back <- this.create_sprite(this.indicator[v].top());
+					local n = this.indicator.life[1] + (i == 0 ? "_1p" : "_2p");
+					t.res2 <- this.anime_set[n];
+					t.bar2 <- this.create_sprite(n);
+					n = this.indicator.life[0] + (i == 0 ? "_1p" : "_2p");
+					t.res <- this.anime_set[n];
+					t.bar <- this.create_sprite(n);
+					t.bar.x = text.x + 240;
+					t.bar.y = text.y + 12 + ::font.system_size / 2 - t.res.height / 2;
+					t.bar2.x = t.bar.x;
+					t.bar2.y = t.bar.y;
+					t.back.x = t.bar.x;
+					t.back.y = t.bar.y;
+					t.obj.push(t.back);
+					t.obj.push(t.bar2);
+					t.obj.push(t.bar);
+				}
 				else
 				{
 					t.Update <- update_indicator;
-					local n = indicator[v][0] + (i == 0 ? "_1p" : "_2p");
+					local n = this.indicator[v][0] + (i == 0 ? "_1p" : "_2p");
 					t.res <- this.anime_set[n];
-					t.back <- this.create_sprite(indicator[v].top());
+					t.back <- this.create_sprite(this.indicator[v].top());
 					t.bar <- this.create_sprite(n);
 					t.bar.x = text.x + 240;
 					t.bar.y = text.y + 12 + ::font.system_size / 2 - t.res.height / 2;
@@ -234,7 +295,7 @@ function Initialize()
 				continue;
 			}
 
-			item.select_obj = this.UIItemSelectorSingle(cur_table.slice(1), text.x + 320, text.y, p.mat_world, this.action.page[i].cursor[v]);
+			item.select_obj = this.UIItemSelectorSingle(cur_table.slice(1), text.x + (i == 2 ? 320 : 240), text.y, p.mat_world, this.action.page[i].cursor[v]);
 			item.select_obj.SetColor(1, 1, 0);
 		}
 	}

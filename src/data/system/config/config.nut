@@ -1,16 +1,15 @@
 this.item <- [
 	"se",
 	"bgm",
-	null,
 	"screen",
 	"vsync",
+	"background",
 	"fps",
-	null,
 	"key1p",
 	"key2p",
-	null,
 	"replay_save",
 	"replay_save_online",
+	"lang",
 	null,
 	"exit"
 ];
@@ -22,9 +21,11 @@ this.cursor_bgm <- this.Cursor(1, 11, ::input_all);
 this.cursor_bgm.loop = false;
 this.cursor_screen <- this.Cursor(1, 2, ::input_all);
 this.cursor_vsync <- this.Cursor(1, 2, ::input_all);
+this.cursor_background <- this.Cursor(1, 2, ::input_all);
 this.cursor_fps <- this.Cursor(1, 2, ::input_all);
 this.cursor_replay_save <- this.Cursor(1, 3, ::input_all);
 this.cursor_replay_save_online <- this.Cursor(1, 2, ::input_all);
+this.cursor_lang <- this.Cursor(1, 2, ::input_all);
 this.help <- [
 	"B1",
 	"ok",
@@ -52,11 +53,49 @@ this.common_callback_ok <- null;
 this.common_callback_cancel <- null;
 this.anime <- {};
 ::manbow.CompileFile("data/system/config/config_animation.nut", this.anime);
-function Initialize()
+function Initialize( enable_lang = false )
 {
 	::menu.cursor.Activate();
 	::menu.back.Activate();
 	::menu.help.Set(this.help);
+
+	if (enable_lang)
+	{
+		this.item = [
+			"se",
+			"bgm",
+			"screen",
+			"vsync",
+			"background",
+			"fps",
+			"key1p",
+			"key2p",
+			"replay_save",
+			"replay_save_online",
+			"lang",
+			null,
+			"exit"
+		];
+	}
+	else
+	{
+		this.item = [
+			"se",
+			"bgm",
+			"screen",
+			"vsync",
+			"background",
+			"fps",
+			"key1p",
+			"key2p",
+			"replay_save",
+			"replay_save_online",
+			null,
+			"exit"
+		];
+	}
+
+	this.cursor_item = ::menu.common.CreateCursor(this.item);
 	this.cursor_item.val = 0;
 	this.state <- 0;
 	this.count <- 0;
@@ -64,9 +103,11 @@ function Initialize()
 	this.cursor_bgm.val = ::config.sound.bgm / 10;
 	this.cursor_screen.val = ::config.graphics.fullscreen;
 	this.cursor_vsync.val = ::config.graphics.vsync;
+	this.cursor_background.val = ::config.graphics.background;
 	this.cursor_fps.val = ::config.graphics.fps;
 	this.cursor_replay_save.val = ::config.replay.save_mode;
 	this.cursor_replay_save_online.val = ::config.replay.save_mode_online;
+	this.cursor_lang.val = ::config.lang;
 	this.BeginAnime();
 	this.Update = this.UpdateMain;
 	::loop.Begin(this);
@@ -221,6 +262,20 @@ this.proc.vsync <- function ()
 		this.cursor_vsync.val = ::config.graphics.vsync;
 	};
 };
+this.proc.background <- function ()
+{
+	::menu.help.Set(this.help_item);
+	this.Update = this.UpdateCommonItem;
+	this.common_cursor = this.cursor_background;
+	this.common_callback_ok = function ()
+	{
+		::config.graphics.background = this.cursor_background.val;
+	};
+	this.common_callback_cancel = function ()
+	{
+		this.cursor_background.val = ::config.graphics.background;
+	};
+};
 this.proc.fps <- function ()
 {
 	::menu.help.Set(this.help_item);
@@ -283,11 +338,16 @@ this.proc.replay_save_online <- function ()
 };
 this.proc.lang <- function ()
 {
+	::menu.help.Set(this.help_item);
 	this.Update = this.UpdateCommonItem;
 	this.common_cursor = this.cursor_lang;
 	this.common_callback_ok = function ()
 	{
-		::config.cursor_lang = this.cursor_lang.val;
+		if (::config.lang != this.cursor_lang.val)
+		{
+			::config.lang = this.cursor_lang.val;
+			this.anime.UpdateLang();
+		}
 	};
 	this.common_callback_cancel = function ()
 	{

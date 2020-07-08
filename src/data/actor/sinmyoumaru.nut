@@ -1953,6 +1953,8 @@ function Shot_Charge_Fire( t )
 			{
 				local t_ = {};
 				t_.charge <- 0;
+				t_.rot <- this.atan2(this.target.y - this.y, (this.target.x - this.x) * this.direction);
+				t_.rot = this.Math_MinMax(t_.rot, -0.52359873, 0.52359873);
 				this.flag1 = this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Charge, t_).weakref();
 				this.PlaySE(3434);
 			}
@@ -2129,6 +2131,8 @@ function OkultAir_Init( t )
 			this.count = 0;
 			this.PlaySE(3437);
 			this.team.AddMP(-200, 120);
+			this.team.op_stop = 300;
+			this.team.op_stop_max = 300;
 			this.stateLabel = function ()
 			{
 				this.CenterUpdate(0.10000000, null);
@@ -2869,24 +2873,25 @@ function SP_F_Init( t )
 			this.PlaySE(3491);
 			this.stateLabel = function ()
 			{
-				if (this.hitCount <= 3)
+				if (this.hitCount <= 2)
 				{
 					this.HitCycleUpdate(3);
 				}
 
 				if (this.va.y < 0.00000000 && this.y < this.centerY || this.va.y > 0.00000000 && this.y > this.centerY)
 				{
-					this.SetSpeed_XY(this.va.x * 0.40000001, this.va.y * 0.40000001);
+					this.SetSpeed_XY(this.va.x * 0.34999999, this.va.y * 0.34999999);
+					this.SetMotion(this.motion, 2);
+					this.HitTargetReset();
 					this.stateLabel = function ()
 					{
 						this.CenterUpdate(0.50000000, null);
 
 						if (this.centerStop * this.centerStop <= 1)
 						{
-							this.SetMotion(this.motion, 2);
-							this.SetSpeed_XY(this.va.x * 0.50000000, this.va.y * 0.50000000);
 							this.stateLabel = function ()
 							{
+								this.CenterUpdate(0.50000000, null);
 								this.VX_Brake(0.50000000);
 							};
 						}

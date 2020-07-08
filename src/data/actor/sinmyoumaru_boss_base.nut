@@ -19,14 +19,18 @@ function Update_Normal()
 
 	if (::battle.state == 8)
 	{
-		if (this.cpuState)
+		if (this.boss_cpu)
+		{
+			this.boss_cpu();
+		}
+		else if (this.cpuState)
 		{
 			this.cpuState();
-		}
 
-		if (this.input && this.team.current == this)
-		{
-			this.Update_Input();
+			if (this.input && this.team.current == this)
+			{
+				this.Update_Input();
+			}
 		}
 	}
 
@@ -41,7 +45,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{

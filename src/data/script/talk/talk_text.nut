@@ -5,6 +5,7 @@ class this.Text
 	offset = 0;
 	scale = 0.00000000;
 	text = null;
+	subtitle = null;
 	constructor()
 	{
 		this.text = [];
@@ -46,6 +47,17 @@ class this.Text
 		this.text.append(t);
 	}
 
+	function SetSubtitle( _text, name = null )
+	{
+		this.subtitle = ::talk.CreateSubtitle(_text, name);
+
+		foreach( v in this.subtitle )
+		{
+			v.alpha = 0;
+			v.ConnectRenderSlot(::graphics.slot.talk, 30);
+		}
+	}
+
 	function Show()
 	{
 		foreach( v in this.text )
@@ -65,6 +77,18 @@ class this.Text
 					{
 						v.alpha += 0.10000000;
 						b = true;
+					}
+				}
+
+				if (t.subtitle)
+				{
+					foreach( v in t.subtitle )
+					{
+						if (v.alpha < 1.00000000)
+						{
+							v.alpha += 0.10000000;
+							b = true;
+						}
 					}
 				}
 
@@ -94,6 +118,18 @@ class this.Text
 					}
 				}
 
+				if (t.subtitle)
+				{
+					foreach( v in t.subtitle )
+					{
+						if (v.alpha > 0.00000000)
+						{
+							v.alpha -= 0.10000000;
+							b = true;
+						}
+					}
+				}
+
 				this.suspend();
 			}
 
@@ -104,6 +140,7 @@ class this.Text
 		});
 		t.call(this);
 		::talk.async_task[this.tostring()] <- t;
+		this.subtitle = null;
 	}
 
 	function Update()

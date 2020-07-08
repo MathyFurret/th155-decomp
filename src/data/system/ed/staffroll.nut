@@ -63,7 +63,8 @@ function SetupA()
 {
 	local t;
 	this.end = 79179 + 2000;
-	local table = ::manbow.LoadCSV("data/system/ed/staffroll.csv");
+	local lang = ::config.lang == 1 ? "_en" : "";
+	local table = ::manbow.LoadCSV("data/system/ed/staffroll" + lang + ".csv");
 	t = this.TaskItemScroll(table, 0, 79179 - 1000, 0, 1);
 	this.task.push(t);
 	t = this.TaskPicture(null, -1000, null);
@@ -83,7 +84,8 @@ function SetupB()
 {
 	local t;
 	this.end = 94179 + 2000;
-	local table = ::manbow.LoadCSV("data/system/ed/staffroll.csv");
+	local lang = ::config.lang == 1 ? "_en" : "";
+	local table = ::manbow.LoadCSV("data/system/ed/staffroll" + lang + ".csv");
 	t = this.TaskFlower(60000 - 1000, 60000 + 1000);
 	this.task.push(t);
 	t = this.TaskFlowerScroll(60000 - 500, 94179 - 1000);
@@ -97,7 +99,7 @@ function SetupB()
 
 	for( local i = 0; i < 12; i = ++i )
 	{
-		t = this.TaskPicture("data/system/ed/staffpic/staffmoji" + i + ".png", 15000 + 3750 * i, 15000 + 3750 - 1000 + 3750 * i, 2);
+		t = this.TaskPicture("data/system/ed/staffpic/staffmoji" + i + lang + ".png", 15000 + 3750 * i, 15000 + 3750 - 1000 + 3750 * i, 2);
 		this.task.push(t);
 	}
 
@@ -136,7 +138,8 @@ function SetupC()
 {
 	local t;
 	this.end = 90050 + 2000;
-	local table = ::manbow.LoadCSV("data/system/ed/staffroll.csv");
+	local lang = ::config.lang == 1 ? "_en" : "";
+	local table = ::manbow.LoadCSV("data/system/ed/staffroll" + lang + ".csv");
 	t = this.TaskItemScroll(table, 15000, 90050 - 1000, 0, 0);
 	this.task.push(t);
 	t = this.TaskPicture(null, 15000 - 2000, null);

@@ -1,3 +1,122 @@
+function Dish_Guage_Back( t )
+{
+	this.SetMotion(9041, 0);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.flag1 = this.SetFreeObjectDynamic(this.x, this.y, this.direction, this.Dish_Guage_Line, {});
+	this.flag4 = this.Vector3();
+	this.flag5 = this.Vector3();
+	this.flag5.x = this.x;
+	this.flag5.y = this.y;
+	::battle.gauge.mat_left_bottom.GetTranslation(this.flag4);
+	this.y = this.flag5.y + this.flag4.y;
+	this.Warp(this.x, this.y + 512);
+	this.func = [
+		function ()
+		{
+			::battle.DeleteTask(this.flag3);
+
+			if (this.flag1)
+			{
+				this.flag1.func[0].call(this.flag1);
+			}
+		},
+		function ( val_ )
+		{
+			if (val_ == 9)
+			{
+			}
+			else if (val_ == 10)
+			{
+			}
+			else
+			{
+			}
+
+			this.flag1.anime.width = 24 * val_;
+			this.SetFreeObjectDynamic(this.x, this.y, this.direction, this.Dish_Guage_Flash, {});
+		},
+		function ( visible_ )
+		{
+			if (this.flag1)
+			{
+				this.flag1.isVisible = visible_;
+			}
+
+			this.isVisible = visible_;
+		}
+	];
+	this.flag3 = {};
+	this.flag3.actor <- this.weakref();
+	this.flag3.Update <- function ()
+	{
+		if (this.actor)
+		{
+			::battle.gauge.mat_left_bottom.GetTranslation(this.actor.flag4);
+			this.actor.Warp(this.actor.x, this.actor.flag5.y + this.actor.flag4.y);
+		}
+	};
+	::battle.AddTask(this.flag3);
+}
+
+function Dish_Guage_Line( t )
+{
+	this.SetMotion(9041, 1);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.flag4 = this.Vector3();
+	this.flag5 = this.Vector3();
+	this.flag5.x = this.x;
+	this.flag5.y = this.y;
+	this.Warp(this.x, this.y + 512);
+	this.anime.width = 0;
+	this.anime.top = 0;
+	this.anime.height = 8;
+	this.anime.left = 0;
+	this.anime.center_x = 12;
+	this.anime.center_y = 4;
+	this.func = [
+		function ()
+		{
+			::battle.DeleteTask(this.flag3);
+			this.ReleaseActor();
+		}
+	];
+	this.flag3 = {};
+	this.flag3.actor <- this.weakref();
+	this.flag3.Update <- function ()
+	{
+		if (this.actor)
+		{
+			::battle.gauge.mat_left_bottom.GetTranslation(this.actor.flag4);
+			this.actor.Warp(this.actor.x, this.actor.flag5.y + this.actor.flag4.y);
+		}
+	};
+	::battle.AddTask(this.flag3);
+}
+
+function Dish_Guage_Flash( t )
+{
+	this.SetMotion(9041, 4);
+	this.EnableTimeStop(false);
+	this.ConnectRenderSlot(::graphics.slot.status, 100);
+	this.anime.width = this.owner.brokenDish * 24;
+	this.anime.top = 0;
+	this.anime.height = 8;
+	this.anime.left = 0;
+	this.anime.center_x = 12;
+	this.anime.center_y = 4;
+	this.stateLabel = function ()
+	{
+		this.alpha -= 0.10000000;
+
+		if (this.alpha <= 0.00000000)
+		{
+			this.ReleaseActor();
+		}
+	};
+}
+
 function Dish_LevelUP( t )
 {
 	this.PlaySE(1989);
@@ -203,6 +322,8 @@ function BreakDishCount( t_ = 1 )
 	{
 		this.owner.brokenDish = 10;
 	}
+
+	this.owner.dish_guage.func[1].call(this.owner.dish_guage, this.owner.brokenDish);
 }
 
 function SetDish_Point( t )
@@ -3070,7 +3191,6 @@ function Climax_Well( t )
 	this.atkRate_Pat = t.rate;
 	this.flag1 = ::manbow.Actor2DProcGroup();
 	this.flag2 = this.Vector3();
-	this.target = this.owner.target.weakref();
 	this.atkRate_Pat = t.rate;
 	this.atk_id = 134217728;
 	this.func = [
@@ -3136,13 +3256,13 @@ function Climax_Well( t )
 		},
 		function ()
 		{
-			this.target.freeMap = true;
-			this.target.DamageGrab_Common(311, 1, -this.direction);
-			this.flag2.x = this.target.x - this.x;
-			this.flag2.y = this.target.y - this.y;
+			this.owner.target.freeMap = true;
+			this.owner.target.DamageGrab_Common(311, 1, -this.direction);
+			this.flag2.x = this.owner.target.x - this.x;
+			this.flag2.y = this.owner.target.y - this.y;
 			this.flag2.SetLength(225);
 			this.SetMotion(4909, 2);
-			this.target.DrawActorPriority(210);
+			this.owner.target.DrawActorPriority(210);
 			this.count = 0;
 			this.stateLabel = function ()
 			{
@@ -3167,10 +3287,10 @@ function Climax_Well( t )
 
 				this.flag2.Mul(0.99000001);
 				this.flag2.RotateByDegree(-5.00000000);
-				this.target.x += (pos_.x + this.flag2.x * this.direction - this.target.x) * 0.15000001;
-				this.target.y += (pos_.y + this.flag2.y - this.target.y) * 0.15000001;
-				this.target.sx = this.target.sy += (0.15000001 - this.target.sx) * 0.01000000;
-				this.target.rz = -this.atan2(this.flag2.y, this.flag2.x) + 45 * 0.01745329;
+				this.owner.target.x += (pos_.x + this.flag2.x * this.direction - this.owner.target.x) * 0.15000001;
+				this.owner.target.y += (pos_.y + this.flag2.y - this.owner.target.y) * 0.15000001;
+				this.owner.target.sx = this.owner.target.sy += (0.15000001 - this.owner.target.sx) * 0.01000000;
+				this.owner.target.rz = -this.atan2(this.flag2.y, this.flag2.x) + 45 * 0.01745329;
 			};
 		},
 		function ()

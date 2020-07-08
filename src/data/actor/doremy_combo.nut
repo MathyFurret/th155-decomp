@@ -36,7 +36,7 @@ function Rush_Smash()
 		{
 			if (this.Atk_RushC_Under_Init(null))
 			{
-				this.combo_func = this.Rush_Skill_Under;
+				this.combo_func = this.Rush_Skill_Front;
 				return true;
 			}
 		}

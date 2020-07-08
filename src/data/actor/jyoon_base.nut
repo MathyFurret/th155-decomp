@@ -44,12 +44,27 @@ function Update_Normal()
 
 function Update_Input()
 {
+	if (this.wait_input)
+	{
+		return;
+	}
+
+	if (this.stg_mode)
+	{
+		if (this.Cancel_Check(10))
+		{
+			this.VS_NamazuMove();
+		}
+
+		return;
+	}
+
 	if (this.command_change())
 	{
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{
@@ -86,6 +101,34 @@ function Update_Input()
 				this.command.ResetReserve();
 				return true;
 			}
+
+			if (this.command.rsv_y > 0)
+			{
+				this.SP_E_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
+
+			if (this.command.rsv_x * this.direction > 0)
+			{
+				this.SP_A_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
+
+			if (this.command.rsv_x * this.direction < 0)
+			{
+				this.SP_C_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
+
+			if (this.command.rsv_x == 0)
+			{
+				this.SP_D_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
 		}
 	}
 
@@ -114,6 +157,34 @@ function TeamSkillChain_Input( input_ )
 	if (input_.command.rsv_y < 0)
 	{
 		this.SP_B_Init(null);
+		this.command.ResetReserve();
+		return true;
+	}
+
+	if (input_.command.rsv_y > 0)
+	{
+		this.SP_E_Init(null);
+		this.command.ResetReserve();
+		return true;
+	}
+
+	if (input_.command.rsv_x * this.direction > 0)
+	{
+		this.SP_A_Init(null);
+		this.command.ResetReserve();
+		return true;
+	}
+
+	if (input_.command.rsv_x * this.direction < 0)
+	{
+		this.SP_C_Init(null);
+		this.command.ResetReserve();
+		return true;
+	}
+
+	if (input_.command.rsv_x == 0)
+	{
+		this.SP_D_Init(null);
 		this.command.ResetReserve();
 		return true;
 	}

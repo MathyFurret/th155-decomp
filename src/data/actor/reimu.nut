@@ -6,6 +6,12 @@ function Func_BeginBattle()
 		return;
 	}
 
+	if (this.team.master == this && this.team.slave && this.team.slave.type == 17)
+	{
+		this.BeginBattle_Yukari(null);
+		return;
+	}
+
 	this.BeginBattle(null);
 }
 
@@ -102,6 +108,54 @@ function BeginBattle_Kasen( t )
 	];
 }
 
+function BeginBattle_Yukari( t )
+{
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.LabelClear();
+	this.SetMotion(9005, 0);
+	this.team.slave.BeginBattle_Slave(null);
+	this.count = 0;
+	this.flag1 = this.Vector3();
+	this.flag1.x = ::battle.start_x[this.team.index];
+	this.flag1.y = ::battle.start_y[this.team.index];
+	this.func = function ()
+	{
+		this.DrawActorPriority();
+		this.SetMotion(9005, 1);
+		this.PlaySE(1113);
+	};
+	this.keyAction = [
+		null,
+		function ()
+		{
+			this.centerStop = -3;
+			this.SetSpeed_XY(3.00000000 * this.direction, -3.50000000);
+			this.stateLabel = function ()
+			{
+				this.CenterUpdate(0.37500000, null);
+
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					this.SetMotion(9005, 3);
+					this.count = 0;
+					this.Warp(this.flag1.x, this.y);
+					this.centerStop = 1;
+					this.SetSpeed_XY(0.00000000, this.va.y);
+					this.stateLabel = function ()
+					{
+					};
+				}
+			};
+		},
+		null,
+		function ()
+		{
+			this.CommonBegin();
+			this.EndtoFreeMove();
+		}
+	];
+}
+
 function BeginBattle_Slave( t )
 {
 	this.SetSpeed_XY(0.00000000, 0.00000000);
@@ -116,6 +170,75 @@ function BeginBattle_Slave( t )
 			this.SetEffect(this.x, this.y - 20, this.direction, this.EF_Team_ChangeB, {}, this.weakref());
 			this.SetMotion(3910, 2);
 			this.LabelClear();
+		}
+	];
+}
+
+function BeginBattle_SlaveYukari( t )
+{
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.LabelClear();
+	this.SetMotion(9005, 0);
+	this.count = 0;
+	this.flag1 = this.Vector3();
+	this.flag1.x = ::battle.start_x[this.team.index];
+	this.flag1.y = ::battle.start_y[this.team.index];
+	this.func = function ()
+	{
+		this.DrawActorPriority();
+		this.SetMotion(9005, 1);
+		this.PlaySE(1113);
+	};
+	this.keyAction = [
+		null,
+		function ()
+		{
+			this.centerStop = -3;
+			this.SetSpeed_XY(2.00000000 * this.direction, -3.00000000);
+			this.stateLabel = function ()
+			{
+				this.CenterUpdate(0.34999999, null);
+
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					this.SetMotion(9005, 3);
+					this.count = 0;
+					this.stateLabel = function ()
+					{
+						this.VX_Brake(0.50000000);
+
+						if (this.count == 35)
+						{
+							this.SetMotion(9005, 5);
+						}
+					};
+				}
+			};
+		},
+		null,
+		function ()
+		{
+		},
+		null,
+		function ()
+		{
+			this.DrawActorPriority(180);
+			this.centerStop = -2;
+			this.SetSpeed_XY(-15.50000000 * this.direction, -6.00000000);
+			this.count = 0;
+			this.PlaySE(800);
+			this.stateLabel = function ()
+			{
+				this.Vec_Brake(0.75000000, 2.00000000);
+
+				if (this.count == 30)
+				{
+					this.PlaySE(900);
+					this.SetEffect(this.x, this.y - 20, this.direction, this.EF_Team_ChangeB, {}, this.weakref());
+					this.SetMotion(3910, 2);
+					this.LabelClear();
+				}
+			};
 		}
 	];
 }

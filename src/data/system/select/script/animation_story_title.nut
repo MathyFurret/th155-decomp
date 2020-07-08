@@ -2,6 +2,7 @@ local priority = 10000;
 local func_init = function ()
 {
 	this.action <- ::menu.story_select.weakref();
+	local lang = ::config.lang == 1 ? "en_" : "";
 	this.name_sprite <- {};
 	this.title_sprite <- {};
 
@@ -14,7 +15,7 @@ local func_init = function ()
 
 		local t = ::manbow.Texture();
 
-		if (t.Load("data/system/select/story_title/name_" + v + ".png"))
+		if (t.Load("data/system/select/story_title/name_" + lang + v + ".png"))
 		{
 			local s = ::manbow.Sprite();
 			s.Initialize(t, 0, 0, t.width, t.height);
@@ -24,7 +25,7 @@ local func_init = function ()
 
 		local t = ::manbow.Texture();
 
-		if (t.Load("data/system/select/story_title/title_" + v + ".png"))
+		if (t.Load("data/system/select/story_title/title_" + lang + v + ".png"))
 		{
 			local s = ::manbow.Sprite();
 			s.Initialize(t, 0, 0, t.width, t.height);
@@ -70,7 +71,24 @@ local func_init = function ()
 			t.obj.push(title);
 		}
 
-		if (::savedata.story[v].ed)
+		if (this.action.difficulty == 4)
+		{
+			if (::savedata.story[v].ed & 16)
+			{
+				local s = ::manbow.AnimationController2D();
+				s.Init(this.anime_set);
+				s.SetMotion(500, 1);
+				t.obj.push(s);
+			}
+			else if (::savedata.story[v].stage_overdrive < 0)
+			{
+				local s = ::manbow.AnimationController2D();
+				s.Init(this.anime_set);
+				s.SetMotion(500, 0);
+				t.obj.push(s);
+			}
+		}
+		else if (::savedata.story[v].ed)
 		{
 			local s = ::manbow.AnimationController2D();
 			s.Init(this.anime_set);

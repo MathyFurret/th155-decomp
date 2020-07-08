@@ -128,6 +128,7 @@ class this.BGM
 	title = "";
 	author = "";
 	comment = "";
+	comment2 = "";
 	hidden = 0;
 	function Play()
 	{
@@ -158,6 +159,7 @@ function LoadBGM( filename )
 		t.title = val.title;
 		t.author = val.author;
 		t.comment = val.comment;
+		t.comment2 = val.comment2;
 		t.hidden = val.hidden;
 		this.bgm.data[key] <- t;
 	}
@@ -192,15 +194,18 @@ function PlayBGM( index, loop_flag = true )
 	{
 		local data = this.bgm.data[index];
 
-		if ("savedata" in this.getroottable())
+		if (::replay.GetState() != ::replay.PLAY)
 		{
-			if (!(index in ::savedata.bgm))
+			if ("savedata" in this.getroottable())
 			{
-				::savedata.bgm[index] <- true;
-
-				if (data.track_no >= 0)
+				if (!(index in ::savedata.bgm))
 				{
-					::savedata.Save();
+					::savedata.bgm[index] <- true;
+
+					if (data.track_no >= 0)
+					{
+						::savedata.Save();
+					}
 				}
 			}
 		}
@@ -266,15 +271,18 @@ function PreLoadBGM( index, loop_flag = true )
 		this.current_bgm_index = index;
 		local data = this.bgm.data[index];
 
-		if ("savedata" in this.getroottable())
+		if (::replay.GetState() != ::replay.PLAY)
 		{
-			if (!(index in ::savedata.bgm))
+			if ("savedata" in this.getroottable())
 			{
-				::savedata.bgm[index] <- true;
-
-				if (data.track_no >= 0)
+				if (!(index in ::savedata.bgm))
 				{
-					::savedata.Save();
+					::savedata.bgm[index] <- true;
+
+					if (data.track_no >= 0)
+					{
+						::savedata.Save();
+					}
 				}
 			}
 		}

@@ -99,22 +99,28 @@ this.actor4.Init(this.anime_set);
 this.actor4.SetMotion(3, 3);
 this.actor4.ConnectRenderSlot(slot.background3d_3, 998);
 local mat = ::manbow.Matrix();
-mat.SetTranslation(50, -580, -200);
+mat.SetScaling(-1, 1, 1);
+mat.Translate(-50, -580, -200);
 this.actor1.SetWorldTransform(mat);
 this.actor1.Update();
-mat.SetTranslation(-50, -580, -220);
+mat.SetScaling(-1, 1, 1);
+mat.Translate(50, -580, -220);
 this.actor2.SetWorldTransform(mat);
 this.actor2.Update();
-mat.SetTranslation(-50, -580, -221);
+mat.SetScaling(-1, 1, 1);
+mat.Translate(50, -580, -221);
 this.actor2b.SetWorldTransform(mat);
 this.actor2b.Update();
-mat.SetTranslation(180, -580, -210);
+mat.SetScaling(-1, 1, 1);
+mat.Translate(180, -580, -210);
 this.actor3.SetWorldTransform(mat);
 this.actor3.Update();
-mat.SetTranslation(180, -580, -211);
+mat.SetScaling(-1, 1, 1);
+mat.Translate(180, -580, -211);
 this.actor3b.SetWorldTransform(mat);
 this.actor3b.Update();
-mat.SetTranslation(-180, -580, -220);
+mat.SetScaling(-1, 1, 1);
+mat.Translate(-180, -580, -220);
 this.actor4.SetWorldTransform(mat);
 this.actor4.Update();
 this.begin <- ::manbow.timeGetTime();
@@ -123,7 +129,8 @@ function Update()
 {
 	local mat = ::manbow.Matrix();
 	this.count++;
-	mat.SetTranslation(50, -650 + 10 * this.sin(1.08570004 * this.count * 3 * 0.01745329), -130);
+	mat.SetScaling(-1, 1, 1);
+	mat.Translate(-50, -650 + 10 * this.sin(1.08570004 * this.count * 3 * 0.01745329), -130);
 	this.actor1.SetWorldTransform(mat);
 	this.actor1.Update();
 
@@ -138,11 +145,11 @@ function Update()
 	}
 
 	mat.SetScaling(-1, 1, 1);
-	mat.Translate(-50 + 10 * this.sin(1.08570004 * this.count * 0.01745329), -580 + 5 * this.sin((1.08570004 * this.count + 90) * 3 * 0.01745329), -200);
+	mat.Translate(50 + 10 * this.sin(1.08570004 * this.count * 0.01745329), -580 + 5 * this.sin((1.08570004 * this.count + 90) * 3 * 0.01745329), -200);
 	this.actor2.SetWorldTransform(mat);
 	this.actor2.Update();
 	mat.SetScaling(-1, 1, 1);
-	mat.Translate(-50 + 10 * this.sin(1.08570004 * this.count * 0.01745329), -580 + 5 * this.sin((1.08570004 * this.count + 90) * 3 * 0.01745329), -210);
+	mat.Translate(50 + 10 * this.sin(1.08570004 * this.count * 0.01745329), -580 + 5 * this.sin((1.08570004 * this.count + 90) * 3 * 0.01745329), -210);
 	this.actor2b.SetWorldTransform(mat);
 	this.actor2b.Update();
 	mat.SetScaling(-1, 1, 1);

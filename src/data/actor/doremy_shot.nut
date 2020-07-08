@@ -73,16 +73,63 @@ function Mukon_AirDash( t )
 	};
 }
 
+function Mukon_StockBall( t )
+{
+	this.SetMotion(2508, 6);
+	this.DrawActorPriority(170);
+	this.sx = this.sy = 0.00000000;
+	this.func = [
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += 0.10000000;
+				this.alpha -= 0.20000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		},
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy *= 0.89999998;
+				this.alpha -= 0.10000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.alpha <= 0.00000000;
+					this.stateLabel = function ()
+					{
+					};
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.sx = this.sy += (1.00000000 - this.sx) * 0.20000000;
+	};
+}
+
 function Set_Mukon( x_, y_, type_ = 0 )
 {
-	if (type_ == 1)
+	switch(type_)
 	{
+	case 2:
+		this.SetShot(x_, y_, 1.00000000, this.Mukon_Item_AutoGet, {});
+		break;
+
+	case 1:
 		this.owner.mukon.Add(this.SetShot(x_, y_, 1.00000000, this.Mukon_Item_Mid, {}));
-	}
-	else
-	{
+		break;
+
+	default:
 		this.owner.mukon.Add(this.SetShot(x_, y_, 1.00000000, this.Mukon_Item, {}));
-		  // [029]  OP_JMP            0      0    0    0
+		break;
 	}
 }
 
@@ -110,7 +157,7 @@ function Mukon_Item( t )
 				{
 					this.stateLabel = function ()
 					{
-						this.SetSpeed_XY((this.owner.x - this.x) * 0.25000000, (this.owner.y - 30 - this.y) * 0.25000000);
+						this.SetSpeed_XY((this.team.current.x - this.x) * 0.25000000, (this.team.current.y - 30 - this.y) * 0.25000000);
 						this.sx = this.sy -= 0.10000000;
 
 						if (this.sx <= 0.00000000)
@@ -129,7 +176,7 @@ function Mukon_Item( t )
 	];
 	this.keyAction = function ()
 	{
-		this.SetSpeed_XY(0.00000000, -6.00000000);
+		this.SetSpeed_XY(0.00000000, -3.00000000 - this.rand() % 61 * 0.10000000);
 		this.flag1 = this.rand() % 360 * 0.01745329;
 		this.stateLabel = function ()
 		{
@@ -148,6 +195,148 @@ function Mukon_Item( t )
 			this.VY_Brake(0.20000000, -1.00000000);
 			this.SetSpeed_XY(1.50000000 * this.sin(this.flag1), this.va.y);
 			this.flag1 += 0.08726646;
+		};
+	};
+}
+
+function Reset_Mukon_Item( t )
+{
+	this.SetMotion(2508, 0);
+	this.HitReset();
+	this.owner.mukon.Add(this);
+	this.SetTeamSelfShot();
+	this.sx = this.sy = 2.00000000;
+	this.count = 0;
+	this.stateLabel = function ()
+	{
+		this.sx = this.sy -= 0.10000000;
+	};
+	this.func = [
+		function ()
+		{
+			this.SetMotion(2508, 2);
+			this.owner.Mukon_Charge(1);
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += (2.00000000 - this.sx) * 0.25000000;
+
+				if (this.sx > 1.95000005)
+				{
+					this.stateLabel = function ()
+					{
+						this.SetSpeed_XY((this.team.current.x - this.x) * 0.25000000, (this.team.current.y - 30 - this.y) * 0.25000000);
+						this.sx = this.sy -= 0.10000000;
+
+						if (this.sx <= 0.00000000)
+						{
+							this.ReleaseActor();
+						}
+					};
+				}
+			};
+		},
+		function ()
+		{
+			this.SetShot(this.x, this.y, this.direction, this.Mukon_Vucume_Shot, {});
+			this.ReleaseActor();
+		},
+		function ()
+		{
+			this.SetMotion(2508, 2);
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.func[1] = function ()
+			{
+			};
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy -= 0.10000000;
+
+				if (this.sx <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.keyAction = function ()
+	{
+		this.flag1 = this.rand() % 360 * 0.01745329;
+		this.stateLabel = function ()
+		{
+			if (this.IsScreen(100))
+			{
+				this.ReleaseActor();
+				return;
+			}
+
+			if (this.hitCount > 0)
+			{
+				this.func[0].call(this);
+				return;
+			}
+
+			if (this.count >= 120)
+			{
+				this.func[2].call(this);
+				return;
+			}
+
+			this.count++;
+			this.VY_Brake(0.20000000, -1.00000000);
+			this.SetSpeed_XY(1.50000000 * this.sin(this.flag1), this.va.y);
+			this.flag1 += 0.08726646;
+		};
+	};
+}
+
+function Mukon_Item_AutoGet( t )
+{
+	this.SetMotion(2508, 0);
+	this.SetTeamSelfShot();
+	this.alpha = 0.00000000;
+	this.sx = this.sy = 2.00000000;
+	this.stateLabel = function ()
+	{
+		this.alpha += 0.10000000;
+		this.sx = this.sy -= 0.10000000;
+	};
+	this.func = [
+		function ()
+		{
+			this.SetMotion(2508, 2);
+			this.owner.Mukon_Charge(1);
+			this.SetSpeed_XY(this.va.x * 0.10000000, this.va.y * 0.10000000);
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += (2.00000000 - this.sx) * 0.25000000;
+
+				if (this.sx > 1.95000005)
+				{
+					this.stateLabel = function ()
+					{
+						this.SetSpeed_XY((this.team.current.x - this.x) * 0.25000000, (this.team.current.y - 30 - this.y) * 0.25000000);
+						this.sx = this.sy -= 0.10000000;
+
+						if (this.sx <= 0.00000000)
+						{
+							this.ReleaseActor();
+						}
+					};
+				}
+			};
+		}
+	];
+	this.keyAction = function ()
+	{
+		this.stateLabel = function ()
+		{
+			if (this.hitCount > 0)
+			{
+				this.func[0].call(this);
+				return;
+			}
+
+			this.SetSpeed_XY((this.team.current.x - this.x) * 0.10000000, (this.team.current.y - this.y) * 0.10000000);
 		};
 	};
 }
@@ -176,7 +365,7 @@ function Mukon_Item_Mid( t )
 				{
 					this.stateLabel = function ()
 					{
-						this.SetSpeed_XY((this.owner.x - this.x) * 0.25000000, (this.owner.y - 30 - this.y) * 0.25000000);
+						this.SetSpeed_XY((this.team.current.x - this.x) * 0.25000000, (this.team.current.y - 30 - this.y) * 0.25000000);
 						this.sx = this.sy -= 0.10000000;
 
 						if (this.sx <= 0.00000000)
@@ -218,9 +407,100 @@ function Mukon_Item_Mid( t )
 	};
 }
 
+function Reset_Mukon_Item_Mid( t )
+{
+	this.SetMotion(2508, 3);
+	this.HitReset();
+	this.owner.mukon.Add(this);
+	this.SetTeamSelfShot();
+	this.sx = this.sy = 2.00000000;
+	this.count = 0;
+	this.stateLabel = function ()
+	{
+		this.sx = this.sy -= 0.10000000;
+	};
+	this.func = [
+		function ()
+		{
+			this.SetMotion(2508, 5);
+			this.owner.Mukon_Charge(5);
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += (2.00000000 - this.sx) * 0.25000000;
+
+				if (this.sx > 1.95000005)
+				{
+					this.stateLabel = function ()
+					{
+						this.SetSpeed_XY((this.team.current.x - this.x) * 0.25000000, (this.team.current.y - 30 - this.y) * 0.25000000);
+						this.sx = this.sy -= 0.10000000;
+
+						if (this.sx <= 0.00000000)
+						{
+							this.ReleaseActor();
+						}
+					};
+				}
+			};
+		},
+		function ()
+		{
+			this.SetShot(this.x, this.y, this.direction, this.Mukon_Vucume_Shot_Mid, {});
+			this.ReleaseActor();
+		},
+		function ()
+		{
+			this.SetMotion(2508, 5);
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.func[1] = function ()
+			{
+			};
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy -= 0.10000000;
+
+				if (this.sx <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.keyAction = function ()
+	{
+		this.flag1 = this.rand() % 360 * 0.01745329;
+		this.stateLabel = function ()
+		{
+			if (this.IsScreen(100))
+			{
+				this.ReleaseActor();
+				return;
+			}
+
+			if (this.hitCount > 0)
+			{
+				this.func[0].call(this);
+				return;
+			}
+
+			if (this.count >= 120)
+			{
+				this.func[2].call(this);
+				return;
+			}
+
+			this.count++;
+			this.VY_Brake(0.20000000, -1.00000000);
+			this.SetSpeed_XY(1.50000000 * this.sin(this.flag1), this.va.y);
+			this.flag1 += 0.08726646;
+		};
+	};
+}
+
 function Mukon_Item_ChargeShot( t )
 {
 	this.SetMotion(2508, 3);
+	this.owner.mukon.Add(this);
 	this.alpha = 0.00000000;
 	this.SetTeamSelfShot();
 	this.SetSpeed_Vec(6.00000000, t.rot, this.direction);
@@ -242,7 +522,7 @@ function Mukon_Item_ChargeShot( t )
 				{
 					this.stateLabel = function ()
 					{
-						this.SetSpeed_XY((this.owner.x - this.x) * 0.25000000, (this.owner.y - 30 - this.y) * 0.25000000);
+						this.SetSpeed_XY((this.team.current.x - this.x) * 0.25000000, (this.team.current.y - 30 - this.y) * 0.25000000);
 						this.sx = this.sy -= 0.10000000;
 
 						if (this.sx <= 0.00000000)
@@ -292,7 +572,7 @@ function Mukon_Vucume_Shot( t )
 	this.cancelCount = 1;
 	this.atk_id = 1048576;
 	this.flag1 = null;
-	this.flag2 = 1.00000000;
+	this.flag2 = 5.00000000;
 	this.func = [
 		function ()
 		{
@@ -326,12 +606,34 @@ function Mukon_Vucume_Shot( t )
 
 			this.owner.Mukon_Charge(1);
 			this.func[0].call(this);
+		},
+		function ()
+		{
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+
+			if (this.flag1)
+			{
+				this.flag1.ReleaseActor();
+			}
+
+			this.flag1 = null;
+			this.SetMotion(this.motion, 3);
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy *= 0.89999998;
+				this.alpha -= 0.20000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
 		}
 	];
 	this.subState = function ()
 	{
-		this.vec.x = this.owner.point0_x - this.x;
-		this.vec.y = this.owner.point0_y - this.y;
+		this.vec.x = this.team.current.point0_x - this.x;
+		this.vec.y = this.team.current.point0_y - this.y;
 
 		if (this.vec.Length() <= 25)
 		{
@@ -356,10 +658,20 @@ function Mukon_Vucume_Shot( t )
 			this.direction = -1.00000000;
 		}
 
+		this.func[2] = function ()
+		{
+			this.subState = function ()
+			{
+				if (this.Vec_Brake(0.25000000))
+				{
+					this.func[0].call(this);
+				}
+			};
+		};
 		this.subState = function ()
 		{
-			this.vec.x = this.owner.point0_x - this.x;
-			this.vec.y = this.owner.point0_y - this.y;
+			this.vec.x = this.team.current.point0_x - this.x;
+			this.vec.y = this.team.current.point0_y - this.y;
 
 			if (this.vec.Length() <= 25)
 			{
@@ -380,6 +692,12 @@ function Mukon_Vucume_Shot( t )
 	};
 	this.stateLabel = function ()
 	{
+		if (this.Damage_ConvertOP(this.x, this.y, 1))
+		{
+			this.ReleaseActor();
+			return;
+		}
+
 		if (this.cancelCount <= 0)
 		{
 			this.func[0].call(this);
@@ -392,8 +710,32 @@ function Mukon_Vucume_Shot( t )
 		}
 		else
 		{
-			this.func[0].call(this);
-			return;
+			this.flag2 -= 0.75000000;
+
+			if (this.flag2 <= 0.00000000)
+			{
+				this.flag2 = 0.00000000;
+			}
+
+			if (this.Vec_Brake(0.75000000))
+			{
+				if (this.hitResult)
+				{
+					this.func[0].call(this);
+				}
+				else
+				{
+					if (this.flag1)
+					{
+						this.flag1.ReleaseActor();
+					}
+
+					this.flag1 = null;
+					this.Reset_Mukon_Item(null);
+				}
+
+				return;
+			}
 		}
 	};
 }
@@ -405,7 +747,7 @@ function Mukon_Vucume_Shot_Mid( t )
 	this.cancelCount = 3;
 	this.atk_id = 1048576;
 	this.flag1 = null;
-	this.flag2 = 1.00000000;
+	this.flag2 = 5.00000000;
 	this.func = [
 		function ()
 		{
@@ -488,6 +830,12 @@ function Mukon_Vucume_Shot_Mid( t )
 	};
 	this.stateLabel = function ()
 	{
+		if (this.Damage_ConvertOP(this.x, this.y, 3))
+		{
+			this.ReleaseActor();
+			return;
+		}
+
 		if (this.cancelCount <= 0)
 		{
 			this.func[0].call(this);
@@ -500,8 +848,32 @@ function Mukon_Vucume_Shot_Mid( t )
 		}
 		else
 		{
-			this.func[0].call(this);
-			return;
+			this.flag2 -= 0.40000001;
+
+			if (this.flag2 <= 0.00000000)
+			{
+				this.flag2 = 0.00000000;
+			}
+
+			if (this.Vec_Brake(0.40000001))
+			{
+				if (this.hitResult)
+				{
+					this.func[0].call(this);
+				}
+				else
+				{
+					if (this.flag1)
+					{
+						this.flag1.ReleaseActor();
+					}
+
+					this.flag1 = null;
+					this.Reset_Mukon_Item_Mid(null);
+				}
+
+				return;
+			}
 		}
 	};
 }
@@ -509,6 +881,7 @@ function Mukon_Vucume_Shot_Mid( t )
 function Shot_Normal_Sub( t )
 {
 	this.SetMotion(2009, 0);
+	this.atk_id = 16384;
 	this.func = [
 		function ()
 		{
@@ -539,7 +912,6 @@ function Shot_Normal_Sub( t )
 
 function Shot_Normal( t )
 {
-	this.cancelCount = 5;
 	this.flag1 = [];
 	this.flag2 = this.Vector3();
 	this.flag2.x = 1.00000000;
@@ -560,7 +932,7 @@ function Shot_Normal( t )
 	this.func = [
 		function ()
 		{
-			if (this.hitResult & 1)
+			if (this.hitResult & 13)
 			{
 				foreach( a in this.flag1 )
 				{
@@ -585,7 +957,7 @@ function Shot_Normal( t )
 	{
 		if (this.IsScreen(200))
 		{
-			this.ReleaseActor();
+			this.func[0].call(this);
 			return;
 		}
 
@@ -1282,31 +1654,45 @@ function SPShot_Balloon( t )
 				this.owner.flag1 = null;
 			}
 
+			if (this.hitResult & 1)
+			{
+				for( local i = 0; i < 4; i++ )
+				{
+					this.Set_Mukon(this.point0_x, this.point0_y, 0);
+					this.Set_Mukon(this.point1_x, this.point1_y, 0);
+					this.Set_Mukon(this.point2_x, this.point2_y, 0);
+				}
+			}
+
 			this.ReleaseActor();
 		},
 		function ()
 		{
 			local t_ = {};
 			t_.rot <- -15 * 0.01745329;
-			t_.take <- 2;
+			t_.take <- 5;
 			t_.scale <- this.sx;
-			t_.vx <- this.owner.va.x;
-			t_.vy <- this.owner.va.y;
-			this.SetFreeObject(this.point0_x, this.point0_y, this.direction, this.SPShot_BalloonFree, t_);
+			t_.vx <- this.owner.va.x * 0.92000002;
+			t_.vy <- this.owner.va.y * 0.92000002;
+			this.SetShot(this.point0_x, this.point0_y, this.direction, this.SPShot_BalloonFree, t_);
 			local t_ = {};
 			t_.rot <- 0 * 0.01745329;
-			t_.take <- 3;
+			t_.take <- 6;
 			t_.scale <- this.sx;
-			t_.vx <- this.owner.va.x;
-			t_.vy <- this.owner.va.y;
-			this.SetFreeObject(this.point1_x, this.point1_y, this.direction, this.SPShot_BalloonFree, t_);
+			t_.vx <- this.owner.va.x * 0.95999998;
+			t_.vy <- this.owner.va.y * 0.95999998;
+			this.SetShot(this.point1_x, this.point1_y, this.direction, this.SPShot_BalloonFree, t_);
 			local t_ = {};
 			t_.rot <- 15 * 0.01745329;
-			t_.take <- 4;
+			t_.take <- 7;
 			t_.scale <- this.sx;
 			t_.vx <- this.owner.va.x;
 			t_.vy <- this.owner.va.y;
-			this.SetFreeObject(this.point2_x, this.point2_y, this.direction, this.SPShot_BalloonFree, t_);
+			this.SetShot(this.point2_x, this.point2_y, this.direction, this.SPShot_BalloonFree, t_);
+			this.ReleaseActor();
+		},
+		function ()
+		{
 			this.ReleaseActor();
 		}
 	];
@@ -1333,18 +1719,41 @@ function SPShot_Balloon( t )
 function SPShot_BalloonFree( t )
 {
 	this.SetMotion(3049, t.take);
+	this.owner.balloon.Add(this);
 	this.sx = this.sy = t.scale;
+	this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 	this.SetSpeed_XY(t.vx, t.vy);
+	this.cancelCount = 1;
+	this.atk_id = 16777216;
+	this.func = [
+		function ()
+		{
+			if (this.hitResult & 1)
+			{
+				for( local i = 0; i < 4; i++ )
+				{
+					this.Set_Mukon(this.x, this.y, 0);
+				}
+			}
+
+			this.SetEffect(this.x, this.y, this.direction, this.EF_HitSmashB, {});
+			this.ReleaseActor();
+		}
+	];
 	this.stateLabel = function ()
 	{
-		this.AddSpeed_XY(0.00000000, -0.10000000);
-
-		if (this.y < ::battle.scroll_top - 200)
+		if (this.IsScreen(200))
 		{
 			this.ReleaseActor();
 		}
 
-		this.rz += -this.rz * 0.07500000;
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.Damage_ConvertOP(this.x, this.y, 4))
+		{
+			this.func[0].call(this);
+			return;
+		}
+
+		this.AddSpeed_XY(0.00000000, -0.10000000);
 	};
 }
 
@@ -1365,6 +1774,7 @@ function Occult_Mukon( t )
 	this.SetMotion(2509, 4);
 	this.sx = this.sy = 0.10000000;
 	this.cancelCount = 1;
+	this.atk_id = 524288;
 	this.func = [
 		function ()
 		{
@@ -1393,7 +1803,7 @@ function Occult_Mukon( t )
 			{
 				this.AddSpeed_XY(0.00000000, 0.10000000);
 
-				if (this.hitCount > 0 || this.grazeCount > 0)
+				if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0)
 				{
 					this.func[0].call(this);
 				}
@@ -1602,6 +2012,12 @@ function Occult_Hole( t )
 
 	this.stateLabel = function ()
 	{
+		if (::battle.state != 8)
+		{
+			this.func[0].call(this);
+			return;
+		}
+
 		local x_ = this.flag1 + 0.05000000 * this.sin(this.count * 0.05235988);
 		this.sx = this.sy += (x_ - this.sx) * 0.15000001;
 
@@ -1677,6 +2093,7 @@ function SpellShot_A( t )
 	this.func = [
 		function ()
 		{
+			this.team.spell_enable_end = true;
 			this.SetKeyFrame(1);
 			this.SetSpeed_XY(0.00000000, 0.00000000);
 			this.stateLabel = function ()
@@ -1714,9 +2131,9 @@ function SpellShot_A( t )
 			this.SetSpeed_XY(this.flag1.x, this.flag1.y);
 		}
 
-		this.HitCycleUpdate(3);
+		this.HitCycleUpdate(5);
 
-		if (this.count >= 150 || this.hitCount >= 10 || this.cancelCount <= 0)
+		if (this.count >= 210 || this.hitCount >= 10 || this.cancelCount <= 0)
 		{
 			this.func[0].call(this);
 			return;
@@ -1938,13 +2355,18 @@ function SpellShot_C( t )
 {
 	this.SetMotion(4029, 5);
 	this.DrawActorPriority(189);
-	this.SetSpeed_Vec(10.00000000 + this.rand() % 6, t.rot, this.direction);
+	this.SetSpeed_Vec(t.v, t.rot, this.direction);
 	this.rz = t.rot;
 	this.cancelCount = 1;
 	this.atk_id = 67108864;
 	this.func = [
 		function ()
 		{
+			if (this.hitResult & 1)
+			{
+				this.Set_Mukon(this.x, this.y, 2);
+			}
+
 			this.DrawActorPriority(200);
 			this.SetMotion(4029, 6);
 			this.SetSpeed_XY(0.00000000, 0.00000000);
@@ -1963,13 +2385,13 @@ function SpellShot_C( t )
 	];
 	this.stateLabel = function ()
 	{
-		if (this.hitCount > 0 || this.grazeCount > 0 || this.IsScreen(10))
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.IsScreen(200))
 		{
 			this.func[0].call(this);
 			return;
 		}
 
-		this.TargetHoming(this.team.target, 1.00000000 * 0.01745329, this.direction);
+		this.TargetHoming(this.team.target, 0.03490658, this.direction);
 		this.rz = this.atan2(this.va.y, this.va.x * this.direction);
 	};
 }

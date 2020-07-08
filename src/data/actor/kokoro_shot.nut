@@ -133,8 +133,8 @@ function MaskObject( t )
 
 		this.flag2.y *= 0.50000000 + this.sin(a_.maskPitch) * 0.50000000;
 		this.flag2.RotateByRadian(a_.maskYaw);
-		this.flag2.x += this.owner.x;
-		this.flag2.y += this.owner.y;
+		this.flag2.x += this.team.current.x;
+		this.flag2.y += this.team.current.y;
 		this.direction = this.owner.direction;
 		this.SetSpeed_XY((this.flag2.x - this.x) * 0.20000000, (this.flag2.y - this.y) * 0.20000000);
 		local r_ = this.va.LengthXY();
@@ -278,7 +278,7 @@ function NormalShot( t )
 
 	if (t.rot == 0.00000000)
 	{
-		r_ = this.GetTargetAngle(this.target, this.direction);
+		r_ = this.GetTargetAngle(this.owner.target, this.direction);
 		r_ = this.Math_MinMax(r_, -30.00000000 * 0.01745329, 30.00000000 * 0.01745329);
 	}
 	else
@@ -294,7 +294,7 @@ function NormalShot( t )
 	this.count = 0;
 	this.stateLabel = function ()
 	{
-		this.TargetHoming(this.target, 2.00000000 * 0.01745329, this.direction);
+		this.TargetHoming(this.owner.target, 2.00000000 * 0.01745329, this.direction);
 		this.count++;
 
 		if (this.hitCount > 0 || this.cancelCount <= 0 || this.IsScreen(100.00000000) || this.count >= 75 || this.Damage_ConvertOP(this.x, this.y, 3))
@@ -360,7 +360,7 @@ function NormalShot_S( t )
 
 			if (this.flag4 == 0.00000000)
 			{
-				t_.rot = this.GetTargetAngle(this.target, this.direction);
+				t_.rot = this.GetTargetAngle(this.owner.target, this.direction);
 				t_.rot = this.Math_MinMax(t_.rot, -30.00000000 * 0.01745329, 30.00000000 * 0.01745329);
 			}
 			else
@@ -513,7 +513,7 @@ function NormalShot_B( t )
 	this.stateLabel = function ()
 	{
 		this.Vec_Brake(0.30000001, 2.50000000);
-		this.TargetHoming(this.target, 2.00000000 * 0.01745329, this.direction);
+		this.TargetHoming(this.owner.target, 2.00000000 * 0.01745329, this.direction);
 		this.count++;
 
 		if (this.count % 2 == 1)
@@ -740,7 +740,7 @@ function Shot_FrontS( t )
 
 	this.stateLabel = function ()
 	{
-		this.TargetHoming(this.target, 0.50000000 * 0.01745329, this.direction);
+		this.TargetHoming(this.owner.target, 0.50000000 * 0.01745329, this.direction);
 
 		if (this.hitCount > 0 || this.cancelCount <= 0 || this.grazeCount >= 2 || this.IsScreen(200.00000000) || this.count >= 150 || this.Damage_ConvertOP(this.x, this.y, 1))
 		{
@@ -1295,7 +1295,7 @@ function Shot_Charge( t )
 			this.DrawActorPriority(200);
 			this.SetMotion(2028, this.keyTake);
 			this.cancelCount = 3;
-			this.SetSpeed_Vec(10.00000000, this.GetTargetAngle(this.target, this.direction), this.direction);
+			this.SetSpeed_Vec(10.00000000, this.GetTargetAngle(this.owner.target, this.direction), this.direction);
 			this.stateLabel = function ()
 			{
 				this.flag5.Warp(this.x, this.y);
@@ -1330,7 +1330,7 @@ function Shot_Charge( t )
 			return;
 		}
 
-		if (this.abs(this.y - this.target.y) <= 75 && this.abs(this.x - this.target.x) <= 450 && this.count >= 120)
+		if (this.abs(this.y - this.owner.target.y) <= 75 && this.abs(this.x - this.owner.target.x) <= 450 && this.count >= 120)
 		{
 			this.func[1].call(this);
 			return;
@@ -1669,7 +1669,7 @@ function HighShot_S( t )
 
 	this.stateLabel = function ()
 	{
-		this.TargetHoming(this.target, 0.50000000 * 0.01745329, this.direction);
+		this.TargetHoming(this.owner.target, 0.50000000 * 0.01745329, this.direction);
 
 		if (this.hitCount > 0 || this.cancelCount <= 0 || this.grazeCount >= 2 || this.IsScreen(200.00000000) || this.count >= 150)
 		{
@@ -1888,78 +1888,6 @@ function HighShot_B( t )
 		}
 
 		this.HitCycleUpdate(7);
-	};
-}
-
-function HighShot_Front( t )
-{
-	this.SetMotion(5020, t.type);
-	this.SetSpeed_XY(15.00000000 * this.direction, 0.00000000);
-	this.flag2 = true;
-	this.func = function ()
-	{
-		this.callbackGroup = 0;
-		this.stateLabel = function ()
-		{
-			this.alpha -= 0.10000000;
-
-			if (this.alpha <= 0.00000000)
-			{
-				this.ReleaseActor();
-			}
-		};
-	};
-	this.keyAction = this.ReleaseActor;
-	this.stateLabel = function ()
-	{
-		this.VX_Brake(0.50000000);
-		this.count++;
-
-		if (this.count % 2 == 1)
-		{
-			local t_ = {};
-			t_.motion <- 5027 + this.keyTake;
-			this.SetFreeObject(this.x + this.rand() % 40 - 80, this.y + this.rand() % 20 - 40, this.direction, this.owner.NormalShot_Aura, t_);
-		}
-
-		if (this.count % 3 == 1)
-		{
-			local t_ = {};
-			t_.motion <- 5027 + this.keyTake;
-			this.SetFreeObject(this.x, this.y, this.direction, this.owner.NormalShot_B_Aura, t_);
-		}
-
-		if (this.count >= 8)
-		{
-			this.PlaySE(2827);
-			this.SetMotion(5021, this.keyTake);
-			this.SetSpeed_XY(0.00000000, 0.00000000);
-			this.stateLabel = function ()
-			{
-				if (this.hitResult & 1)
-				{
-					if (this.flag2)
-					{
-						switch(this.keyTake)
-						{
-						case 0:
-							this.target.DebuffSet_Fear(300);
-							break;
-
-						case 1:
-							this.target.DebuffSet_Hyper(300);
-							break;
-
-						case 2:
-							this.target.DebuffSet_Hate(300);
-							break;
-						}
-
-						this.flag2 = false;
-					}
-				}
-			};
-		}
 	};
 }
 
@@ -2182,7 +2110,7 @@ function Shot_Change_MaskCore( t )
 
 	foreach( a in this.flag2[0] )
 	{
-		a.hitOwner = this;
+		a.hitOwner = this.weakref();
 	}
 
 	for( local i = 0; i < 6; i++ )
@@ -2281,7 +2209,7 @@ function Shot_Change_Mask( t )
 			this.hitCount = 0;
 			this.grazeCount = 0;
 			this.cancelCount = 3;
-			this.hitOwner = this;
+			this.hitOwner = this.weakref();
 			this.SetSpeed_Vec(v_, rot_, this.direction);
 			this.stateLabel = function ()
 			{
@@ -2418,7 +2346,7 @@ function SPShot_B_Web( t )
 				}
 
 				this.owner.captureString = [];
-				this.owner.capture = this.target.weakref();
+				this.owner.capture = this.owner.target.weakref();
 
 				for( local i = 0; i < 8; i++ )
 				{
@@ -2427,6 +2355,12 @@ function SPShot_B_Web( t )
 
 				this.flag2 = true;
 			}
+		}
+
+		if (this.cancelCount <= 0)
+		{
+			this.func();
+			return;
 		}
 
 		this.sx = this.sy += (1.10000002 - this.sx) * 0.50000000;
@@ -2502,8 +2436,8 @@ function SPShot_B_String( t )
 		this.subState();
 		this.Warp(this.team.current.x, this.team.current.y - 50);
 		local Pos_ = this.Vector3();
-		Pos_.x = (this.target.x + this.flag2.x - this.x) * this.direction;
-		Pos_.y = this.target.y + this.flag2.y - this.y;
+		Pos_.x = (this.owner.target.x + this.flag2.x - this.x) * this.direction;
+		Pos_.y = this.owner.target.y + this.flag2.y - this.y;
 		this.sx = Pos_.LengthXY() / 128;
 		this.rz = this.atan2(Pos_.y, Pos_.x);
 	};
@@ -2594,7 +2528,7 @@ function SPShot_C( t )
 			this.DrawActorPriority(200);
 			this.SetMotion(6021, this.keyTake);
 			this.cancelCount = 3;
-			this.SetSpeed_Vec(10.00000000, this.GetTargetAngle(this.target, this.direction), this.direction);
+			this.SetSpeed_Vec(10.00000000, this.GetTargetAngle(this.owner.target, this.direction), this.direction);
 			this.stateLabel = function ()
 			{
 				this.flag5.Warp(this.x, this.y);
@@ -2629,7 +2563,7 @@ function SPShot_C( t )
 			return;
 		}
 
-		if (this.abs(this.y - this.target.y) <= 75 && this.abs(this.x - this.target.x) <= 450 && this.count >= 120)
+		if (this.abs(this.y - this.owner.target.y) <= 75 && this.abs(this.x - this.owner.target.x) <= 450 && this.count >= 120)
 		{
 			this.func[1].call(this);
 			return;

@@ -8,6 +8,7 @@ function Team_Change_AttackB( t_ )
 	this.AjustCenterStop();
 	this.count = 0;
 	this.SetSpeed_XY(15.00000000 * this.direction, 0.00000000);
+	this.stone.func[2].call(this.stone);
 	this.keyAction = [
 		null,
 		function ()

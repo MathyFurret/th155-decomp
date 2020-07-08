@@ -25,6 +25,11 @@ this.player_class.Init <- function ()
 	this.func_beginDemo = this.Func_BeginBattle;
 	this.func_timeDemo = this.Func_Lose;
 	this.func_winDemo = this.Func_Win;
+	this.func_beginDemoSkip = function ()
+	{
+		this.CommonBeginBattleSkip();
+		this.freeMap = false;
+	};
 	this.resetFunc = function ()
 	{
 		this.occultCount = 0;
@@ -36,129 +41,26 @@ this.player_class.Init <- function ()
 	{
 		if (this.occultCount > 0)
 		{
+			this.team.enable_regain = true;
 			this.occultCount = 0;
 			this.atkRate = 1.00000000;
 			this.occult_level = 0;
 		}
 	};
-	this.combo_slot = [
-		[],
-		[],
-		[],
-		[]
+	this.motion_test = [
+		function ()
+		{
+			this.Func_BeginBattle();
+		},
+		function ()
+		{
+			this.Func_Win();
+		},
+		function ()
+		{
+			this.Func_Lose();
+		}
 	];
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushA_Init(t_);
-		return true;
-	};
-	this.combo_slot[3].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushB_Init(t_);
-		return true;
-	};
-	this.combo_slot[3].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushC_Front_Init(t_);
-		return true;
-	};
-	this.combo_slot[3].append(s_);
-	local s_ = function ( t_ )
-	{
-		if (this.team.mp >= 200)
-		{
-			local tab_ = {};
-			tab_.rush <- true;
-			this.SP_C_Init(tab_);
-			return true;
-		}
-	};
-	this.combo_slot[3].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushA_Init(t_);
-		return true;
-	};
-	this.combo_slot[0].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushB_Init(t_);
-		return true;
-	};
-	this.combo_slot[0].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushC_Front_Init(t_);
-		return true;
-	};
-	this.combo_slot[0].append(s_);
-	local s_ = function ( t_ )
-	{
-		if (this.team.mp >= 200)
-		{
-			local tab_ = {};
-			tab_.rush <- true;
-			this.SP_C_Init(tab_);
-			return true;
-		}
-	};
-	this.combo_slot[0].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushA_Init(t_);
-		return true;
-	};
-	this.combo_slot[2].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushB_Init(t_);
-		return true;
-	};
-	this.combo_slot[2].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushC_Upper_Init(t_);
-		return true;
-	};
-	this.combo_slot[2].append(s_);
-	local s_ = function ( t_ )
-	{
-		if (this.team.mp >= 200)
-		{
-			this.SP_E_Init(t_);
-			return true;
-		}
-	};
-	this.combo_slot[2].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushA_Init(t_);
-		return true;
-	};
-	this.combo_slot[1].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushB_Init(t_);
-		return true;
-	};
-	this.combo_slot[1].append(s_);
-	local s_ = function ( t_ )
-	{
-		this.Atk_RushC_Under_Init(t_);
-		return true;
-	};
-	this.combo_slot[1].append(s_);
-	local s_ = function ( t_ )
-	{
-		if (this.team.mp >= 200)
-		{
-			this.SP_A_Init(t_);
-			return true;
-		}
-	};
-	this.combo_slot[1].append(s_);
 	this.Load_SpellCardData("mokou");
 
 	if (this.team.slave == this)

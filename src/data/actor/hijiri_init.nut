@@ -71,6 +71,14 @@ this.player_class.Init <- function ()
 			this.SetFreeObject(this.x, this.y, this.direction, this.Chant_Counter, t5_).weakref()
 		];
 	};
+	this.practice_update = function ()
+	{
+		if (::battle.hijiri[this.team.index] >= 0 && this.chant != ::battle.hijiri[this.team.index])
+		{
+			this.chant = ::battle.hijiri[this.team.index];
+			this.Set_ChantCount();
+		}
+	};
 	this.Load_SpellCardData("hijiri");
 
 	if (this.team.slave == this)

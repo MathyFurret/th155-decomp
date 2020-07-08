@@ -1,5 +1,6 @@
 function Reset_PlayerCommon( round_ = false )
 {
+	this.SetParent(null, 0, 0);
 	this.spellBaria = null;
 	this.spellBack = null;
 	this.guardEffect = null;
@@ -64,6 +65,7 @@ function Reset_PlayerCommon( round_ = false )
 	this.invinObject = 0;
 	this.graze = 0;
 	this.grazeCount = 0;
+	this.vx_slow = 0;
 	this.armor = 0;
 	this.force_counter = 0;
 	this.hitStopTime = 0;
@@ -84,6 +86,7 @@ function Reset_PlayerCommon( round_ = false )
 	this.vf = this.Vector3();
 	this.va = this.Vector3();
 	this.vfBaria = this.Vector3();
+	this.resist_baria = false;
 	this.atkRate = 1.00000000;
 	this.defRate = 1.00000000;
 	this.baseAtkRate = 1.00000000;
@@ -134,6 +137,9 @@ function AI_PlayerCommon()
 	this.enableJustGuard = true;
 	this.guardMissAction = this.PlayerMissGuardAction_Normal;
 	this.guardCrashAction = this.PlayerGuardCrashAction_Normal;
+	this.practice_update = function ()
+	{
+	};
 	this.colorFunction = this.CommonColorUpdate;
 	this.func_beginDemo = this.CommonBegin;
 	this.func_beginDemoSkip = this.CommonBeginBattleSkip;

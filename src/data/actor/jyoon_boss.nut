@@ -6,6 +6,7 @@ function Master_Spell_1()
 	this.cpuState = null;
 	this.com_flag1 = -1.00000000;
 	this.com_flag2 = 1;
+	this.resist_baria = true;
 	this.boss_spell_func = function ()
 	{
 		this.Set_Boss_Shield(::battle.boss_spell[0].slave_life);
@@ -168,6 +169,7 @@ function MS1_Attack( t )
 		break;
 
 	case 3:
+	case 4:
 		this.flag5.shotCycle = 5;
 		this.flag5.scale = 1.50000000;
 		this.flag5.shotWay = 3;
@@ -250,6 +252,7 @@ function Master_Spell_2()
 	this.cpuState = null;
 	this.com_flag1 = -1.00000000;
 	this.com_flag2 = 0;
+	this.resist_baria = true;
 	this.boss_spell_func = function ()
 	{
 		this.Set_Boss_Shield(::battle.boss_spell[0].slave_life);
@@ -316,6 +319,7 @@ function Master_Spell_2_Attack()
 		break;
 
 	case 3:
+	case 4:
 		this.flag5.shotCycle = 2;
 		break;
 	}
@@ -457,8 +461,10 @@ function Master_Spell_3()
 	this.cpuState = null;
 	this.com_flag1 = -1.00000000;
 	this.com_flag2 = 0;
+	this.resist_baria = true;
 	this.invin = -1;
 	this.invinObject = -1;
+	::battle.enable_demo_talk = true;
 
 	if (this.team.master)
 	{
@@ -498,6 +504,7 @@ function Master_Spell_3()
 function Master_Spell_3_Start()
 {
 	this.LabelClear();
+	this.HitReset();
 	this.SetMotion(4990, 0);
 	this.direction = -1.00000000;
 	this.flag5 = {};
@@ -747,6 +754,7 @@ function Master_Spell_3B()
 	this.cpuState = null;
 	this.com_flag1 = -1.00000000;
 	this.com_flag2 = 0;
+	this.resist_baria = true;
 	this.invin = -1;
 	this.invinObject = -1;
 
@@ -908,6 +916,145 @@ function Master_Spell_3B_Change()
 				{
 					this.func[0].call(this);
 					return;
+				}
+			};
+		},
+		null,
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.CenterUpdate(0.25000000, 9.00000000);
+			};
+		},
+		this.Master_Spell_3_Move
+	];
+	this.stateLabel = function ()
+	{
+		this.SetSpeed_XY((this.flag5.pos.x - this.x) * 0.10000000, (this.flag5.pos.y - this.y) * 0.10000000);
+		local v_ = this.va.Length();
+
+		if (v_ >= this.flag5.moveV)
+		{
+			this.va.SetLength(this.flag5.moveV);
+			this.ConvertTotalSpeed();
+		}
+
+		this.subState();
+	};
+}
+
+function Master_Spell_3_DemoStart()
+{
+	this.LabelClear();
+	this.SetMotion(4990, 0);
+	this.direction = -1.00000000;
+	this.flag5 = {};
+	this.flag5.moveCount <- 0;
+	this.flag5.moveV <- 0;
+	this.flag5.pos <- this.Vector3();
+	this.centerStop = -2;
+	this.flag5.pos.x = 860;
+	this.flag5.pos.y = this.centerY - 100;
+	this.flag4 = this.SetEffect(this.x, this.y - 25, 1.00000000, this.Boss_SpellCharge, {}, this.weakref()).weakref();
+	this.flag3 = this.flag5.pos.x - this.x;
+	this.lavelClearEvent = function ()
+	{
+		if (this.flag4)
+		{
+			this.flag4.func();
+		}
+
+		this.flag4 = null;
+	};
+	this.count = 0;
+	this.stateLabel = function ()
+	{
+		this.Boss_WalkMotionUpdate(this.flag3);
+		this.flag5.moveV += 0.75000000;
+
+		if (this.flag5.moveV >= 12.50000000)
+		{
+			this.flag5.moveV = 12.50000000;
+		}
+
+		this.SetSpeed_XY((this.flag5.pos.x - this.x) * 0.10000000, (this.flag5.pos.y - this.y) * 0.10000000);
+		local v_ = this.va.Length();
+
+		if (v_ < 4.00000000 && this.flag5.moveV > 4.00000000)
+		{
+			this.flag3 = 0.00000000;
+		}
+
+		if (v_ >= this.flag5.moveV)
+		{
+			this.va.SetLength(this.flag5.moveV);
+			this.ConvertTotalSpeed();
+		}
+
+		if (this.flag3 == 0.00000000)
+		{
+			this.flag5.moveCount++;
+
+			if (this.flag5.moveCount >= 15)
+			{
+				this.Master_Spell_3_DemoChange();
+				return;
+			}
+		}
+	};
+}
+
+function Master_Spell_3_DemoChange()
+{
+	this.LabelReset();
+	this.HitReset();
+	this.SetMotion(4930, 0);
+	this.flag5.moveV = 12.50000000;
+	this.flag5.core <- null;
+	this.centerStop = -2;
+	this.subState = function ()
+	{
+	};
+	this.func = [
+		function ()
+		{
+			this.FadeOut(1.00000000, 1.00000000, 1.00000000, 10);
+			this.count = 0;
+			this.subState = function ()
+			{
+				if (this.count == 10)
+				{
+					::battle.team[0].current.DamageGrab_Common(308, 0, -this.direction);
+					::battle.gauge.Hide();
+				}
+
+				if (this.count == 120)
+				{
+					::sound.StopBGM(3000);
+					return;
+				}
+			};
+		}
+	];
+	this.keyAction = [
+		function ()
+		{
+			this.count = 0;
+			this.subState = function ()
+			{
+				if (this.count == 30)
+				{
+					if (this.flag4)
+					{
+						this.flag4.func();
+					}
+
+					this.flag4 = null;
+					this.PlaySE(827);
+					this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_Team_ChangeB, {}, this.weakref());
+					this.flag5.core = this.SetShot(this.point0_x, this.point0_y, this.direction, this.Boss_Shot_MS3, {}).weakref();
+					this.FadeOut(1.00000000, 1.00000000, 1.00000000, 90);
 				}
 			};
 		},

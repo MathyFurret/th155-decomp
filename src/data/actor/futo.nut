@@ -1989,6 +1989,7 @@ function Okult_Init( t )
 			this.SetShot(pos_.x, pos_.y, this.direction, this.Shot_Okult, {});
 			this.hitResult = 1;
 			this.brokenDish = 0;
+			this.dish_guage.func[1].call(this.dish_guage, this.brokenDish);
 
 			if (this.y <= this.centerY || this.centerStop * this.centerStop <= 1)
 			{

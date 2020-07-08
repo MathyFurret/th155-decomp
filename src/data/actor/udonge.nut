@@ -1980,6 +1980,16 @@ function Atk_Throw( t )
 			this.SetParent.call(this.flag2, this, this.flag2.x - this.x, this.flag2.y - this.y);
 			this.stateLabel = function ()
 			{
+				if (!this.san_mode)
+				{
+					this.san += 83;
+
+					if (this.san_gauge)
+					{
+						this.san_gauge.func[2].call(this.san_gauge, 1.00000000);
+					}
+				}
+
 				if (this.count == 60)
 				{
 					this.func[0].call(this);
@@ -2055,7 +2065,6 @@ function Shot_Normal_Init( t )
 	this.keyAction = [
 		function ()
 		{
-			this.SetSpeed_XY(-6.00000000 * this.direction, null);
 			this.team.AddMP(-200, 90);
 
 			if (this.san_mode)
@@ -2075,8 +2084,6 @@ function Shot_Normal_Init( t )
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					this.SetSpeed_XY(-6.00000000 * this.direction, null);
-
 					if (this.san_mode)
 					{
 						this.owner.san -= 400;
@@ -2141,13 +2148,11 @@ function Shot_Normal_Air_Init( t )
 			t.addRot <- (36 - this.flag1 * 12) * 0.01745329;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			this.flag1--;
-			this.SetSpeed_XY(-3.00000000 * this.direction, this.flag3 * 1.00000000);
 			this.centerStop = 3 * this.flag3;
 			this.stateLabel = function ()
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					this.SetSpeed_XY(-3.00000000 * this.direction, this.flag3 * 1.00000000);
 					this.centerStop = 3 * this.flag3;
 
 					if (this.san_mode)
@@ -2216,13 +2221,10 @@ function Shot_Normal_Upper_Init( t )
 			t.addRot <- (36 - this.flag1 * 12) * 0.01745329;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			this.flag1--;
-			this.SetSpeed_XY(-6.00000000 * this.direction, null);
 			this.stateLabel = function ()
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					this.SetSpeed_XY(-6.00000000 * this.direction, null);
-
 					if (this.san_mode)
 					{
 						this.owner.san -= 400;
@@ -2359,13 +2361,10 @@ function Shot_Normal_Under_Init( t )
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			this.flag1--;
 			this.centerStop = -3;
-			this.SetSpeed_XY(-4.00000000 * this.direction, null);
 			this.stateLabel = function ()
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					this.SetSpeed_XY(-4.00000000 * this.direction, null);
-
 					if (this.san_mode)
 					{
 						this.owner.san -= 400;
@@ -2508,6 +2507,7 @@ function Shot_Front_Init( t )
 						local t_ = {};
 						t_.rot <- this.flag3 + (this.flag1 - 3) * 7 * 0.01745329;
 						t_.san <- this.flag2;
+						t_.cancel <- this.flag1 == 3 ? 3 : 1;
 						this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t_);
 						this.flag1--;
 
@@ -2576,6 +2576,7 @@ function Shot_Front_Air_Init( t )
 						local t_ = {};
 						t_.rot <- this.flag3 + (this.flag1 - 3) * 7 * 0.01745329;
 						t_.san <- this.flag2;
+						t_.cancel <- this.flag1 == 3 ? 3 : 1;
 						this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t_);
 
 						if (this.san_mode)
@@ -3225,7 +3226,7 @@ function SP_B_Init( t )
 			{
 				this.VX_Brake(1.00000000, -0.50000000 * this.direction);
 
-				if (this.count >= 8 && this.count % 4 == 1)
+				if (this.count >= 5 && this.count % 4 == 1)
 				{
 					if (this.flag2 <= 2)
 					{
@@ -3408,7 +3409,7 @@ function SP_B_Air_Init( t )
 			{
 				this.VX_Brake(1.00000000, -0.50000000 * this.direction);
 
-				if (this.count >= 8 && this.count % 4 == 1)
+				if (this.count >= 5 && this.count % 4 == 1)
 				{
 					if (this.flag2 <= 2)
 					{
@@ -3422,7 +3423,7 @@ function SP_B_Air_Init( t )
 					this.flag2++;
 				}
 
-				if (this.count >= 25)
+				if (this.count >= 20)
 				{
 					this.SetMotion(this.motion, 7);
 					this.stateLabel = function ()
@@ -3778,6 +3779,7 @@ function SP_E_Init( t )
 	this.flag2 = null;
 	this.flag3 = 0.00000000;
 	this.flag4 = this.san_mode;
+	this.flag5 = 0;
 	this.skillE_air = true;
 	this.keyAction = [
 		function ()
@@ -3861,9 +3863,10 @@ function SP_E_Init( t )
 						}
 					}
 
+					local f_ = this.GetFront();
 					this.hitResult = 1;
 
-					if (this.flag3 == 0.00000000)
+					if (this.flag3 == 0.00000000 || this.flag3 * this.direction > 0 && !f_)
 					{
 						this.SetMotion(this.motion, 5);
 					}
@@ -4702,43 +4705,6 @@ function Spell_Climax_Cut()
 	};
 }
 
-function Spell_Climax_Finish()
-{
-	this.LabelReset();
-	this.SetMotion(4901, 2);
-	this.flag2 = this.SetFreeObjectStencil(640, 360, 1.00000000, this.Climax_FaceA, {}).weakref();
-	this.flag1.Add(this.flag2);
-	this.count = 0;
-	::camera.Shake(20.00000000);
-	this.KnockBackTarget(-this.direction);
-	this.stateLabel = function ()
-	{
-		if (this.count == 90)
-		{
-			this.flag5.enemy.func[0].call(this.flag5.enemy);
-			this.Climax_FinishB(null);
-			return;
-			this.stateLabel = function ()
-			{
-				if (this.count == 90)
-				{
-					this.count = 0;
-					this.flag2.func[0].call(this.flag2);
-					this.flag3.func[0].call(this.flag3);
-					this.stateLabel = function ()
-					{
-						if (this.count == 60)
-						{
-							this.flag2.func[1].call(this.flag2);
-							this.Climax_FinishB(null);
-						}
-					};
-				}
-			};
-		}
-	};
-}
-
 function Climax_FinishB( t )
 {
 	this.BackFadeIn(0.00000000, 0.00000000, 0.00000000, 0);
@@ -4771,6 +4737,17 @@ function Climax_FinishB( t )
 		::battle.enableTimeUp = true;
 		this.lastword.Deactivate();
 	};
+
+	if (!this.san_mode)
+	{
+		this.san = 10000;
+
+		if (this.san_gauge)
+		{
+			this.san_gauge.func[2].call(this.san_gauge, 1.00000000);
+		}
+	}
+
 	this.stateLabel = function ()
 	{
 		this.AddSpeed_XY(null, 0.01000000);

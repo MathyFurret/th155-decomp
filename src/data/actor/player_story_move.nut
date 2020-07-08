@@ -130,3 +130,46 @@ function StageOut_SlideUpper()
 	];
 }
 
+function TalkPosition( t )
+{
+	this.LabelClear();
+	this.flag1 = ::battle.start_x[this.team.index];
+	this.SetMotion(4993, 0);
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.keyAction = [
+		function ()
+		{
+			this.direction = this.team.index == 0 ? 1.00000000 : -1.00000000;
+			this.SetSpeed_XY((this.flag1 - this.x) / 50.00000000, -12.50000000);
+			this.centerStop = -3;
+			this.stateLabel = function ()
+			{
+				this.CenterUpdate(0.50000000, null);
+
+				if (this.keyTake == 2 && this.va.y > -2.50000000)
+				{
+					this.SetMotion(this.motion, 3);
+				}
+
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					this.Warp(this.flag1, this.y);
+					this.SetMotion(this.motion, 5);
+					this.SetSpeed_XY(0.00000000, this.va.y);
+					this.stateLabel = function ()
+					{
+					};
+				}
+			};
+		},
+		null,
+		null,
+		null,
+		null,
+		this.EndtoFreeMove
+	];
+	this.stateLabel = function ()
+	{
+	};
+}
+

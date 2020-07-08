@@ -385,17 +385,12 @@ function SlideUp_Init( t )
 	t_.v2 <- -8.00000000;
 	t_.v3 <- 17.00000000;
 	this.SlideUp_Common(t_);
-
-	if (this.centerStop * this.centerStop <= 1)
-	{
-		this.stone.func[2].call(this.stone);
-	}
-
+	this.stone.func[2].call(this.stone);
 	local func_ = this.keyAction[0];
 	this.keyAction[0] = function ()
 	{
 		func_();
-		this.stone.func[1].call(this.stone);
+		this.stone.func[0].call(this.stone);
 	};
 }
 
@@ -411,17 +406,12 @@ function C_SlideUp_Init( t )
 	t_.v2 <- -8.00000000;
 	t_.v3 <- 17.00000000;
 	this.C_SlideUp_Common(t_);
-
-	if (this.centerStop * this.centerStop <= 1)
-	{
-		this.stone.func[2].call(this.stone);
-	}
-
+	this.stone.func[2].call(this.stone);
 	local func_ = this.keyAction[0];
 	this.keyAction[0] = function ()
 	{
 		func_();
-		this.stone.func[1].call(this.stone);
+		this.stone.func[0].call(this.stone);
 	};
 }
 
@@ -437,17 +427,12 @@ function SlideFall_Init( t )
 	t_.v2 <- 8.00000000;
 	t_.v3 <- 17.00000000;
 	this.SlideFall_Common(t_);
-
-	if (this.centerStop * this.centerStop <= 1)
-	{
-		this.stone.func[2].call(this.stone);
-	}
-
+	this.stone.func[2].call(this.stone);
 	local func_ = this.keyAction[0];
 	this.keyAction[0] = function ()
 	{
 		func_();
-		this.stone.func[1].call(this.stone);
+		this.stone.func[0].call(this.stone);
 	};
 }
 
@@ -463,17 +448,12 @@ function C_SlideFall_Init( t )
 	t_.v2 <- 8.00000000;
 	t_.v3 <- 17.00000000;
 	this.C_SlideFall_Common(t_);
-
-	if (this.centerStop * this.centerStop <= 1)
-	{
-		this.stone.func[2].call(this.stone);
-	}
-
+	this.stone.func[2].call(this.stone);
 	local func_ = this.keyAction[0];
 	this.keyAction[0] = function ()
 	{
 		func_();
-		this.stone.func[1].call(this.stone);
+		this.stone.func[0].call(this.stone);
 	};
 }
 
@@ -613,6 +593,45 @@ function Flight_Assult_Init( t )
 	this.flag4 = 0.26179937;
 }
 
+local func_ = this.Guard_Init;
+function Guard_Init( t )
+{
+	func_(t);
+	this.stone.func[2].call(this.stone);
+}
+
+local func_ = this.JustGuard_Init;
+function JustGuard_Init( t )
+{
+	func_(t);
+	this.stone.func[2].call(this.stone);
+}
+
+local func_ = this.DamageFinish;
+function DamageFinish( t )
+{
+	func_(t);
+	this.stone.func[0].call(this.stone);
+}
+
+local func_ = this.SpellCall_Init;
+function SpellCall_Init( t )
+{
+	func_(t);
+	this.Vanish_Sword();
+	this.stone.func[2].call(this.stone);
+	local func_ = this.keyAction[3];
+	this.keyAction[3] = function ()
+	{
+		func_();
+
+		if (this.centerStop * this.centerStop >= 2)
+		{
+			this.stone.func[0].call(this.stone);
+		}
+	};
+}
+
 function StandAnimal_Init( t )
 {
 	this.LabelClear();
@@ -710,7 +729,7 @@ function Atk_RushA_Init( t )
 	this.keyAction = [
 		function ()
 		{
-			this.PlaySE(1060);
+			this.PlaySE(4200);
 		}
 	];
 	return true;
@@ -1949,7 +1968,7 @@ function Shot_FrontCatch_Init( t )
 
 	if (this.centerStop * this.centerStop <= 1)
 	{
-		this.SetMotion(2012, 0);
+		this.SetMotion(2040, 0);
 		this.SetSpeed_XY(-7.50000000 * this.direction, 0.00000000);
 		this.stateLabel = function ()
 		{
@@ -1959,7 +1978,7 @@ function Shot_FrontCatch_Init( t )
 	else
 	{
 		this.stone.func[2].call(this.stone);
-		this.SetMotion(2013, 0);
+		this.SetMotion(2041, 0);
 		this.AjustCenterStop();
 		this.SetSpeed_XY(-7.50000000 * this.direction, -3.00000000);
 		this.stateLabel = function ()
@@ -2006,6 +2025,12 @@ function Shot_Charge_Fire( t )
 	this.GetFront();
 	this.HitReset();
 	this.Vanish_Sword();
+
+	if (this.shot_charge)
+	{
+		this.shot_charge.func[0].call(this.shot_charge);
+	}
+
 	this.SetMotion(2020, 0);
 	this.SetSpeed_XY(this.va.x * 0.50000000, this.va.y * 0.50000000);
 	this.count = 0;
@@ -2021,7 +2046,7 @@ function Shot_Charge_Fire( t )
 			local t_ = {};
 			t_.rot <- this.atan2(this.target.y - this.y, (this.target.x - this.x) * this.direction);
 			t_.rot = this.Math_MinMax(t_.rot, -0.52359873, 0.52359873);
-			this.flag1 = this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Charge, t_).weakref();
+			this.shot_charge = this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Charge, t_).weakref();
 			this.PlaySE(4266);
 			this.SetSpeed_XY(-10.00000000 * this.direction, 0.00000000);
 			this.stateLabel = function ()
@@ -2228,6 +2253,7 @@ function SP_Koma_Init( t )
 	this.HitReset();
 	this.SetSpeed_XY(0.00000000, this.va.y);
 	this.SetMotion(3040, 0);
+	this.stone.func[2].call(this.stone);
 	this.keyAction = [
 		function ()
 		{
@@ -2253,6 +2279,7 @@ function SP_Koma_Air_Init( t )
 	this.LabelClear();
 	this.HitReset();
 	this.SetSpeed_XY(this.va.x * 0.25000000, this.va.y * 0.25000000);
+	this.stone.func[2].call(this.stone);
 	this.SetMotion(3041, 0);
 	this.keyAction = [
 		function ()
@@ -2262,6 +2289,7 @@ function SP_Koma_Air_Init( t )
 			this.PlaySE(4221);
 			this.SetShot(this.point1_x, this.point1_y, this.direction, this.SP_Koma_Shot, {});
 			this.SetSpeed_XY(-8.00000000 * this.direction, 0.00000000);
+			this.AjustCenterStop();
 			this.stateLabel = function ()
 			{
 				if (this.centerStop * this.centerStop <= 1)
@@ -2281,6 +2309,10 @@ function SP_Koma_Air_Init( t )
 					this.VX_Brake(0.50000000);
 				}
 			};
+		},
+		function ()
+		{
+			this.stone.func[0].call(this.stone);
 		}
 	];
 	this.stateLabel = function ()
@@ -2477,6 +2509,7 @@ function SP_Hisou_Slash( t )
 	this.flag1 = null;
 	this.flag2 = 1.00000000;
 	this.flag3 = true;
+	this.stone.func[2].call(this.stone);
 	this.keyAction = [
 		function ()
 		{
@@ -2697,6 +2730,7 @@ function Spell_A_Init( t )
 	this.flag1 = 0;
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.AjustCenterStop();
+	this.stone.func[2].call(this.stone);
 	this.flag5 = ::manbow.Actor2DProcGroup();
 	this.keyAction = [
 		function ()
@@ -2775,6 +2809,16 @@ function Spell_A_Init( t )
 					this.stateLabel = null;
 				}
 			};
+		},
+		null,
+		null,
+		null,
+		function ()
+		{
+			if (this.centerStop * this.centerStop >= 2)
+			{
+				this.stone.func[0].call(this.stone);
+			}
 		}
 	];
 	return true;
@@ -2786,6 +2830,7 @@ function Spell_B_Init( t )
 	this.HitReset();
 	this.Vanish_Sword();
 	this.SetMotion(4010, 0);
+	this.atk_id = 67108864;
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.AjustCenterStop();
 	this.flag1 = null;
@@ -2897,6 +2942,7 @@ function Spell_C_Init( t )
 	this.Vanish_Sword();
 	this.SetMotion(4020, 0);
 	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.stone.func[2].call(this.stone);
 	this.AjustCenterStop();
 	this.stateLabel = function ()
 	{
@@ -2929,6 +2975,13 @@ function Spell_C_Init( t )
 			this.stateLabel = function ()
 			{
 			};
+		},
+		function ()
+		{
+			if (this.centerStop * this.centerStop >= 2)
+			{
+				this.stone.func[0].call(this.stone);
+			}
 		}
 	];
 	return true;
@@ -3011,7 +3064,7 @@ function Spell_Climax_Init( t )
 					{
 						this.func[1].call(this);
 					});
-					this.SetMotion(this.motion, 4);
+					this.SetMotion(this.motion, 5);
 					this.stateLabel = function ()
 					{
 					};

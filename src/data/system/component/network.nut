@@ -1,8 +1,9 @@
 this.lobby_prefix <- "th155_";
-this.lobby_version_sig <- "1_00";
+this.lobby_version_sig <- this.GetVersionSignature();
 this.lobby_name <- "Free";
 this.inst <- null;
 this.inst_connect <- null;
+this.return_code <- -1;
 this.client_num <- 0;
 this.is_client <- false;
 this.is_parent_vs <- false;
@@ -23,14 +24,28 @@ this.use_matching <- false;
 this.numbattle <- 1;
 this.frame_score <- 0;
 this.frame_count <- 0;
+this.player_name <- [
+	"",
+	""
+];
+this.color_num <- [
+	8,
+	8
+];
 this.icon <- [
 	null,
 	null
 ];
+function func_get_delay()
+{
+	return 0;
+}
+
 function Initialize()
 {
 	this.inst = null;
 	this.inst_connect = null;
+	this.return_code = -1;
 	this.input_local = null;
 	this.is_client = false;
 	this.is_parent_vs = false;
@@ -42,6 +57,10 @@ function Initialize()
 		null,
 		null
 	];
+	this.func_get_delay = function ()
+	{
+		return 0;
+	};
 }
 
 function Terminate()
@@ -120,16 +139,36 @@ function StartupServer( port )
 			return false;
 		}
 
+		if ("is_watch" in table_src)
+		{
+			if (id > 0)
+			{
+				if (this.allow_watch)
+				{
+					table_dst.is_parent_vs <- true;
+					table_dst.is_watch <- true;
+					return true;
+				}
+
+				table_dst.message = "watch";
+				return false;
+			}
+			else
+			{
+				if (::config.network.allow_watch)
+				{
+					table_dst.message = "ready";
+					return false;
+				}
+
+				table_dst.message = "watch";
+				return false;
+			}
+		}
+
 		if (id > 0)
 		{
-			if (("is_watch" in table_src) && this.allow_watch)
-			{
-				table_dst.is_parent_vs <- true;
-				table_dst.is_watch <- true;
-				return true;
-			}
-
-			table_dst.message = "watch";
+			table_dst.message = "busy";
 			return false;
 		}
 
@@ -139,14 +178,24 @@ function StartupServer( port )
 		}
 
 		this.inst = this.inst_connect;
+		this.func_get_delay = function ()
+		{
+			return ::network.inst.GetChildDelay(0);
+		};
 		this.rand_seed = ::manbow.timeGetTime();
 		this.srand(this.rand_seed);
+		this.player_name[0] = ::config.network.player_name;
+		this.player_name[1] = table_src.name.len() > 16 ? "" : table_src.name;
+		this.color_num[0] = ::savedata.GetColorNum();
+		this.color_num[1] = table_src.color;
 		this.icon[1] = "icon" in table_src ? table_src.icon : null;
 		this.allow_watch = ::config.network.allow_watch && table_src.allow_watch;
 		table_dst.rand_seed <- this.rand_seed;
 		table_dst.is_parent_vs <- true;
 		table_dst.allow_watch <- this.allow_watch;
 		table_dst.use_lobby <- this.use_lobby;
+		table_dst.name <- ::config.network.player_name.len() > 16 ? "" : ::config.network.player_name;
+		table_dst.color <- this.color_num[0];
 		table_dst.icon <- this.icon[0];
 		::sound.PlaySE(120);
 		::loop.Fade(function ()
@@ -171,7 +220,7 @@ function StartupServer( port )
 	return mb_server.Init(port, this.client_num);
 }
 
-function StartupClient( addr, port )
+function StartupClient( addr, port, mode )
 {
 	this.Initialize();
 	local mb_client = ::manbow.NetworkClient();
@@ -194,7 +243,13 @@ function StartupClient( addr, port )
 			return false;
 		}
 
-		if (!("is_watch" in table_src) || !::network.allow_watch)
+		if (!("is_watch" in table_src))
+		{
+			table_dst.message = "busy";
+			return false;
+		}
+
+		if (!::network.allow_watch)
 		{
 			table_dst.message = "watch";
 			return false;
@@ -236,9 +291,17 @@ function StartupClient( addr, port )
 		this.is_client = true;
 		this.rand_seed = _reply_table.rand_seed;
 		this.srand(this.rand_seed);
+		this.player_name[0] = _reply_table.name.len() > 16 ? "" : _reply_table.name;
+		this.player_name[1] = ::config.network.player_name;
+		this.color_num[0] = _reply_table.color;
+		this.color_num[1] = ::savedata.GetColorNum();
 		this.icon[0] = "icon" in _reply_table ? _reply_table.icon : null;
 		this.allow_watch = _reply_table.allow_watch;
 		this.use_lobby = _reply_table.use_lobby;
+		this.func_get_delay = function ()
+		{
+			return ::network.inst.GetParentDelay();
+		};
 		::sound.PlaySE(120);
 		::loop.Fade(function ()
 		{
@@ -251,6 +314,25 @@ function StartupClient( addr, port )
 	{
 		if ("message" in table)
 		{
+			if (table.message == "busy")
+			{
+				this.return_code = 1;
+			}
+
+			if (table.message == "version")
+			{
+				this.return_code = 2;
+			}
+
+			if (table.message == "watch")
+			{
+				this.return_code = 3;
+			}
+
+			if (table.message == "ready")
+			{
+				this.return_code = 4;
+			}
 		}
 	}.bindenv(this);
 	mb_client.DisconnectParent = function ()
@@ -301,9 +383,16 @@ function StartupClient( addr, port )
 	local connect_param = {};
 	connect_param.version <- ::GetVersion();
 	connect_param.allow_watch <- ::config.network.allow_watch;
+	connect_param.name <- ::config.network.player_name.len() > 16 ? "" : ::config.network.player_name;
+	connect_param.color <- ::savedata.GetColorNum();
 	connect_param.extra <- this.icon[1];
 	connect_param.battle_num <- 1;
-	connect_param.is_watch <- true;
+
+	if (mode == 1)
+	{
+		connect_param.is_watch <- false;
+	}
+
 	this.inst_connect = mb_client;
 	return mb_client.Connect(addr, port, connect_param);
 }
@@ -339,6 +428,11 @@ function Disconnect( scene = true )
 	}
 
 	return;
+}
+
+function GetDelay()
+{
+	return this.func_get_delay();
 }
 
 function BeginStreaming()

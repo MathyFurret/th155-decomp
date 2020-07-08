@@ -281,46 +281,68 @@ function Shot_Normal_Aura( t )
 function Shot_Front( t )
 {
 	this.SetMotion(2019, 4);
-	this.func = function ()
-	{
-		this.SetParent(null, 0, 0);
-		this.callbackGroup = 0;
-		this.stateLabel = function ()
+	this.func = [
+		function ()
 		{
-			this.alpha -= 0.15000001;
-			this.sy *= 0.80000001;
-			this.sx *= 1.10000002;
-
-			if (this.alpha <= 0.00000000)
+			this.SetParent(null, 0, 0);
+			this.callbackGroup = 0;
+			this.stateLabel = function ()
 			{
-				this.ReleaseActor();
-			}
-		};
-	};
+				this.alpha -= 0.15000001;
+				this.sy *= 0.80000001;
+				this.sx *= 1.10000002;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		},
+		function ()
+		{
+			this.SetParent(null, 0, 0);
+			this.flag1 = 1;
+		}
+	];
+	this.flag1 = 0;
 	this.SetSpeed_XY(17.50000000 * this.direction, 0.00000000);
 	this.SetParent(this.owner, this.x - this.owner.x, this.y - this.owner.y);
-	this.cancelCount = 6;
+	this.cancelCount = 9;
 	this.atk_id = 65536;
 	this.stateLabel = function ()
 	{
-		if (this.Damage_ConvertOP(this.x, this.y, 6) || this.owner.motion != 2010 && this.owner.motion != 2011)
+		if (this.Damage_ConvertOP(this.x, this.y, 6) || this.flag1 >= 1)
 		{
-			this.func();
+			this.func[0].call(this);
 			return true;
 		}
 
 		this.VX_Brake(0.50000000);
+
+		if (this.direction == 1.00000000 && this.x > ::battle.corner_right || this.direction == -1.00000000 && this.x < ::battle.corner_left)
+		{
+			this.VX_Brake(1.50000000);
+		}
+
+		this.sx += 0.01000000;
+		this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+
+		if (this.flag1 > 0)
+		{
+			this.flag1++;
+		}
+
 		this.count++;
 
 		if (this.hitCount >= 5 || this.cancelCount <= 0)
 		{
-			this.func();
+			this.func[0].call(this);
 			return;
 		}
 
 		this.HitCycleUpdate(8);
 
-		if (this.count % 6 == 1)
+		if (this.flag1 == 0 && this.count % 6 == 1)
 		{
 			this.SetParent.call(this.SetFreeObjectDynamic(this.x, this.y, this.direction, this.Shot_FrontVortexA, {}), this, 0, 0);
 			local t_ = {};
@@ -1242,6 +1264,8 @@ function Shot_Okult( t )
 
 							if (this.va.Length() > 25.00000000)
 							{
+								this.va.x = this.owner.point0_x - this.x;
+								this.va.y = this.owner.point0_y - this.y;
 								this.va.SetLength(25.00000000);
 							}
 
@@ -1723,6 +1747,22 @@ function SPShot_B_Aura( t )
 	};
 }
 
+function SP_C_SparkCharge( t )
+{
+	this.SetMotion(3029, 3);
+	this.stateLabel = function ()
+	{
+		this.anime.radius0 += (this.initTable.scale - this.anime.radius0) * 0.25000000;
+		this.anime.radius1 += (this.initTable.scale - this.anime.radius1) * 0.25000000;
+		this.alpha = this.red = this.green -= 0.05000000;
+
+		if (this.alpha <= 0.00000000)
+		{
+			this.ReleaseActor();
+		}
+	};
+}
+
 function SP_C_Spark( t )
 {
 	this.SetMotion(3029, 1);
@@ -1970,7 +2010,7 @@ function SPShot_D_Tama( t )
 
 				if (x_ <= 75 && x_ >= -75 && y_ > 0 && y_ < 150)
 				{
-					this.owner.ball.func[2].call(this.owner.ball);
+					this.owner.ball.func[2].call(this.owner.ball, this.direction);
 				}
 			}
 			else if (this.motion == 3039)
@@ -2030,8 +2070,9 @@ function SPShot_D_Ball( t )
 		function ()
 		{
 		},
-		function ()
+		function ( dir_ )
 		{
+			this.direction = dir_;
 			this.PlaySE(3065);
 			this.SetEffect(this.x, this.y, this.direction, this.EF_HitSmashB, {});
 			this.SetMotion(3037, 0);

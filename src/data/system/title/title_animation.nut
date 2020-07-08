@@ -4,6 +4,7 @@ function Initialize()
 	this.action <- ::menu.title.weakref();
 	local actor;
 	this.item <- [];
+	this.update_message <- [];
 	this.item.push(::graphics.CreateSprite("data/system/title/title_back.png"));
 	local temp = this.item[0];
 	this.item.push(::graphics.CreateSprite("data/system/title/title_logo_2.png"));
@@ -92,10 +93,11 @@ function Initialize()
 		"easy",
 		"normal",
 		"hard",
-		"lunatic"
+		"lunatic",
+		"overdrive"
 	];
 
-	for( local i = 0; i < 4; i = ++i )
+	for( local i = 0; i < _item.len(); i = ++i )
 	{
 		local v = {};
 		local res = this.anime_set[_item[i]];
@@ -176,6 +178,7 @@ function Terminate()
 	this.difficulty = null;
 	this.main = null;
 	this.item = null;
+	this.update_message = null;
 }
 
 function Suspend()
@@ -184,6 +187,13 @@ function Suspend()
 
 function Resume()
 {
+	if (this.update_message.len())
+	{
+		this.update_message[0].Set(::menu.common.GetMessageText("new_version"));
+		this.update_message[0].x = ::graphics.width - this.update_message[0].width - 16;
+		this.update_message[1].Set(::menu.common.GetMessageText("need_to_update"));
+		this.update_message[1].x = ::graphics.width - this.update_message[1].width - 16;
+	}
 }
 
 function Update()
@@ -197,18 +207,18 @@ function Update()
 	if (this.action.new_version && !this.new_version)
 	{
 		this.new_version = true;
-		local t = ::font.CreateSystemStringSmall("V‚\x2561‚¢ƒo[ƒWƒ‡ƒ“‚ª‚ ‚è‚\x2584‚\x2556");
+		local t = ::font.CreateSystemStringSmall(::menu.common.GetMessageText("new_version"));
 		t.x = ::graphics.width - t.width - 16;
 		t.y = ::graphics.height - t.height - 32 - 20 * 2;
 		t.blue = 0.50000000;
 		t.ConnectRenderSlot(::graphics.slot.ui, 10);
-		this.item.push(t);
-		t = ::font.CreateSystemStringSmall("ƒAƒbƒvƒf[ƒg‚\x2261s‚\x2534‚\x2500‚­‚\x255b‚\x2502‚¢");
+		this.update_message.push(t);
+		t = ::font.CreateSystemStringSmall(::menu.common.GetMessageText("need_to_update"));
 		t.x = ::graphics.width - t.width - 16;
 		t.y = ::graphics.height - t.height - 32 - 20;
 		t.blue = 0.50000000;
 		t.ConnectRenderSlot(::graphics.slot.ui, 10);
-		this.item.push(t);
+		this.update_message.push(t);
 	}
 
 	switch(this.state)
@@ -224,6 +234,11 @@ function Update()
 
 			foreach( i, v in this.difficulty )
 			{
+				if (i >= this.action.cursor_difficulty.item_num)
+				{
+					break;
+				}
+
 				v.count <- 10 + i * 3;
 				v.Update <- this.TaskUpdateIn;
 				::loop.AddTask(v);
@@ -263,8 +278,13 @@ function Update()
 				::loop.AddTask(v);
 			}
 
-			foreach( v in this.difficulty )
+			foreach( i, v in this.difficulty )
 			{
+				if (i >= this.action.cursor_difficulty.item_num)
+				{
+					break;
+				}
+
 				v.Update <- this.TaskUpdateOut;
 				::loop.AddTask(v);
 			}
@@ -278,6 +298,11 @@ function Update()
 
 			foreach( i, v in this.difficulty )
 			{
+				if (i >= this.action.cursor_difficulty.item_num)
+				{
+					break;
+				}
+
 				if (this.action.cursor_difficulty.val != i)
 				{
 					v.obj.red = v.obj.green = v.obj.blue = 0.50000000;

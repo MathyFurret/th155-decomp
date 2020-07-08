@@ -2,10 +2,11 @@ function Initialize()
 {
 	this.mode <- 0;
 	this.anime_set <- ::manbow.AnimationSet2D();
-	this.anime_set.Load("data/system/select/character_select.pat", null);
+	local lang = ::config.lang == 1 ? "_en" : "";
+	this.anime_set.Load("data/system/select/character_select" + lang + ".pat", null);
 	this.anime_set.Load("data/system/select/character_select2.pat", null);
-	this.anime_set.Load("data/system/select/name/name.pat", null);
-	this.anime_set.Load("data/system/select/stage_name/stage_name.pat", null);
+	this.anime_set.Load("data/system/select/name/name" + lang + ".pat", null);
+	this.anime_set.Load("data/system/select/stage_name/stage_name" + lang + ".pat", null);
 	this.anime_set.Load("data/system/select/stage_pic/stage_pic.pat", null);
 	this.anime_set.Load("data/system/select/bgm_name/bgm_name.pat", null);
 	this.take <- ::actor.LoadAnimationData("data/system/select/pic/pic.pat", true);
@@ -158,6 +159,39 @@ function Initialize()
 		}
 	};
 	this.data.push(v);
+
+	if (::network.IsPlaying())
+	{
+		v = {};
+		v.text <- ::font.CreateSystemStringSmall("");
+		v.text.ConnectRenderSlot(::graphics.slot.ui, 60000);
+		v.Update <- function ()
+		{
+			this.text.Set("ping:" + ::network.GetDelay());
+			this.text.x = ::graphics.width - this.text.width - 2;
+			this.text.y = -4;
+		};
+		this.data.push(v);
+
+		for( local i = 0; i < 2; i = ++i )
+		{
+			v = {};
+			v.icon <- ::manbow.Sprite();
+			v.icon.Initialize(::menu.cursor.texture, 160, i * 32, 32, 32);
+			v.icon.ConnectRenderSlot(::graphics.slot.ui, 40000);
+			v.icon.x = i == 0 ? 16 : 1280 - 16 - 32;
+			v.icon.y = 36;
+			v.text <- ::font.CreateSystemString(::network.player_name[i]);
+			v.text.sx = v.text.sy = 0.66000003;
+			v.text.x = i == 0 ? v.icon.x + 32 : v.icon.x - v.text.width * v.text.sx;
+			v.text.y = v.icon.y + 2;
+			v.text.ConnectRenderSlot(::graphics.slot.ui, 40000);
+			v.Update <- function ()
+			{
+			};
+			this.data.push(v);
+		}
+	}
 }
 
 function Update()

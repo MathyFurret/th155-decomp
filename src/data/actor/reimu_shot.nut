@@ -765,6 +765,96 @@ function Shot_Barrage( t )
 	};
 }
 
+function Shot_BarrageB( t )
+{
+	this.SetMotion(2048, 0);
+	this.rx = 1.04719746;
+	this.atk_id = 262144;
+	this.cancelCount = 2;
+	this.SetSpeed_Vec(t.v, t.rot, this.direction);
+	this.func = function ()
+	{
+		this.SetSpeed_XY(0.00000000, 0.00000000);
+		this.SetMotion(this.motion, 2);
+		this.sx = this.sy *= 1.50000000;
+		this.callbackGroup = 0;
+		this.stateLabel = function ()
+		{
+			this.rz += 0.50000000 * this.flag1;
+			this.sx = this.sy *= 0.89999998;
+			this.alpha = this.green = this.blue -= 0.07500000;
+
+			if (this.alpha <= 0.00000000)
+			{
+				this.ReleaseActor();
+			}
+		};
+	};
+	this.stateLabel = function ()
+	{
+		this.rz += 0.17453292;
+
+		if (this.IsScreen(150) || this.Damage_ConvertOP(this.x, this.y, 1))
+		{
+			this.ReleaseActor();
+			return;
+		}
+
+		if (this.hitCount > 0 || this.cancelCount <= 0 || this.grazeCount > 0)
+		{
+			this.func();
+			return;
+		}
+
+		this.AddSpeed_XY(0.25000000 * this.direction, 0.00000000);
+		this.sx = this.sy += (2.00000000 - this.sx) * 0.05000000;
+		this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+	};
+}
+
+function Shot_BarrageC( t )
+{
+	this.SetMotion(2049, 0);
+	this.atk_id = 262144;
+	local func_ = function ()
+	{
+		this.ReleaseActor();
+	};
+	this.rz = t.rot;
+	this.SetSpeed_Vec(t.v, this.rz, this.direction);
+	this.keyAction = this.ReleaseActor;
+	this.cancelCount = 1;
+	this.func = function ()
+	{
+		this.SetMotion(this.motion, 1);
+		this.SetSpeed_XY(0.00000000, 0.00000000);
+		this.stateLabel = function ()
+		{
+			this.sx = this.sy *= 0.92000002;
+			this.alpha -= 0.10000000;
+
+			if (this.alpha <= 0.00000000)
+			{
+				this.ReleaseActor();
+			}
+		};
+	};
+	this.stateLabel = function ()
+	{
+		if (this.IsScreen(100) || this.Damage_ConvertOP(this.x, this.y, 1))
+		{
+			this.ReleaseActor();
+			return true;
+		}
+
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0)
+		{
+			this.func();
+			return true;
+		}
+	};
+}
+
 function Shot_Charge( t )
 {
 	this.SetMotion(2029, 1);

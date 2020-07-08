@@ -12,6 +12,7 @@ class this.InitializeParam
 	background_id = 26;
 	bgm_id = 1;
 	seed = 0;
+	player_name = [];
 	param_list = [
 		"difficulty",
 		"mode",
@@ -22,7 +23,8 @@ class this.InitializeParam
 		"spell",
 		"background_id",
 		"bgm_id",
-		"seed"
+		"seed",
+		"player_name"
 	];
 	constructor()
 	{
@@ -54,6 +56,10 @@ class this.InitializeParam
 			0,
 			0
 		];
+		this.player_name = [
+			"",
+			""
+		];
 	}
 
 }
@@ -79,6 +85,11 @@ function Initialize( param )
 	if (::network.IsPlaying())
 	{
 		::network.BeginStreaming();
+	}
+	else if (::network.IsActive())
+	{
+		::network.player_name[0] = param.player_name[0];
+		::network.player_name[1] = param.player_name[1];
 	}
 
 	for( local i = 0; i < 2; i = ++i )

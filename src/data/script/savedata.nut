@@ -44,12 +44,15 @@ foreach( v in story_list )
 {
 	local t = {};
 	t.available <- false;
+	t.overdrive <- 0;
 	t.stage <- -1;
+	t.stage_overdrive <- -1;
 	t.ed <- 0;
 	this.story[v] <- t;
 }
 
 this.story.reimu.available = true;
+this.story.reimu.overdrive = 1;
 this.story.reimu.stage = 0;
 this.ed <- {};
 this.ed.type0 <- 0;
@@ -152,6 +155,58 @@ function UpdateFlag()
 		this.story.jyoon.available = true;
 	}
 
+	clear_count = 0;
+
+	foreach( v in count_check )
+	{
+		if (this.story[v].ed & 16)
+		{
+			clear_count++;
+		}
+	}
+
+	if (this.story.reimu.ed & 16)
+	{
+		this.story.marisa.overdrive = 1;
+		this.story.mamizou.overdrive = 1;
+		this.story.miko.overdrive = 1;
+	}
+
+	if (this.story.marisa.ed & 16)
+	{
+		this.story.nitori.overdrive = 1;
+	}
+
+	if (this.story.miko.ed & 16)
+	{
+		this.story.futo.overdrive = 1;
+	}
+
+	if (clear_count >= 1)
+	{
+		this.story.udonge.overdrive = 1;
+	}
+
+	if (clear_count >= 3)
+	{
+		this.story.usami.overdrive = 1;
+	}
+
+	if (clear_count >= 5)
+	{
+		this.story.tenshi.overdrive = 1;
+	}
+
+	if (this.story.tenshi.ed & 16)
+	{
+		this.story.yukari.overdrive = 1;
+	}
+
+	if (this.story.yukari.ed & 16)
+	{
+		this.story.jyoon.overdrive = 1;
+	}
+
 	if ("yukari" in this.character)
 	{
 		this.stage[27] <- 1;
@@ -181,6 +236,31 @@ function GetTitleBGMID()
 	}
 
 	return 501;
+}
+
+function GetDifficultyNum()
+{
+	if (this.story.jyoon.ed & 255)
+	{
+		return 5;
+	}
+
+	return 4;
+}
+
+function GetColorNum()
+{
+	if (this.story.jyoon.ed & 16)
+	{
+		return 10;
+	}
+
+	if (this.story.jyoon.ed & 255)
+	{
+		return 9;
+	}
+
+	return 8;
 }
 
 

@@ -139,3 +139,17 @@ function Update_Input()
 	this.InputMove();
 }
 
+function BossForceCall_Init()
+{
+	::battle.enableTimeCount = false;
+	this.CallBossCard(0, ::battle.boss_spell[0].master_name);
+	this.SetFreeObject(640 - 640, 720, -1.00000000, this.SpellUseFace, {});
+
+	if (this.boss_spell_func)
+	{
+		this.boss_spell_func();
+	}
+
+	return true;
+}
+

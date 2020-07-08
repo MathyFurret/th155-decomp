@@ -175,6 +175,34 @@ this.player_class.Init <- function ()
 		this.warpCount = 0;
 		this.uv.SetMotion(9901, 0);
 	};
+	this.practice_update = function ()
+	{
+		if (::battle.miko[this.team.index] >= 0 && this.style != ::battle.miko[this.team.index])
+		{
+			foreach( a in this.styleAura )
+			{
+				if (a)
+				{
+					a.func[0].call(a);
+				}
+			}
+
+			this.styleAura = [];
+			this.SetMantType(::battle.miko[this.team.index]);
+
+			if (this.style > 0)
+			{
+				this.styleTime = 1000;
+				local t_ = {};
+				t_.type <- this.style + 3;
+				this.styleAura.append(this.SetFreeObjectDynamic(this.x, this.y + 50, 1.00000000, this.Okult_TimeAura, t_).weakref());
+			}
+			else
+			{
+				this.styleTime = 0;
+			}
+		}
+	};
 	this.change_reset = function ()
 	{
 	};

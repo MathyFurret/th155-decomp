@@ -118,6 +118,8 @@ function Shot_Charge( t )
 	this.SetMotion(2029, 0);
 	this.atk_id = 131072;
 	this.cancelCount = 3;
+	this.rz = t.rot;
+	this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 	this.stateLabel = function ()
 	{
 	};
@@ -1286,8 +1288,42 @@ function Spell_C_ShotB_Fish( t )
 	this.flag1 = 9.50000000 * 0.01745329;
 	this.SetSpeed_XY((3.00000000 + this.rand() % 4) * this.direction, -25.00000000 - this.rand() % 4);
 	this.cancelCount = 3;
+	this.func = [
+		function ()
+		{
+			this.SetMotion(4027, 0);
+			this.stateLabel = function ()
+			{
+				this.rz += this.flag1;
+
+				if (this.va.y > 0.00000000)
+				{
+					this.flag1 *= 0.92000002;
+
+					if (this.flag1 < 2.00000000 * 0.01745329)
+					{
+						this.flag1 = 2.00000000 * 0.01745329;
+					}
+				}
+
+				this.AddSpeed_XY(0.00000000, this.va.y > 0.00000000 ? 0.75000000 : 0.50000000);
+				this.alpha = this.red = this.green -= 0.10000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
 	this.stateLabel = function ()
 	{
+		if (this.cancelCount <= 0)
+		{
+			this.func[0].call(this);
+			return;
+		}
+
 		this.rz += this.flag1;
 
 		if (this.va.y > 0.00000000)

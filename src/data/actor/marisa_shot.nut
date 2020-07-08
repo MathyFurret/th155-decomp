@@ -2744,14 +2744,19 @@ function SpellA_Shot( t )
 	this.atkRate_Pat = t.rate;
 	this.SetParent(this.owner, this.x - this.owner.x, this.y - this.owner.y);
 	this.keyAction = this.ReleaseActor;
+	this.flag1 = 0.00000000;
 	this.stateLabel = function ()
 	{
-		local a_ = this.owner;
 		this.count++;
 		this.sy += 0.00100000;
-		this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+		this.SetCollisionScaling(this.sx, this.sy + this.flag1, 1.00000000);
 
-		if (a_.motion == 4000 && a_.keyTake == 2)
+		if (this.flag1 == 0.00000000 && this.hitResult & 1)
+		{
+			this.flag1 = 0.20000000;
+		}
+
+		if (this.owner.motion == 4000 && this.owner.keyTake == 2)
 		{
 			this.HitCycleUpdate(4);
 		}

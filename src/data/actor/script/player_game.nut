@@ -1,7 +1,15 @@
 function ConvertTotalSpeed()
 {
-	this.vx = this.va.x + this.vf.x + this.vfBaria.x;
-	this.vy = this.va.y + this.vf.y + this.vfBaria.y;
+	if (this.vx_slow)
+	{
+		this.vx = this.va.x * 0.25000000 + this.vf.x + this.vfBaria.x;
+		this.vy = this.va.y + this.vf.y + this.vfBaria.y;
+	}
+	else
+	{
+		this.vx = this.va.x + this.vf.x + this.vfBaria.x;
+		this.vy = this.va.y + this.vf.y + this.vfBaria.y;
+	}
 }
 
 function ResetSpeed()
@@ -14,6 +22,7 @@ function ResetSpeed()
 	this.vf.y = 0.00000000;
 	this.vfBaria.x = 0.00000000;
 	this.vfBaria.y = 0.00000000;
+	this.vx_slow = 0;
 	this.hitBackFlag = 0;
 	this.bariaBackFlag = 0;
 	this.ConvertTotalSpeed();

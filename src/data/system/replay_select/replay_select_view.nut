@@ -219,7 +219,7 @@ function CreatePage( filelist )
 		local t = {};
 		t.y <- this.y;
 		t.obj <- [];
-		local text = ::font.CreateSystemString("ƒtƒ@ƒCƒ‹‚ª‚ ‚è‚\x2584‚\x2563‚ñ");
+		local text = ::font.CreateSystemString(::menu.common.GetMessageText("empty_file"));
 		text.x = this.x;
 		text.y = this.y - 8;
 		t.obj.push(text);
@@ -258,7 +258,7 @@ function CreateDir( t, obj )
 function CreateFile( t, obj )
 {
 	t.obj <- [];
-	local text = ::font.CreateSystemString("“\x255f\x20a7’†...");
+	local text = ::font.CreateSystemString(::menu.common.GetMessageText("reading"));
 	text.x = this.x + 36;
 	text.y = t.y - 8;
 	text.red = text.green = text.blue = 0.50000000;
@@ -280,7 +280,13 @@ function SetFileHeader( target, header )
 {
 	if (header == null)
 	{
-		target.obj[0].Set("Žg—p‚\x253c‚«‚\x2584‚\x2563‚ñ");
+		target.obj[0].Set(::menu.common.GetMessageText("invalid_file"));
+		local _icon;
+		_icon = ::manbow.ObjectRenderer();
+		_icon.Set(this.system_icon[6]);
+		_icon.x = this.x;
+		_icon.y = target.y;
+		target.obj.push(_icon);
 
 		if (target.page.visible)
 		{

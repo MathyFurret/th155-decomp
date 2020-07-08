@@ -15,6 +15,7 @@ class this.InputCommand
 	rsv_k12 = 0;
 	rsv_k23 = 0;
 	ban_slide = 0;
+	ban_b = 0;
 	com = null;
 	constructor( _device )
 	{
@@ -72,51 +73,63 @@ class this.InputCommand
 			this.ban_slide = 0;
 		}
 
-		if (this.com.b0 > 0 && this.com.b1 > 0)
+		if (this.ban_b == 0)
 		{
-			this.rsv_k01 = 5;
-			inputSet_ = true;
-		}
+			if (this.com.b0 > 0 && this.com.b1 > 0)
+			{
+				this.rsv_k01 = 5;
+				inputSet_ = true;
+			}
 
-		if (this.com.b1 > 0 && this.com.b2 > 0)
-		{
-			this.rsv_k12 = 5;
-			inputSet_ = true;
-		}
+			if (this.com.b1 > 0 && this.com.b2 > 0)
+			{
+				this.rsv_k12 = 5;
+				inputSet_ = true;
+			}
 
-		if (this.com.b2 > 0 && this.com.b3 > 0)
-		{
-			this.rsv_k23 = 5;
-			inputSet_ = true;
-		}
+			if (this.com.b2 > 0 && this.com.b3 > 0)
+			{
+				this.rsv_k23 = 5;
+				inputSet_ = true;
+			}
 
-		if (this.device.b0 == 2 || this.device.b0 == 0 && this.com.b0 > 0)
-		{
-			this.rsv_k0 = 5;
-			inputSet_ = true;
-		}
+			if (this.device.b0 == 2 || this.device.b0 == 0 && this.com.b0 > 0)
+			{
+				this.rsv_k0 = 5;
+				inputSet_ = true;
+			}
 
-		if (this.device.b1 == 2 || this.device.b1 == 0 && this.com.b1 > 0)
-		{
-			this.rsv_k1 = 5;
-			inputSet_ = true;
-		}
+			if (this.device.b1 == 2 || this.device.b1 == 0 && this.com.b1 > 0)
+			{
+				this.rsv_k1 = 5;
+				inputSet_ = true;
+			}
 
-		if (this.device.b2 == 2 || this.device.b2 == 0 && this.com.b2 > 0)
-		{
-			this.rsv_k2 = 5;
-			inputSet_ = true;
-		}
+			if (this.device.b2 == 2 || this.device.b2 == 0 && this.com.b2 > 0)
+			{
+				this.rsv_k2 = 5;
+				inputSet_ = true;
+			}
 
-		if (this.device.b3r > 0)
-		{
-			this.rsv_k3_r = 10;
-		}
+			if (this.device.b3r > 0)
+			{
+				this.rsv_k3_r = 10;
+			}
 
-		if (this.device.b3 == 2 || this.device.b3 == 0 && this.com.b3 > 0)
+			if (this.device.b3 == 2 || this.device.b3 == 0 && this.com.b3 > 0)
+			{
+				this.rsv_k3 = 7;
+				inputSet_ = true;
+			}
+		}
+		else
 		{
-			this.rsv_k3 = 7;
-			inputSet_ = true;
+			this.ban_b--;
+
+			if (this.device.b0 == 0 && this.device.b1 == 0 && this.device.b2 == 0 && this.device.b3 == 0 && this.device.b4 == 0)
+			{
+				this.ban_b = 0;
+			}
 		}
 
 		if (inputSet_)

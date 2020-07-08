@@ -80,6 +80,17 @@ this.player_class.Init <- function ()
 	this.change_reset = function ()
 	{
 	};
+	this.practice_update = function ()
+	{
+		if (::battle.kokoro[this.team.index] == 3 && this.emotion != -1)
+		{
+			this.ChangeEmotion(-1);
+		}
+		else if (this.emotion != ::battle.kokoro[this.team.index] && ::battle.kokoro[this.team.index] >= 0 && ::battle.kokoro[this.team.index] <= 2)
+		{
+			this.ChangeEmotion(::battle.kokoro[this.team.index]);
+		}
+	};
 	this.Load_SpellCardData("kokoro");
 
 	if (this.team.slave == this)

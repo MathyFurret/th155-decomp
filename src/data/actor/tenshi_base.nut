@@ -98,7 +98,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.occult_time == 0 && this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.occult_time == 0 && this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(9, 200, 0, false))
 		{

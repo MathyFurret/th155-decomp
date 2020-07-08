@@ -136,8 +136,23 @@ function EndSpellCard()
 function UseSpellCard( time_, sp_ )
 {
 	this.SetTimeStop(time_);
-	this.team.spell_time = 1;
-	this.team.spell_use_count++;
+
+	if (this.team.spell_use_count < 0)
+	{
+		this.team.sp -= this.team.sp_max;
+
+		if (this.team.sp < 0)
+		{
+			this.team.sp = 0;
+		}
+	}
+
+	if (this.team.spell_use_count >= 0)
+	{
+		this.team.spell_time = 1;
+		this.team.spell_use_count++;
+	}
+
 	this.PlaySE(820);
 	this.SetSpellBack(true);
 	this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_SpellFlash, {});

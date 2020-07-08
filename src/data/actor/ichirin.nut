@@ -1158,7 +1158,7 @@ function Atk_RushC_Front_Init( t )
 function Atk_RushA_Far_Init( t )
 {
 	this.Atk_HighFront_Init(t);
-	this.SetMotion(1750, 0);
+	this.SetMotion(this.motion + 520, 0);
 	this.atk_id = 2048;
 	this.flag1 = false;
 	return true;
@@ -2283,6 +2283,7 @@ function SP_B_Init( t )
 	this.HitReset();
 	this.atk_id = 2097152;
 	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.AjustCenterStop();
 	this.flag1 = 10;
 	this.keyAction = [
 		function ()
@@ -2814,8 +2815,8 @@ function SP_RingFlight_Init( t )
 	this.count = 0;
 	this.SetMotion(3070, 0);
 	this.va.x = this.Math_MinMax(this.va.x, -6.00000000, 6.00000000);
+	this.va.y = this.Math_MinMax(this.va.y, -4.50000000, 4.50000000);
 	this.SetSpeed_XY(this.va.x, this.va.y);
-	this.centerStop = -3;
 	this.hitCount = 0;
 	this.grazeCount = 0;
 	this.flag1 = [
@@ -3080,7 +3081,6 @@ function Spell_C_Init( t )
 		},
 		function ()
 		{
-			this.PlaySE(1480);
 			this.SetSpeed_Vec(20.00000000, -5 * 0.01745329, this.direction);
 			this.centerStop = -2;
 			this.stateLabel = function ()

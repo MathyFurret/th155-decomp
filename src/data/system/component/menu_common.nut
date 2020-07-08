@@ -3,6 +3,17 @@ this.title_y <- 96;
 this.item_x <- 640;
 this.item_y <- 200;
 this.item_space <- 30;
+local message_item = ::manbow.LoadCSV("data/system/component/item.csv");
+this.message_table <- {};
+
+foreach( v in message_item )
+{
+	this.message_table[v[0]] <- [
+		v[1],
+		v[2]
+	];
+}
+
 function Initialize()
 {
 	this.state = 0;
@@ -28,6 +39,12 @@ function Suspend()
 function Resume()
 {
 	this.state = 0;
+
+	if (("anime" in this) && "Resume" in this.anime)
+	{
+		this.anime.Resume();
+	}
+
 	::menu.help.Set(this.help);
 }
 
@@ -136,6 +153,11 @@ function LoadItemTextArray( filename )
 	return item_table;
 }
 
+function GetMessageText( name )
+{
+	return name in this.message_table ? this.message_table[name][::config.lang] : "";
+}
+
 function InitializeLayout( gl, item_table )
 {
 	if (gl)
@@ -219,6 +241,20 @@ function UpdateLayout( gl )
 
 		v.SetWorldTransform(this.mat_world);
 		v.red = v.green = v.blue = this.action.cursor_item.val == i ? 1.00000000 : 0.50000000;
+	}
+}
+
+function UpdateItemString( item_table )
+{
+	foreach( i, v in this.action.item )
+	{
+		if (v == null)
+		{
+			continue;
+		}
+
+		local item = item_table[v];
+		this.text[i].Set(typeof item == "array" ? item[0] : item);
 	}
 }
 

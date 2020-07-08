@@ -34,12 +34,14 @@ function Update_Normal()
 	{
 		if (this.IsDamage())
 		{
+			this.team.enable_regain = true;
 			this.occultCount = 0;
 			this.atkRate = 1.00000000;
 			this.occult_level = 0;
 		}
 		else if (this.team.life <= 1)
 		{
+			this.team.enable_regain = true;
 			this.occultCount = 0;
 			this.atkRate = 1.00000000;
 			this.occult_level = 0;
@@ -101,7 +103,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{

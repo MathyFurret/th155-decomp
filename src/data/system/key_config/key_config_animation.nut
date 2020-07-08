@@ -7,13 +7,14 @@ function Initialize()
 	this.visible <- true;
 	local obj;
 	local texture = ::manbow.Texture();
-	texture.Load("data/system/key_config/parts.png");
+	local lang = ::config.lang == 1 ? "_en" : "";
+	texture.Load("data/system/key_config/parts" + lang + ".png");
 	this.texture_key <- ::manbow.Texture();
 	this.texture_key.Load("data/system/key_config/config_moji1.png");
 	this.texture_button <- ::manbow.Texture();
-	this.texture_button.Load("data/system/key_config/config_pad1.png");
+	this.texture_button.Load("data/system/key_config/config_pad1" + lang + ".png");
 	this.texture_lever <- ::manbow.Texture();
-	this.texture_lever.Load("data/system/key_config/config_pad2.png");
+	this.texture_lever.Load("data/system/key_config/config_pad2" + lang + ".png");
 	local func_create_sprite = function ( name )
 	{
 		local res = this.anime_set[name];
@@ -27,29 +28,44 @@ function Initialize()
 	this.title.x = ::menu.common.title_x - this.anime_set[title_name].width / 2;
 	this.title.y = ::menu.common.title_y;
 	this.pad <- func_create_sprite("gamepad");
-	this.pad.x = 400 + 128;
+	this.pad.x = 400 + 160;
 	this.pad.y = ::menu.common.item_y - 36;
 	this.key <- func_create_sprite("keyboard");
-	this.key.x = 400 + 320;
+	this.key.x = 400 + 352;
 	this.key.y = ::menu.common.item_y - 36;
 	this.item <- [];
 	this.item_key <- [];
 	this.item_pad <- [];
+	local item_list = [
+		"b0",
+		"b1",
+		"b2",
+		"b3",
+		"b4",
+		"b5",
+		"b6",
+		"b7",
+		"b8",
+		"t0",
+		"t1",
+		"t2",
+		"s0"
+	];
 
-	for( local i = 0; i < 10; i = ++i )
+	for( local i = 0; i < 13; i = ++i )
 	{
-		local _y = ::menu.common.item_y + i * 36;
-		obj = func_create_sprite("b" + i);
+		local _y = ::menu.common.item_y + i * 32;
+		obj = func_create_sprite(item_list[i]);
 		obj.x = 400;
 		obj.y = _y;
 		this.item.push(obj);
 		obj = ::manbow.Sprite();
-		obj.x = this.key.x;
+		obj.x = this.key.x + 8;
 		obj.y = _y;
 		obj.ConnectRenderSlot(::graphics.slot.overlay, 0);
 		this.item_key.append(obj);
 		obj = ::manbow.Sprite();
-		obj.x = this.pad.x;
+		obj.x = this.pad.x + 8;
 		obj.y = _y;
 		obj.ConnectRenderSlot(::graphics.slot.overlay, 0);
 		this.item_pad.append(obj);
@@ -57,7 +73,7 @@ function Initialize()
 
 	obj = func_create_sprite("exit");
 	obj.x = 400;
-	obj.y = ::menu.common.item_y + 11 * 36;
+	obj.y = ::menu.common.item_y + item_list.len() * 32;
 	this.item.push(obj);
 	this.ui <- this.UIBase();
 	this.ui.action = this.action.weakref();
@@ -104,13 +120,13 @@ function Update()
 
 	if (this.action.state == 0)
 	{
-		if (this.action.cursor.y >= 10)
+		if (this.action.cursor.y >= 13)
 		{
 			::menu.cursor.SetTarget(this.item[y].x - 20, this.item[y].y + 16, 0.69999999);
 		}
 		else
 		{
-			::menu.cursor.SetTarget(this.action.cursor.x == 0 ? this.item_pad[y].x : this.item_key[y].x, this.item[y].y + 16, 0.69999999);
+			::menu.cursor.SetTarget((this.action.cursor.x == 0 ? this.item_pad[y].x : this.item_key[y].x) - 20, this.item[y].y + 16, 0.69999999);
 		}
 	}
 
@@ -142,9 +158,13 @@ function Update()
 
 function SetKey( obj, val )
 {
-	if (val < 0)
+	if (val == -1)
 	{
 		obj.Initialize(this.texture_lever, 256, 160, 128, 32);
+	}
+	else if (val == -2)
+	{
+		obj.Initialize(this.texture_lever, 384, 160, 128, 32);
 	}
 	else
 	{
@@ -156,9 +176,13 @@ function SetKey( obj, val )
 
 function SetPad( obj, val )
 {
-	if (val < 0)
+	if (val == -1)
 	{
 		obj.Initialize(this.texture_lever, 256, 160, 128, 32);
+	}
+	else if (val == -2)
+	{
+		obj.Initialize(this.texture_lever, 384, 160, 128, 32);
 	}
 	else
 	{

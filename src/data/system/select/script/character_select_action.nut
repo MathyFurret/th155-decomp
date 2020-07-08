@@ -136,7 +136,8 @@ this.stage_table <- [
 		31
 	],
 	[
-		2
+		2,
+		45
 	],
 	[
 		3,
@@ -279,8 +280,6 @@ this.bgm <- [
 	[],
 	[]
 ];
-this.handle_name <- {};
-::manbow.LoadCSVtoTable("data/system/select/name/handle_name.csv", this.handle_name);
 this.Update <- null;
 function Initialize( _game_mode, _difficulty = 0 )
 {
@@ -302,6 +301,10 @@ function Initialize( _game_mode, _difficulty = 0 )
 	this.bgm_page = 0;
 	this.end_wait = 0;
 	this.count = 0;
+	local color_num = [
+		8,
+		8
+	];
 
 	if (::network.IsActive())
 	{
@@ -313,6 +316,8 @@ function Initialize( _game_mode, _difficulty = 0 )
 		this.stage = clone this.stage_base;
 		this.bgm[0] = clone this.bgm_base[0];
 		this.bgm[1] = clone this.bgm_base[1];
+		color_num[0] = ::network.color_num[0];
+		color_num[1] = ::network.color_num[1];
 		this.hide_character = false;
 	}
 	else
@@ -340,6 +345,7 @@ function Initialize( _game_mode, _difficulty = 0 )
 		}
 
 		this.bgm[1].extend(this.bgm_base[1].slice(this.bgm_base[0].len()));
+		color_num[0] = color_num[1] = ::savedata.GetColorNum();
 	}
 
 	this.t[0].cursor_center.x = 0;
@@ -351,10 +357,14 @@ function Initialize( _game_mode, _difficulty = 0 )
 	this.t[1].cursor_center_slave.x = 0;
 	this.t[1].cursor_center_slave.y = 0;
 
-	foreach( v in this.t )
+	foreach( i, v in this.t )
 	{
 		v.state = this.SelectMaster;
 		v.cursor_spell.val = 0;
+		local c = color_num[i];
+		c = c < 8 ? 8 : c > 10 ? 10 : c;
+		v.cursor_color_master <- this.Cursor(0, c);
+		v.cursor_color_slave <- this.Cursor(0, c);
 		v.cursor_color_master.val = 0;
 		v.cursor_color_slave.val = 0;
 		v.cursor_center.Reset();
@@ -393,6 +403,7 @@ function Initialize( _game_mode, _difficulty = 0 )
 		this.device_stage.Append(this.device[1]);
 	}
 
+	this.stage_index = [];
 	this.stage_index.resize(this.stage_table.len(), 0);
 	this.cursor_stage = this.Cursor(0, this.stage.len(), this.device_stage);
 	this.cursor_bgm = this.Cursor(0, this.bgm[this.bgm_page].len(), this.device_stage);
@@ -493,9 +504,27 @@ function UpdateCharacterSelect()
 
 	if (::network.IsActive())
 	{
-		if (this.device[0].b1 == 120 || this.device[1].b1 == 120)
+		if (this.device[0].b1 == 120)
 		{
 			::sound.PlaySE("sys_cancel");
+
+			if (::network.is_client)
+			{
+				::network.return_code = 0;
+			}
+
+			::network.Disconnect();
+			return;
+		}
+		else if (this.device[1].b1 == 120)
+		{
+			::sound.PlaySE("sys_cancel");
+
+			if (!::network.is_client)
+			{
+				::network.return_code = 0;
+			}
+
 			::network.Disconnect();
 			return;
 		}
@@ -961,6 +990,13 @@ function BeginBattle()
 	}
 
 	param.seed = this.rand();
+
+	if (::network.IsPlaying())
+	{
+		param.player_name[0] = ::network.player_name[0];
+		param.player_name[1] = ::network.player_name[1];
+	}
+
 	::sound.StopBGM(500);
 
 	if (this.device[0])

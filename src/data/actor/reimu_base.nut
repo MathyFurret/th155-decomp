@@ -41,7 +41,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{
@@ -186,5 +186,17 @@ function TeamSkillChain_Input( input_ )
 	}
 
 	return false;
+}
+
+function ForceSpecialCall_Init()
+{
+	this.EndSpellCard();
+	this.team.spell_active = true;
+	this.team.spell_time = 9999;
+	this.team.spell_use_count = -1;
+	this.team.master.spellcard.Activate("Åuç\x253cã≠ç\x253có\x255fÇ\x2560à\x2518ï\x2567â\x2261åàõ\x2590èóÅv");
+	this.PlaySE(826);
+	this.SetFreeObjectStencil(this.team.index == 0 ? -1480 : 1280 + 1480, 360 + 442, this.team.index == 0 ? 1.00000000 : -1.00000000, this.SpellFace, {}, this.weakref());
+	return true;
 }
 

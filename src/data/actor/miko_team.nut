@@ -130,6 +130,7 @@ function Team_Change_ShotB( va_ )
 	if (this.centerStop * this.centerStop <= 1)
 	{
 		this.SetMotion(3920, 0);
+		this.PlaySE(2117);
 		this.SetSpeed_XY(-8.00000000 * this.direction, 0.00000000);
 		this.stateLabel = function ()
 		{
@@ -139,6 +140,7 @@ function Team_Change_ShotB( va_ )
 	else
 	{
 		this.SetMotion(3921, 0);
+		this.PlaySE(2117);
 		this.SetSpeed_XY(-8.00000000 * this.direction, this.y < this.centerY ? -3.00000000 : 3.00000000);
 		this.stateLabel = function ()
 		{
@@ -165,7 +167,6 @@ function Team_Change_ShotB( va_ )
 				{
 					this.hitResult = 1;
 					this.flag2++;
-					this.PlaySE(1124);
 					this.SetShot(this.x + (-100 - 15 * this.flag2) * this.direction, this.y - 25 * this.flag2, this.direction, this.Shot_Change, {});
 					this.SetShot(this.x + (100 - 15 * this.flag2) * this.direction, this.y - 8 - 25 * this.flag2, this.direction, this.Shot_Change_Back, {});
 				}
@@ -217,6 +218,7 @@ function Team_Change_ShotFinB( va_, ky_ )
 	this.ResetSpeed();
 	this.SetSpeed_XY(va_.x, va_.y);
 	this.SetMotion(3930, 0);
+	this.PlaySE(2117);
 	this.count = 0;
 	this.flag1 = 0;
 	this.flag2 = 0;
@@ -242,7 +244,6 @@ function Team_Change_ShotFinB( va_, ky_ )
 
 			this.SetSpeed_XY(-15.00000000 * this.direction, 0.00000000);
 			this.hitResult = 1;
-			this.PlaySE(1126);
 			local t_ = {};
 			t_.rot <- this.flag1 + this.flag2;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_ChangeFin, t_);

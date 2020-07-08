@@ -1,7 +1,11 @@
 this.item <- null;
 this.texture <- ::manbow.Texture();
 this.texture.Load("data/system/help/help.png");
-this.src <- {};
+this.src <- [
+	{},
+	{}
+];
+local static_src = {};
 function func_init_sprite( x, y, w )
 {
 	local t = {};
@@ -13,14 +17,14 @@ function func_init_sprite( x, y, w )
 	return t;
 }
 
-this.src.B1 <- this.func_init_sprite(15, 0, 113);
-this.src.B2 <- this.func_init_sprite(15, 32, 113);
-this.src.B3 <- this.func_init_sprite(15, 64, 113);
-this.src.UDLR <- this.func_init_sprite(57, 96, 71);
-this.src.UD <- this.func_init_sprite(92, 128, 36);
-this.src.LR <- this.func_init_sprite(82, 160, 46);
-this.src.KEY <- this.func_init_sprite(81, 192, 47);
-this.src.PAD <- this.func_init_sprite(81, 224, 47);
+static_src.B1 <- this.func_init_sprite(15, 0, 113);
+static_src.B2 <- this.func_init_sprite(15, 32, 113);
+static_src.B3 <- this.func_init_sprite(15, 64, 113);
+static_src.UDLR <- this.func_init_sprite(57, 96, 71);
+static_src.UD <- this.func_init_sprite(92, 128, 36);
+static_src.LR <- this.func_init_sprite(82, 160, 46);
+static_src.KEY <- this.func_init_sprite(81, 192, 47);
+static_src.PAD <- this.func_init_sprite(81, 224, 47);
 function func_init_text( text )
 {
 	local t = {};
@@ -31,11 +35,22 @@ function func_init_text( text )
 	return t;
 }
 
-local item_table = ::menu.common.LoadItemText("data/system/help/item.csv");
+local item_table = ::manbow.LoadCSV("data/system/help/item.csv");
 
-foreach( key, v in item_table )
+foreach( v in item_table )
 {
-	this.src[key] <- this.func_init_text(v);
+	foreach( i, v2 in this.src )
+	{
+		v2[v[0]] <- this.func_init_text(v[i + 1]);
+	}
+}
+
+foreach( key, obj in static_src )
+{
+	foreach( v in this.src )
+	{
+		v[key] <- obj;
+	}
 }
 
 this.obj <- [];
@@ -61,16 +76,18 @@ function Set( _item )
 
 		this.obj.resize(0);
 		local w = 0;
+		local _src = this.src[::config.lang];
 
 		foreach( v in this.item )
 		{
-			if (v in this.src)
+			if (v in _src)
 			{
-				this.src[v].obj.x = w;
-				w = w + this.src[v].width;
-				this.src[v].obj.ConnectRenderSlot(::graphics.slot.front, 60000);
-				this.src[v].obj.alpha = 0;
-				this.obj.append(this.src[v].obj);
+				local s = _src[v];
+				s.obj.x = w;
+				w = w + s.width;
+				s.obj.ConnectRenderSlot(::graphics.slot.front, 60000);
+				s.obj.alpha = 0;
+				this.obj.append(s.obj);
 			}
 			else
 			{

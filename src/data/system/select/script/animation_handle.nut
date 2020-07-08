@@ -2,6 +2,31 @@ local priority = 60000;
 local func_init = function ( i )
 {
 	this.action <- ::menu.character_select.weakref();
+	this.handle_name <- {};
+
+	if (::config.lang == 1)
+	{
+		::manbow.LoadCSVtoTable("data/system/select/name/handle_name_en.csv", this.handle_name);
+		this.handle_name2 <- [
+			"duo",
+			"trio",
+			"quartet"
+		];
+		this.conj <- " & ";
+		this.space <- " ";
+	}
+	else
+	{
+		::manbow.LoadCSVtoTable("data/system/select/name/handle_name.csv", this.handle_name);
+		this.handle_name2 <- [
+			"二人",
+			"三人",
+			"四人"
+		];
+		this.conj <- "";
+		this.space <- "";
+	}
+
 	this.side <- i;
 	this.dir <- this.side == 0 ? 1 : -1;
 	this.cursor_master <- this.action.t[this.side].cursor_master;
@@ -15,39 +40,29 @@ local func_init = function ( i )
 
 		if (this.character_name[this.master_id] == "doremy" || this.character_name[this.slave_id] == "doremy")
 		{
-			t = this.action.handle_name.doremy.master;
+			t = this.handle_name.doremy.master;
 		}
 		else
 		{
-			t = this.action.handle_name[this.character_name[this.master_id]].master;
-			t = t + this.action.handle_name[this.character_name[this.slave_id]].slave;
+			t = this.handle_name[this.character_name[this.master_id]].master;
+			t = t + (this.conj + this.handle_name[this.character_name[this.slave_id]].slave);
 		}
 
-		local n = this.action.handle_name[this.character_name[this.master_id]].count + this.action.handle_name[this.character_name[this.slave_id]].count;
-
-		switch(n)
-		{
-		case 2:
-			t = t + "二人";
-			break;
-
-		case 3:
-			t = t + "三人";
-			break;
-
-		case 4:
-			t = t + "四人";
-			break;
-		}
-
+		local n = this.handle_name[this.character_name[this.master_id]].count + this.handle_name[this.character_name[this.slave_id]].count;
+		t = t + (this.space + this.handle_name2[n - 2]);
 		local f = ::font.CreateSystemString(t);
 		f.SetWorldTransform(this.mat_name);
 		f.ConnectRenderSlot(::graphics.slot.ui, priority + 1);
 		f.alpha = 0;
 
+		if (f.width > 450)
+		{
+			f.sx = 450.00000000 / f.width;
+		}
+
 		if (this.side == 1)
 		{
-			f.x = -f.width;
+			f.x = -f.width * f.sx;
 		}
 
 		f.Update();

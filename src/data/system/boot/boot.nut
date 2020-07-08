@@ -21,8 +21,15 @@ function Update()
 
 	if (this.count == 15)
 	{
+		local begin = ::manbow.timeGetTime();
 		::manbow.CompileFile("data/script/initialize.nut", this.getroottable());
 		::actor.Initialize();
+
+		while (::manbow.timeGetTime() - begin < 2000)
+		{
+			this.Sleep(1);
+		}
+
 		::loop.Fade(function ()
 		{
 			::loop.End();

@@ -2610,7 +2610,7 @@ function CPU_ChainSkill( wait_ )
 
 		if (this.alien.len() >= 2 && this.rand() % 10 <= 10)
 		{
-			this.u.CPU_SkillO_2.call(this, -60);
+			this.CPU_SkillO_2(-60);
 			return true;
 		}
 

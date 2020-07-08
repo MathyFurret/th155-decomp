@@ -6,18 +6,7 @@ function Init()
 {
 	this.action <- ::menu.network.weakref();
 	this.count <- 20;
-	this.item <- [
-		"lobby_incomming",
-		"lobby_match",
-		null,
-		"server",
-		"client",
-		null,
-		"port",
-		"upnp",
-		null,
-		"exit"
-	];
+	this.item <- this.action.item;
 	this.ox <- 640 - (this.gl.title.x + this.resource.title.src_width / 2);
 	this.gl.x = this.ox - 1280;
 	this.gl.y = ::menu.common.title_y;
@@ -34,7 +23,7 @@ function Init()
 	this.port_cursor_x <- this.port_window.cursor.x;
 	this.base_x <- {};
 
-	foreach( v in this.item )
+	foreach( i, v in this.item )
 	{
 		if (v)
 		{
@@ -44,8 +33,12 @@ function Init()
 
 	this.base_x.on <- this.resource.on.src_x;
 	this.base_x.off <- this.resource.off.src_x;
+	this.base_x.on_watch <- this.resource.on_watch.src_x;
+	this.base_x.off_watch <- this.resource.off_watch.src_x;
 	this.resource.on.src_x = this.base_x.on + (this.action.cursor_upnp.val == 0 ? -512 : 0);
 	this.resource.off.src_x = this.base_x.off + (this.action.cursor_upnp.val == 1 ? -512 : 0);
+	this.resource.on_watch.src_x = this.base_x.on_watch + (this.action.cursor_allow_watch.val == 0 ? -512 : 0);
+	this.resource.off_watch.src_x = this.base_x.off_watch + (this.action.cursor_allow_watch.val == 1 ? -512 : 0);
 	this.resource.lobby_incomming.src_x -= 512;
 	local val = this.action.cursor.val;
 
@@ -56,6 +49,31 @@ function Init()
 			this.resource[v].src_x = this.base_x[v] + (val == i ? -512 : 0);
 		}
 	}
+
+	local x = this.gl.x + this.gl.lobby_state_title.x + 2;
+	this.room_list <- [];
+
+	foreach( i, v in this.action.room_title )
+	{
+		local a = ::font.CreateSystemString(v);
+		a.x = x;
+		a.y = this.gl.y + this.gl.lobby_select.y - 8;
+		a.blue = 0;
+		a.ConnectRenderSlot(::graphics.slot.overlay, 0);
+		this.room_list.push(a);
+	}
+
+	this.player_name <- ::font.CreateSystemString(::config.network.player_name);
+	this.player_name.x = x;
+	this.player_name.y = this.gl.y + this.gl.player_name.y - 8;
+	this.player_name.blue = 0;
+	this.player_name.ConnectRenderSlot(::graphics.slot.overlay, 0);
+}
+
+function Terminate()
+{
+	this.room_list = null;
+	this.player_name = null;
 }
 
 function Update()
@@ -63,7 +81,7 @@ function Update()
 	switch(this.action.state)
 	{
 	case 0:
-		::menu.cursor.SetTarget(this.ox + this.gl.lobby_incomming.x - 20, this.gl.y + this.gl.lobby_incomming.y + 16 + this.action.cursor.val * 36, 0.69999999);
+		::menu.cursor.SetTarget(this.ox + this.gl.lobby_incomming.x - 20, this.gl.y + this.gl.lobby_incomming.y + 16 + this.action.cursor.val * 32, 0.69999999);
 
 		if (this.count > 0)
 		{
@@ -118,6 +136,23 @@ function Update()
 		this.resource.on.src_x = this.base_x.on + (this.action.cursor_upnp.val == 0 ? -512 : 0);
 		this.resource.off.src_x = this.base_x.off + (this.action.cursor_upnp.val == 1 ? -512 : 0);
 	}
+
+	if (this.action.cursor_allow_watch.diff)
+	{
+		this.resource.on_watch.src_x = this.base_x.on_watch + (this.action.cursor_allow_watch.val == 0 ? -512 : 0);
+		this.resource.off_watch.src_x = this.base_x.off_watch + (this.action.cursor_allow_watch.val == 1 ? -512 : 0);
+	}
+
+	local x = this.gl.x + this.gl.lobby_state_title.x + 2;
+
+	foreach( i, v in this.room_list )
+	{
+		v.x = x;
+		v.visible = i == this.action.cursor_lobby.val;
+	}
+
+	this.player_name.x = x;
+	this.player_name.Set(::config.network.player_name);
 
 	if (this.action.update == this.action.UpdateWaitServer)
 	{
@@ -260,7 +295,7 @@ function Draw()
 	{
 		local d = port % 10;
 		local offset = d * 32;
-		this.gl.port.Blit(408 - i * 20, 0, 32, 32, this.resource.num, offset, 0, this.BLEND_ALPHA, 1.00000000);
+		this.gl.port.Blit(400 - i * 20, 0, 32, 32, this.resource.num, offset, 0, this.BLEND_ALPHA, 1.00000000);
 		port = port / 10;
 
 		if (port == 0)

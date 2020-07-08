@@ -12,7 +12,6 @@ this.item <- [
 this.proc <- {};
 this.cursor <- this.Cursor(0, this.item.len(), ::input_all);
 this.cursor_difficulty <- this.Cursor(0, 4, ::input_all);
-this.cursor_difficulty.val = 1;
 this.op <- {};
 ::manbow.CompileFile("data/system/title/op.nut", this.op);
 this.anime <- {};
@@ -37,6 +36,7 @@ function Suspend()
 function Resume()
 {
 	this.Show();
+	this.anime.Resume();
 	::sound.PlayBGM(::savedata.GetTitleBGMID());
 	this.Update <- this.UpdateMain;
 }
@@ -150,11 +150,20 @@ function UpdateDifficulty()
 
 this.proc.story <- function ()
 {
+	local num = ::savedata.GetDifficultyNum();
+	this.cursor_difficulty.SetItemNum(num);
 	this.cursor_difficulty.val = ::config.difficulty.story;
+
+	if (this.cursor_difficulty.val >= num)
+	{
+		this.cursor_difficulty.val = num - 1;
+	}
+
 	this.Update = this.UpdateDifficulty;
 };
 this.proc.vs_com <- function ()
 {
+	this.cursor_difficulty.SetItemNum(4);
 	this.cursor_difficulty.val = ::config.difficulty.vs;
 	this.Update = this.UpdateDifficulty;
 };
@@ -212,7 +221,7 @@ this.proc.music <- function ()
 };
 this.proc.config <- function ()
 {
-	::menu.config.Initialize();
+	::menu.config.Initialize(true);
 };
 this.proc.exit <- function ()
 {

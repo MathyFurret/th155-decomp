@@ -514,7 +514,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{
@@ -530,21 +530,27 @@ function Update_Input()
 		{
 			if (this.command.rsv_y < 0)
 			{
-				this.SP_B_First_Init(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_B_First_Init(t_);
 				this.command.ResetReserve();
 				return true;
 			}
 
 			if (this.command.rsv_y > 0)
 			{
-				this.SP_F_Init(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_F_Init(t_);
 				this.command.ResetReserve();
 				return true;
 			}
 
 			if (this.command.rsv_x * this.direction < 0)
 			{
-				this.SP_E_Set(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_E_Set(t_);
 				this.command.ResetReserve();
 				return true;
 			}
@@ -553,6 +559,7 @@ function Update_Input()
 			{
 				local t_ = {};
 				t_.force <- false;
+				t_.change <- false;
 				this.SP_D2_Init(t_);
 				this.command.ResetReserve();
 				return true;
@@ -560,7 +567,9 @@ function Update_Input()
 
 			if (this.command.rsv_x == 0)
 			{
-				this.SP_G_Init(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_G_Init(t_);
 				this.command.ResetReserve();
 				return true;
 			}
@@ -618,21 +627,27 @@ function TeamSkillChain_Input( input_ )
 {
 	if (input_.command.rsv_y < 0)
 	{
-		this.SP_B_First_Init(null);
+		local t_ = {};
+		t_.change <- true;
+		this.SP_B_First_Init(t_);
 		this.command.ResetReserve();
 		return true;
 	}
 
 	if (input_.command.rsv_y > 0)
 	{
-		this.SP_F_Init(null);
+		local t_ = {};
+		t_.change <- true;
+		this.SP_F_Init(t_);
 		this.command.ResetReserve();
 		return true;
 	}
 
 	if (input_.command.rsv_x * this.direction < 0)
 	{
-		this.SP_E_Set(null);
+		local t_ = {};
+		t_.change <- true;
+		this.SP_E_Set(t_);
 		this.command.ResetReserve();
 		return true;
 	}
@@ -640,7 +655,8 @@ function TeamSkillChain_Input( input_ )
 	if (input_.command.rsv_x * this.direction > 0)
 	{
 		local t_ = {};
-		t_.force <- false;
+		t_.force <- true;
+		t_.change <- true;
 		this.SP_D2_Init(t_);
 		this.command.ResetReserve();
 		return true;
@@ -648,7 +664,9 @@ function TeamSkillChain_Input( input_ )
 
 	if (input_.command.rsv_x == 0)
 	{
-		this.SP_G_Init(null);
+		local t_ = {};
+		t_.change <- true;
+		this.SP_G_Init(t_);
 		this.command.ResetReserve();
 		return true;
 	}

@@ -126,6 +126,17 @@ function Foot_Stone( t )
 			this.stateLabel = function ()
 			{
 			};
+		},
+		function ()
+		{
+			this.isVisible = false;
+			this.stateLabel = function ()
+			{
+				if (this.owner == this.team.current)
+				{
+					this.func[1].call(this);
+				}
+			};
 		}
 	];
 
@@ -158,6 +169,7 @@ function Shot_Dash( t )
 	this.SetParent(this.owner, 0, 0);
 	this.SetSpeed_XY(12.50000000 * this.direction, 0.00000000);
 	this.cancelCount = 3;
+	this.atk_id = 8192;
 	this.func = [
 		function ()
 		{
@@ -187,6 +199,7 @@ function Shot_Normal( t )
 	this.SetCollisionRotation(0, 0, this.rz);
 	this.SetSpeed_Vec(5.00000000, this.rz, this.direction);
 	this.cancelCount = 1;
+	this.atk_id = 16384;
 	this.Warp(this.x + this.va.x * 5, this.y + this.va.y * 5);
 	this.flag1 = null;
 	this.flag2 = false;
@@ -313,11 +326,27 @@ function Shot_FrontTrail( t )
 	};
 }
 
+function Shot_FrontTrail_R( t )
+{
+	this.SetMotion(2019, 4);
+	this.stateLabel = function ()
+	{
+		this.sx = this.sy += 0.05000000;
+		this.alpha = this.green = this.blue -= 0.05000000;
+
+		if (this.alpha <= 0.00000000)
+		{
+			this.ReleaseActor();
+		}
+	};
+}
+
 function Shot_Front( t )
 {
 	this.SetMotion(2019, 0);
 	this.SetSpeed_Vec(20.00000000, t.rot, this.direction);
-	this.cancelCount = 5;
+	this.cancelCount = 3;
+	this.atk_id = 65536;
 	this.hitCount = 0;
 	this.flag1 = this.Vector3();
 	this.func = function ()
@@ -336,16 +365,16 @@ function Shot_Front( t )
 	};
 	this.subState = function ()
 	{
-		if (this.cancelCount <= 0 || this.hitResult & 32 || ::battle.state != 8)
-		{
-			this.func();
-		}
-
 		this.count++;
 
 		if (this.count % 4 == 1)
 		{
 			this.SetFreeObject(this.x, this.y, this.direction, this.Shot_FrontTrail, {});
+		}
+
+		if (this.cancelCount <= 0 || ::battle.state != 8)
+		{
+			this.func();
 		}
 	};
 	this.stateLabel = function ()
@@ -364,36 +393,82 @@ function Shot_Front( t )
 		if (this.IsScreen(300))
 		{
 			this.PlaySE(4213);
-			this.hitCount = 0;
-			this.stateLabel = function ()
+
+			if (this.hitCount <= 0 && this.grazeCount <= 0)
 			{
-				if (this.Damage_ConvertOP(this.x, this.y, 10))
+				this.hitCount = 0;
+				this.stateLabel = function ()
 				{
-					this.ReleaseActor();
-					return true;
-				}
+					if (this.Damage_ConvertOP(this.x, this.y, 10))
+					{
+						this.ReleaseActor();
+						return true;
+					}
 
-				if (this.hitCount < 3)
+					if (this.hitCount < 3)
+					{
+						this.HitCycleUpdate(2);
+					}
+
+					this.flag1.x = this.owner.x - this.x;
+					this.flag1.y = this.owner.y - 25 - this.y;
+
+					if (this.flag1.Length() <= 50)
+					{
+						this.owner.sword = null;
+						this.owner.Shot_FrontCatch_Init(null);
+						this.ReleaseActor();
+						return;
+					}
+
+					this.flag1.SetLength(12.50000000);
+					this.SetSpeed_XY(this.flag1.x, this.flag1.y);
+					this.subState();
+				};
+				return;
+			}
+			else
+			{
+				this.callbackGroup = 0;
+				this.subState = function ()
 				{
-					this.HitCycleUpdate(2);
-				}
+					this.count++;
 
-				this.subState();
-				this.flag1.x = this.owner.x - this.x;
-				this.flag1.y = this.owner.y - 25 - this.y;
+					if (this.count % 4 == 1)
+					{
+						this.SetFreeObject(this.x, this.y, this.direction, this.Shot_FrontTrail_R, {});
+					}
 
-				if (this.flag1.Length() <= 50)
+					if (::battle.state != 8)
+					{
+						this.func();
+					}
+				};
+				this.stateLabel = function ()
 				{
-					this.owner.sword = null;
-					this.owner.Shot_FrontCatch_Init(null);
-					this.ReleaseActor();
-					return;
-				}
+					if (this.Damage_ConvertOP(this.x, this.y, 10))
+					{
+						this.ReleaseActor();
+						return true;
+					}
 
-				this.flag1.SetLength(12.50000000);
-				this.SetSpeed_XY(this.flag1.x, this.flag1.y);
-			};
-			return;
+					this.flag1.x = this.owner.x - this.x;
+					this.flag1.y = this.owner.y - 25 - this.y;
+
+					if (this.flag1.Length() <= 50)
+					{
+						this.owner.sword = null;
+						this.owner.Shot_FrontCatch_Init(null);
+						this.ReleaseActor();
+						return;
+					}
+
+					this.flag1.SetLength(12.50000000);
+					this.SetSpeed_XY(this.flag1.x, this.flag1.y);
+					this.subState();
+				};
+				return;
+			}
 		}
 
 		this.subState();
@@ -411,6 +486,7 @@ function Shot_Barrage( t )
 	this.SetSpeed_Vec(15.00000000, this.rz, this.direction);
 	this.keyAction = this.ReleaseActor;
 	this.cancelCount = 1;
+	this.atk_id = 262144;
 	this.subState = function ()
 	{
 		if (this.Vec_Brake(0.75000000, 3.00000000))
@@ -456,10 +532,16 @@ function Shot_Charge( t )
 {
 	this.SetMotion(2029, 0);
 	this.cancelCount = 3;
+	this.atk_id = 131072;
 	this.SetSpeed_Vec(15.00000000, t.rot, this.direction);
 	this.func = [
 		function ()
 		{
+			if (this.owner.shot_charge == this)
+			{
+				this.owner.shot_charge = null;
+			}
+
 			this.SetMotion(2029, 2);
 			this.stateLabel = function ()
 			{
@@ -620,6 +702,7 @@ function Shot_Occult_Lightning( t )
 	this.PlaySE(4264);
 	this.keyAction = this.ReleaseActor;
 	this.cancelCount = 3;
+	this.atk_id = 524288;
 	this.stateLabel = function ()
 	{
 		this.count++;
@@ -643,6 +726,7 @@ function Shot_Change( t )
 	this.rz = t.rot;
 	this.SetSpeed_Vec(20.00000000, this.rz, this.direction);
 	this.cancelCount = 1;
+	this.atk_id = 536870912;
 	this.flag2 = 0;
 	this.func = [
 		function ()
@@ -782,6 +866,7 @@ function Shot_ChangeB( t )
 	this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 	this.keyAction = this.ReleaseActor;
 	this.cancelCount = 1;
+	this.atk_id = 536870912;
 	this.func = function ()
 	{
 		this.callbackGroup = 0;
@@ -821,6 +906,7 @@ function Shot_ChangeFin( t )
 	t_.rot <- t.rot;
 	this.flag1.trail = this.SetFreeObject(this.x, this.y, this.direction, this.owner.Shot_ChangeFinTrail, t_).weakref();
 	this.cancelCount = 3;
+	this.atk_id = 536870912;
 	this.SetSpeed_Vec(15.00000000, this.initTable.rot, this.direction);
 	this.subState = function ()
 	{
@@ -934,6 +1020,7 @@ function Shot_BarrageBit( t )
 	this.rz = t.rot;
 	this.SetSpeed_Vec(20.00000000, this.rz, this.direction);
 	this.cancelCount = 1;
+	this.atk_id = 262144;
 	this.flag2 = 0;
 	this.flag3 = t.rot <= 0 ? 0.05235988 : -0.05235988;
 	this.func = [
@@ -1199,6 +1286,7 @@ function SP_Hisou_Laser_Common( t )
 	this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 	this.sy = 0.05000000;
 	this.cancelCount = 1;
+	this.atk_id = 1048576;
 	this.flag1 = null;
 	this.func = [
 		function ()
@@ -1349,6 +1437,7 @@ function SPShot_Kaname_Drop( t )
 {
 	this.SetMotion(3029, 0);
 	this.cancelCount = 3;
+	this.atk_id = 8388608;
 	this.stateLabel = function ()
 	{
 		this.AddSpeed_XY(0.00000000, 0.75000000, 0.00000000, 17.50000000);
@@ -1383,6 +1472,7 @@ function SP_Kaname_Crash_Stone( t )
 	this.flag1.y = 200 * t.y;
 	this.flag2 = 4.00000000;
 	this.cancelCount = 99;
+	this.atk_id = 4194304;
 	this.func = [
 		function ()
 		{
@@ -1445,6 +1535,7 @@ function SP_Kaname_Crash_Wave( t )
 {
 	this.SetMotion(3019, 2);
 	this.cancelCount = 3;
+	this.atk_id = 4194304;
 	this.alpha = 1.25000000;
 	this.stateLabel = function ()
 	{
@@ -1464,6 +1555,7 @@ function SP_Hisou_Slash_Blade( t )
 	this.SetParent(this.owner, 0, 0);
 	this.actorType = 4;
 	this.cancelCount = 6;
+	this.atk_id = 16777216;
 	this.func = [
 		function ()
 		{
@@ -1518,6 +1610,7 @@ function SP_Koma_Shot( t )
 		}
 	];
 	this.cancelCount = 3;
+	this.atk_id = 2097152;
 	this.subState = function ()
 	{
 		this.VX_Brake(0.50000000, 2.00000000 * this.direction);
@@ -2014,6 +2107,7 @@ function SpellShot_A( t )
 	this.SetSpeed_Vec(50.00000000, this.rz, this.direction);
 	this.alpha = 0.00000000;
 	this.cancelCount = 3;
+	this.atk_id = 67108864;
 	this.func = [
 		function ()
 		{
@@ -2117,6 +2211,7 @@ function SpellShot_B( t )
 	this.SetMotion(4019, 1);
 	this.DrawActorPriority(180);
 	this.SetParent(this.owner, 0, 0);
+	this.atk_id = 67108864;
 	this.func = [
 		function ()
 		{
@@ -2177,6 +2272,7 @@ function SpellShot_B( t )
 function SpellShot_B_Sub( t )
 {
 	this.SetMotion(4019, 0);
+	this.atk_id = 67108864;
 	this.DrawActorPriority(180);
 	this.rz = (15 - this.rand() % 31) * 0.10000000 * 0.01745329;
 	::camera.Shake(5.00000000);

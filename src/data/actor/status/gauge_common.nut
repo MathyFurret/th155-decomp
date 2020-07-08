@@ -247,9 +247,9 @@ function UpdatePosition( count )
 	this.mat_right_bottom.SetTranslation(0, y, 0);
 }
 
-function Show( _imm = false )
+function Show( wait_ = 120 )
 {
-	if (_imm)
+	if (wait_ == 0)
 	{
 		this.UpdatePosition(0);
 		this.UpdateParts();
@@ -259,7 +259,7 @@ function Show( _imm = false )
 
 	local t = {};
 	t.setdelegate(this);
-	t.count <- 120;
+	t.count <- wait_;
 	t.Update <- function ()
 	{
 		this.count--;

@@ -62,6 +62,7 @@ class this.Balloon
 	static balloon_src_auto = _balloon_src_auto;
 	sprite = null;
 	text = null;
+	subtitle = null;
 	direction = 1;
 	owner = null;
 	x = 0;
@@ -125,6 +126,17 @@ class this.Balloon
 		this.Show();
 	}
 
+	function SetSubtitle( text )
+	{
+		this.subtitle = ::talk.CreateSubtitle(text);
+
+		foreach( v in this.subtitle )
+		{
+			v.alpha = 0;
+			v.ConnectRenderSlot(::graphics.slot.talk, 30);
+		}
+	}
+
 	function Perse( _str )
 	{
 		local len = _str.len();
@@ -168,6 +180,15 @@ class this.Balloon
 	{
 		this.sprite.ConnectRenderSlot(::graphics.slot.talk, 20);
 		this.text.ConnectRenderSlot(::graphics.slot.talk, 20);
+
+		if (this.subtitle)
+		{
+			foreach( v in this.subtitle )
+			{
+				v.ConnectRenderSlot(::graphics.slot.talk, 30);
+			}
+		}
+
 		local t = ::newthread(function ( t )
 		{
 			while (!t.owner.stop)
@@ -179,6 +200,15 @@ class this.Balloon
 			{
 				t.scale += 0.10000000;
 				t.UpdatePosition();
+
+				if (t.subtitle)
+				{
+					foreach( v in t.subtitle )
+					{
+						v.alpha = t.scale;
+					}
+				}
+
 				this.suspend();
 			}
 		});
@@ -191,6 +221,14 @@ class this.Balloon
 	{
 		this.sprite.DisconnectRenderSlot();
 		this.text.DisconnectRenderSlot();
+
+		if (this.subtitle)
+		{
+			foreach( v in this.subtitle )
+			{
+				v.DisconnectRenderSlot();
+			}
+		}
 	}
 
 	function Update()

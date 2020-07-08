@@ -51,10 +51,19 @@ function PlayerhitAction_Boss( t_ )
 
 	if (this.team.life <= 0 && this.enableKO && t_.atkType != 0)
 	{
-		this.shot_actor.Foreach(function ()
+		this.team.master.shot_actor.Foreach(function ()
 		{
 			this.func[0].call(this);
 		});
+
+		if (this.team.slave)
+		{
+			this.team.slave.shot_actor.Foreach(function ()
+			{
+				this.func[0].call(this);
+			});
+		}
+
 		this.BuffReset();
 		this.enableStandUp = false;
 

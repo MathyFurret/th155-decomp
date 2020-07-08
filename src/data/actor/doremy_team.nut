@@ -186,7 +186,7 @@ function Team_Change_ShotB( va_ )
 					this.flag2++;
 					this.hitResult = 1;
 					local r_ = 25 * 0.01745329 * this.sin(this.flag3 * 0.01745329);
-					this.PlaySE(1124);
+					this.PlaySE(4026);
 					local t_ = {};
 					t_.rot <- -0.78539813;
 					this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Change, t_);
@@ -254,7 +254,7 @@ function Team_Change_ShotFinB( va_, ky_ )
 
 			this.SetSpeed_XY(-15.00000000 * this.direction, 0.00000000);
 			this.hitResult = 1;
-			this.PlaySE(1126);
+			this.PlaySE(4024);
 			local t_ = {};
 			t_.rot <- this.flag1 + this.flag2;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_ChangeFin, t_);

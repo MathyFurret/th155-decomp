@@ -65,11 +65,6 @@ function Save( filename = null )
 		return;
 	}
 
-	if (this.state != this.RECORD)
-	{
-		return;
-	}
-
 	local name = filename;
 	local _year = "";
 	local _month = "";
@@ -369,7 +364,7 @@ function Confirm( _func_callback )
 		break;
 
 	case 2:
-		local message = "ÉäÉvÉåÉCÇ\x2261ï\x2588ë\x2562Ç\x2561Ç\x2584Ç\x2556Ç\x2310ÅH";
+		local message = ::menu.common.GetMessageText("save_replay");
 		this.func_callback = _func_callback;
 		::Dialog(1, message, function ( t )
 		{
@@ -387,7 +382,7 @@ function Confirm( _func_callback )
 			{
 				this.func_callback();
 			}
-		}.bindenv(this), 1);
+		}.bindenv(this), 0);
 		break;
 	}
 }

@@ -86,6 +86,24 @@ this.player_class.Init <- function ()
 	};
 	this.change_reset = function ()
 	{
+		this.masterBlue = this.masterGreen = this.masterAlpha = 1.00000000;
+	};
+	this.practice_update = function ()
+	{
+		if (::battle.udonge[this.team.index] >= 0)
+		{
+			if (::battle.udonge[this.team.index] == 10000 && this.san_mode)
+			{
+				return;
+			}
+
+			this.san = ::battle.udonge[this.team.index];
+
+			if (this.san_gauge)
+			{
+				this.san_gauge.func[2].call(this.san_gauge, 1.00000000);
+			}
+		}
 	};
 	this.Load_SpellCardData("udonge");
 

@@ -12,6 +12,12 @@ function Mukon_Charge( val_ )
 	{
 		this.mukon_charge = 100;
 	}
+
+	while (this.mukon_stock.len() < this.mukon_charge / 25)
+	{
+		local a_ = this.SetFreeObject(this.x, this.y, this.direction, this.Mukon_StockBall, {});
+		this.mukon_stock.append(a_.weakref());
+	}
 }
 
 function Update_Normal()
@@ -19,6 +25,19 @@ function Update_Normal()
 	if (this.mukon_se > 0)
 	{
 		this.mukon_se--;
+	}
+
+	foreach( a in this.mukon_pos )
+	{
+		a.RotateByRadian(0.03490658);
+	}
+
+	foreach( val_, a in this.mukon_stock )
+	{
+		if (a)
+		{
+			a.SetSpeed_XY((this.team.current.x + this.mukon_pos[val_].x - a.x) * 0.10000000, (this.team.current.y + this.mukon_pos[val_].y - a.y) * 0.10000000);
+		}
 	}
 
 	if (!this.MainLoopFirst())
@@ -62,7 +81,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{

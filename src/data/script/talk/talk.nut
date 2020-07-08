@@ -5,6 +5,7 @@ this.font.Load("data/font/talk_font.bmp");
 ::manbow.CompileFile("data/script/talk/talk_character.nut", this);
 ::manbow.CompileFile("data/script/talk/talk_text.nut", this);
 ::manbow.CompileFile("data/script/talk/talk_balloon.nut", this);
+::manbow.CompileFile("data/script/talk/talk_subtitle.nut", this);
 ::manbow.CompileFile("data/script/talk/talk_command_ex.nut", this);
 ::manbow.CompileFile("data/script/talk/talk_generate.nut", this);
 this.command_line <- [];
@@ -56,8 +57,11 @@ function End( arg = null )
 	this.object_list = {};
 	this.current_obj = null;
 	this.message = null;
+	this.message_flush = false;
 	this.group = {};
 	this.is_active = false;
+	this.sub_stack = [];
+	::input_talk.Clear();
 	::battle.DeleteTask(this);
 	return true;
 }

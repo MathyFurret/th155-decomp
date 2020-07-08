@@ -1,7 +1,8 @@
 function Initialize()
 {
 	this.anime_set <- ::manbow.AnimationSet2D();
-	this.anime_set.Load("data/system/select/character_select.pat", null);
+	local lang = ::config.lang == 1 ? "_en" : "";
+	this.anime_set.Load("data/system/select/character_select" + lang + ".pat", null);
 	this.anime_set.Load("data/system/select/character_select2.pat", null);
 	this.mode <- 1;
 	this.take <- ::actor.LoadAnimationData("data/system/select/story_pic/story_pic.pat", true);

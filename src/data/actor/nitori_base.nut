@@ -46,7 +46,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.robo && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_y > 0 && this.command.rsv_k01 > 0)
+	if (this.robo && this.team.op_stop == 0 && this.command.rsv_y > 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{
@@ -58,7 +58,7 @@ function Update_Input()
 		}
 	}
 
-	if (this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{

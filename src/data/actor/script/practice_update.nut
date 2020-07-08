@@ -207,6 +207,19 @@ function Practice_CommonUpdate()
 
 		if (this.team.index == 1)
 		{
+			if (::battle.slave_2p >= 0 && this.IsFree() && this.Cancel_Check(9))
+			{
+				if (::battle.slave_2p == 0 && ::battle.team[1].current == ::battle.team[1].slave)
+				{
+					this.Team_Change_Master(null);
+				}
+
+				if (::battle.slave_2p == 1 && ::battle.team[1].current == ::battle.team[1].master)
+				{
+					this.Team_Change_Slave(null);
+				}
+			}
+
 			switch(::config.practice.player2)
 			{
 			case 0:
@@ -293,11 +306,11 @@ function Practice_CommonUpdate()
 
 					if (this.direction > 0)
 					{
-						this.input.x = 1;
+						this.input.x = 3;
 					}
 					else
 					{
-						this.input.x = -1;
+						this.input.x = -3;
 					}
 
 					break;
@@ -307,11 +320,11 @@ function Practice_CommonUpdate()
 
 					if (this.direction < 0)
 					{
-						this.input.x = 1;
+						this.input.x = 3;
 					}
 					else
 					{
-						this.input.x = -1;
+						this.input.x = -3;
 					}
 
 					break;
@@ -321,11 +334,53 @@ function Practice_CommonUpdate()
 
 					if (this.rand() % 100 < 50)
 					{
-						this.input.x = 1;
+						this.input.x = 3;
 					}
 					else
 					{
-						this.input.x = -1;
+						this.input.x = -3;
+					}
+
+					break;
+
+				case 4:
+					this.input.b3 = 1;
+
+					if (this.direction > 0)
+					{
+						this.input.x = 3;
+					}
+					else
+					{
+						this.input.x = -3;
+					}
+
+					break;
+
+				case 5:
+					this.input.b3 = 1;
+
+					if (this.direction < 0)
+					{
+						this.input.x = 3;
+					}
+					else
+					{
+						this.input.x = -3;
+					}
+
+					break;
+
+				case 6:
+					this.input.b3 = 1;
+
+					if (this.rand() % 100 < 50)
+					{
+						this.input.x = 3;
+					}
+					else
+					{
+						this.input.x = -3;
 					}
 
 					break;

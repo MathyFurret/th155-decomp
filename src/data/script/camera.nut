@@ -16,6 +16,7 @@ this.target_y <- 0;
 this.target_zoom <- 2.00000000;
 this.zoom <- this.target_zoom;
 this.auto_target <- true;
+this.auto_zoom_limit <- 2.00000000;
 this.lock <- false;
 this.camera2d <- null;
 this.camera3d <- null;
@@ -65,6 +66,7 @@ function Clear()
 	this.offset_x = 0;
 	this.offset_y = 0;
 	this.target_object.resize(0);
+	this.auto_zoom_limit = 2.00000000;
 	this.auto_target = true;
 	this.lock = false;
 }
@@ -284,9 +286,9 @@ function UpdateTarget()
 		local _zoomRateY = 2.00000000 - (distY - 360.00000000) / 360.00000000;
 		this.target_zoom = _zoomRateX < _zoomRateY ? _zoomRateX : _zoomRateY;
 
-		if (this.target_zoom > 2.00000000)
+		if (this.target_zoom > this.auto_zoom_limit)
 		{
-			this.target_zoom = 2.00000000;
+			this.target_zoom = this.auto_zoom_limit;
 		}
 		else if (this.target_zoom < 1.00000000)
 		{

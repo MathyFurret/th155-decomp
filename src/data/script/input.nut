@@ -80,7 +80,7 @@ function CreatePlayerInputDevice( index, device_id )
 
 function CreatePlayerInputDeviceLocal( index, device_id )
 {
-	local device = ::manbow.InputSingle();
+	local device = ::manbow.InputMulti();
 	this.SetDeviceAssign(index, device_id, device);
 	return device;
 }
@@ -88,9 +88,7 @@ function CreatePlayerInputDeviceLocal( index, device_id )
 function CreatePlayerInputDevicePractice2P( device_id_1p )
 {
 	local device = ::manbow.InputMulti();
-	local d = ::manbow.InputSingle();
-	this.SetDeviceAssign(1, -1, d);
-	device.Append(d);
+	this.SetDeviceAssign(1, -1, device);
 
 	for( local i = 0; i < ::manbow.GetJoyNum(); i = ++i )
 	{
@@ -99,15 +97,24 @@ function CreatePlayerInputDevicePractice2P( device_id_1p )
 		}
 		else
 		{
-			local d = ::manbow.InputSingle();
-			this.SetDeviceAssign(1, i, d);
-			device.Append(d);
+			this.SetDeviceAssign(1, i, device);
 		}
 	}
 
 	return device;
 }
 
+this.button_list <- {};
+this.button_list.up <- 0;
+this.button_list.down <- 0;
+this.button_list.left <- 0;
+this.button_list.right <- 0;
+this.button_list.b0 <- 0;
+this.button_list.b1 <- 1;
+this.button_list.b2 <- 2;
+this.button_list.b3 <- 3;
+this.button_list.b4 <- 4;
+this.button_list.b10 <- 10;
 function SetDeviceAssign( index, device_id, target_device )
 {
 	if (target_device == null)
@@ -115,40 +122,48 @@ function SetDeviceAssign( index, device_id, target_device )
 		return;
 	}
 
+	if (device_id < -2)
+	{
+		return;
+	}
+
 	local devmap = ::manbow.DeviceMapping();
+	local assign;
+	assign = device_id == -1 ? ::config.input.key[index] : ::config.input.pad[index];
+	devmap.device = device_id;
 
-	if (device_id == -1)
+	foreach( key, val in assign )
 	{
-		devmap.device = -1;
-
-		foreach( key, val in ::config.input.key[index] )
+		if (key in this.button_list)
 		{
 			devmap[key] = val;
 		}
 	}
-	else if (device_id >= 0)
-	{
-		devmap.device = device_id;
 
-		foreach( key, val in ::config.input.pad[index] )
+	local d = ::manbow.InputSingle();
+	d.SetDeviceAssign(devmap);
+	target_device.Append(d);
+
+	for( local i = 0; i < 3; i = ++i )
+	{
+		if (assign["t" + i] >= 0)
 		{
-			devmap[key] = val;
+			local devmap = ::manbow.DeviceMapping();
+			devmap.device = device_id;
+			devmap["b" + i] = assign["t" + i];
+			devmap["b" + (i + 1)] = assign["t" + i];
+			local d = ::manbow.InputSingle();
+			d.SetDeviceAssign(devmap);
+			target_device.Append(d);
 		}
 	}
-	else
-	{
-		devmap.device = -2;
-	}
 
-	target_device.SetDeviceAssign(devmap);
+	target_device.Lock();
 }
 
 function SetDeviceAssignPractice2P( device_id_1p, target_device )
 {
-	target_device.Release();
-	local d = ::manbow.InputSingle();
-	this.SetDeviceAssign(1, -1, d);
-	target_device.Append(d);
+	this.SetDeviceAssign(1, -1, target_device);
 
 	for( local i = 0; i < ::manbow.GetJoyNum(); i = ++i )
 	{
@@ -157,13 +172,21 @@ function SetDeviceAssignPractice2P( device_id_1p, target_device )
 		}
 		else
 		{
-			local d = ::manbow.InputSingle();
-			this.SetDeviceAssign(1, i, d);
-			target_device.Append(d);
+			this.SetDeviceAssign(1, i, target_device);
 		}
 	}
 
 	target_device.Lock();
+}
+
+function ClearDeviceAssign( target_device )
+{
+	if (target_device == null)
+	{
+		return;
+	}
+
+	target_device.Release();
 }
 
 ::input_key <- this.CreateSystemInputDevice(-1);

@@ -22,6 +22,10 @@ function Init()
 	case 3:
 		this.com_level = 100;
 		break;
+
+	case 4:
+		this.com_level = 100;
+		break;
 	}
 
 	this.cpuState = this.CPU_Update_VS;
@@ -84,6 +88,10 @@ function Run_Basic_Com()
 		break;
 
 	case 3:
+		this.com_level = 100;
+		break;
+
+	case 4:
 		this.com_level = 100;
 		break;
 	}

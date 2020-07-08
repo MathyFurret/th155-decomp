@@ -185,6 +185,7 @@ function Team_Change_ShotB( va_ )
 		{
 			this.count = 0;
 			this.PlaySE(4444);
+			this.hitResult = 1;
 			this.team.AddMP(-200, 90);
 
 			for( local i = 0; i < 8; i++ )
@@ -343,6 +344,18 @@ function Team_Change_SpellB( t )
 
 		this.chen = this.SetShot(this.x + 80 * this.direction, this.y, this.direction, this.SpellShot_B_Chen, {}).weakref();
 		this.ran = this.SetShot(this.x - 80 * this.direction, this.y, this.direction, this.SpellShot_B_Ran, {}).weakref();
+		this.lavelClearEvent = function ()
+		{
+			if (this.ran)
+			{
+				this.ran.func[0].call(this.ran);
+			}
+
+			if (this.chen)
+			{
+				this.chen.func[0].call(this.chen);
+			}
+		};
 	};
 	return true;
 }

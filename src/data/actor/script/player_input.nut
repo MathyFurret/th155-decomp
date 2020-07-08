@@ -236,7 +236,7 @@ function InputMove()
 				{
 					this.SlideUp_Init(null);
 				}
-				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6))
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
 				{
 					this.Team_ChangeReserve_Common();
 					this.team.current.C_SlideUp_Init(null);
@@ -257,7 +257,7 @@ function InputMove()
 				{
 					this.SlideFall_Init(null);
 				}
-				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6))
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
 				{
 					this.Team_ChangeReserve_Common();
 					this.team.current.C_SlideFall_Init(null);
@@ -280,7 +280,7 @@ function InputMove()
 				{
 					this.SlideUp_Init(null);
 				}
-				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6))
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
 				{
 					this.Team_ChangeReserve_Common();
 					this.team.current.C_SlideUp_Init(null);
@@ -301,7 +301,7 @@ function InputMove()
 				{
 					this.SlideFall_Init(null);
 				}
-				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6))
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
 				{
 					this.Team_ChangeReserve_Common();
 					this.team.current.C_SlideFall_Init(null);
@@ -622,7 +622,7 @@ function Input_Master()
 
 		if (this.team.spell_active && this.command.rsv_k12 > 0)
 		{
-			if (this.team.spell_use_count == 0 && this.spellList[this.spellcard.id].init && (this.Cancel_Check(60, 0, 0) || this.Cancel_Check(100, 0, 0) && this.hitResult & 1))
+			if ((this.team.spell_use_count == 0 || this.team.spell_use_count < 0 && this.team.sp >= this.team.sp_max) && this.spellList[this.spellcard.id].init && (this.Cancel_Check(60, 0, 0) || this.Cancel_Check(100, 0, 0) && this.hitResult & 1))
 			{
 				if (this.IsAttack() == 3)
 				{
@@ -652,7 +652,7 @@ function Input_Master()
 
 				if (this.command.rsv_x * this.direction > 0 && this.command.rsv_y == 0)
 				{
-					if (this.IsGuard())
+					if (this.team.slave && this.team.slave.type != 19 && this.IsGuard())
 					{
 						this.Team_Change_Counter(null);
 						this.command.ResetReserve();
@@ -693,7 +693,7 @@ function Input_Master()
 
 				if (this.IsGuard())
 				{
-					if (this.command.rsv_x * this.direction < 0 && this.command.rsv_y == 0)
+					if (this.team.slave && this.team.slave.type != 19 && this.command.rsv_x * this.direction < 0 && this.command.rsv_y == 0)
 					{
 						this.Team_GC_DashBack_Init(null);
 						return true;
@@ -748,6 +748,15 @@ function Input_Slave()
 					this.command.ResetReserve();
 					return true;
 				}
+			}
+		}
+
+		if (this.IsGuard())
+		{
+			if (this.team.slave.type != 19 && this.command.rsv_x * this.direction < 0 && this.command.rsv_y == 0)
+			{
+				this.Team_GC_DashBack_Init(null);
+				return true;
 			}
 		}
 

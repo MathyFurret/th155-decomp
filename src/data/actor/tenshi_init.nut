@@ -3,6 +3,8 @@ this.player_class.occult_time <- 0;
 this.player_class.occult_cycle <- 0;
 this.player_class.stone <- null;
 this.player_class.sword <- null;
+this.player_class.namazu <- null;
+this.player_class.shot_charge <- null;
 this.player_class.momo_time <- 0;
 this.player_class.momo_aura <- null;
 this.manbow.CompileFile("data/actor/player_common_move.nut", this.player_class);
@@ -31,13 +33,13 @@ this.player_class.Init <- function ()
 
 		if (this.stone)
 		{
-			if (this.team.current == this)
+			if (this.team.master == this)
 			{
 				this.stone.func[2].call(this.stone);
 			}
 			else
 			{
-				this.stone.func[4].call(this.stone);
+				this.stone.func[5].call(this.stone);
 			}
 		}
 	};
@@ -47,11 +49,22 @@ this.player_class.Init <- function ()
 	{
 		this.stone = this.SetFreeObject(this.x, this.y, this.direction, this.Foot_Stone, {}).weakref();
 		this.sword = null;
+		this.namazu = null;
 		this.momo_time = 0;
 		this.momo_aura = null;
 		this.occult_back = null;
 		this.occult_time = 0;
 		this.occult_cycle = 0;
+		this.shot_charge = null;
+
+		if (this.team.master == this)
+		{
+			this.stone.func[2].call(this.stone);
+		}
+		else
+		{
+			this.stone.func[5].call(this.stone);
+		}
 	};
 	this.change_reset = function ()
 	{
@@ -64,6 +77,19 @@ this.player_class.Init <- function ()
 		this.Vanish_Sword();
 	};
 	this.stone = this.SetFreeObject(this.x, this.y, this.direction, this.Foot_Stone, {}).weakref();
+
+	if (this.stone)
+	{
+		if (this.team.master == this)
+		{
+			this.stone.func[2].call(this.stone);
+		}
+		else
+		{
+			this.stone.func[5].call(this.stone);
+		}
+	}
+
 	this.motion_test = [
 		function ()
 		{

@@ -46,7 +46,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{
@@ -224,9 +224,10 @@ function UdongeColorUpdate()
 
 				if (!c_)
 				{
-					if (this.masterAlpha >= 0.94999999)
+					if (this.masterAlpha >= 0.89999998)
 					{
 						this.masterAlpha = 1.00000000;
+						this.masterBlue = this.masterGreen = this.masterAlpha;
 					}
 					else
 					{
@@ -235,7 +236,7 @@ function UdongeColorUpdate()
 				}
 			}
 		}
-		else if (this.masterAlpha >= 0.94999999)
+		else if (this.masterAlpha >= 0.89999998)
 		{
 			this.masterAlpha = 1.00000000;
 		}
@@ -391,7 +392,7 @@ function Input_CommonAttack()
 
 			if (this.command.Check(this.BB))
 			{
-				if (this.Cancel_Check(50, 200, 0, true) && this.motion >= 2000 && this.motion <= 2019)
+				if (this.Cancel_Check(50, 200, 0, true) && (this.motion >= 2000 && this.motion <= 2019) && this.flagState & 16384)
 				{
 					if (this.centerStop * this.centerStop <= 1)
 					{

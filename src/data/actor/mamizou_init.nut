@@ -18,6 +18,7 @@ this.player_class.spellC_Hit <- false;
 this.player_class.alien <- null;
 this.player_class.karasaka <- null;
 this.player_class.space <- 0;
+this.player_class.tanuki_gauge <- null;
 this.player_class.Init <- function ()
 {
 	this.SetMotion(0, 0);
@@ -41,15 +42,76 @@ this.player_class.Init <- function ()
 		this.karasaka = null;
 		this.space = 0;
 		this.alien = [];
+
+		if (this.team.index == 0)
+		{
+			this.tanuki_gauge = this.SetFreeObject(20, 580, 1.00000000, this.Tanuki_Guage_Back, {}).weakref();
+		}
+		else
+		{
+			this.tanuki_gauge = this.SetFreeObject(1260, 580, -1.00000000, this.Tanuki_Guage_Back, {}).weakref();
+		}
+
+		if (this.tanuki_gauge)
+		{
+			this.tanuki_gauge.func[1].call(this.tanuki_gauge, this.raccoon);
+		}
+	};
+
+	if (this.team.index == 0)
+	{
+		this.tanuki_gauge = this.SetFreeObject(20, 580, 1.00000000, this.Tanuki_Guage_Back, {}).weakref();
+	}
+	else
+	{
+		this.tanuki_gauge = this.SetFreeObject(1260, 580, -1.00000000, this.Tanuki_Guage_Back, {}).weakref();
+	}
+
+	if (this.tanuki_gauge)
+	{
+		this.tanuki_gauge.func[1].call(this.tanuki_gauge, this.raccoon);
+	}
+
+	this.func_beginDemoSkip = function ()
+	{
+		this.CommonBeginBattleSkip();
+		this.freeMap = false;
 	};
 	this.change_reset = function ()
 	{
+	};
+	this.practice_update = function ()
+	{
+		if (::battle.mamizou[this.team.index] >= 0 && this.raccoon != ::battle.mamizou[this.team.index])
+		{
+			this.raccoon = ::battle.mamizou[this.team.index];
+			this.revive = 0;
+
+			if (this.tanuki_gauge)
+			{
+				this.tanuki_gauge.func[1].call(this.tanuki_gauge, this.raccoon);
+			}
+		}
 	};
 	this.resetPracticeFunc = function ()
 	{
 		this.hyakki = 0;
 		this.space = 0;
 	};
+	this.motion_test = [
+		function ()
+		{
+			this.Func_BeginBattle();
+		},
+		function ()
+		{
+			this.Func_Win();
+		},
+		function ()
+		{
+			this.Func_Lose();
+		}
+	];
 	this.Load_SpellCardData("mamizou");
 
 	if (this.team.slave == this)

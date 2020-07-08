@@ -188,11 +188,6 @@ function Update_Normal()
 		this.SummonMask();
 	}
 
-	if (this.mask && this.team.current != this)
-	{
-		this.DamageMask();
-	}
-
 	if (::battle.state == 8)
 	{
 		if (this.cpuState)
@@ -217,7 +212,7 @@ function Update_Input()
 		return true;
 	}
 
-	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.team.master == this && this.command.rsv_k01 > 0)
+	if (this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
 		if (this.Cancel_Check(60, 200, 0, false))
 		{
@@ -305,6 +300,7 @@ function TeamSkillChain_Input( input_ )
 {
 	if (input_.command.rsv_y < 0)
 	{
+		this.SummonMask();
 		this.SP_F_Init(null);
 		this.command.ResetReserve();
 		return true;
@@ -312,6 +308,7 @@ function TeamSkillChain_Input( input_ )
 
 	if (input_.command.rsv_y > 0)
 	{
+		this.SummonMask();
 		this.SP_E_Init(null);
 		this.command.ResetReserve();
 		return true;
@@ -319,6 +316,7 @@ function TeamSkillChain_Input( input_ )
 
 	if (input_.command.rsv_x * this.direction > 0)
 	{
+		this.SummonMask();
 		this.SP_A_Init(null);
 		this.command.ResetReserve();
 		return true;
@@ -326,6 +324,7 @@ function TeamSkillChain_Input( input_ )
 
 	if (input_.command.rsv_x * this.direction < 0)
 	{
+		this.SummonMask();
 		local t_ = {};
 		t_.rush <- false;
 		this.SP_B_Init(t_);
@@ -335,6 +334,7 @@ function TeamSkillChain_Input( input_ )
 
 	if (!input_.command.rsv_x)
 	{
+		this.SummonMask();
 		this.SP_D_Init(null);
 		this.command.ResetReserve();
 		return true;

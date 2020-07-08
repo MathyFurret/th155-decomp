@@ -1,5 +1,11 @@
 function Func_BeginBattle()
 {
+	if (this.team.master == this && this.team.slave && this.team.slave.type == 11)
+	{
+		this.BeginBattle_Mokou(null);
+		return;
+	}
+
 	local r_ = this.rand() % 2;
 
 	switch(r_)
@@ -155,6 +161,168 @@ function BeginBattleB( t )
 					this.stateLabel = null;
 				}
 			};
+		}
+	};
+}
+
+function BeginBattle_Mokou( t )
+{
+	this.LabelClear();
+	this.count = 0;
+	this.SetMotion(9002, 0);
+	this.demoObject = [];
+	this.team.slave.BeginBattle_Slave(null);
+	this.freeMap = true;
+	this.Warp(640 - 960 * this.direction, this.y);
+	this.team.slave.Warp(this.x - 20 * this.direction, this.y);
+	this.DrawActorPriority();
+	this.flag1 = this.Vector3();
+	this.flag1.x = ::battle.start_x[this.team.index];
+	this.flag1.y = ::battle.start_y[this.team.index];
+	this.func = [
+		function ()
+		{
+			this.PlaySE(2716);
+			this.SetSpeed_XY(20.00000000 * this.direction, 0.00000000);
+		},
+		function ()
+		{
+			this.direction = -this.direction;
+			this.team.slave.direction = this.direction;
+			this.PlaySE(2716);
+			this.SetSpeed_XY(20.00000000 * this.direction, 0.00000000);
+			this.Warp(this.direction == 1.00000000 ? ::camera.camera2d.left - 128 : ::camera.camera2d.right + 128, this.y);
+		},
+		function ()
+		{
+			this.direction = -this.direction;
+			this.team.slave.func();
+			this.SetSpeed_XY(15.00000000 * this.direction, 0.00000000);
+			this.PlaySE(2718);
+			this.Warp(this.direction == 1.00000000 ? ::camera.camera2d.left - 128 : ::camera.camera2d.right + 128, this.y);
+			this.count = 0;
+			this.SetMotion(this.motion, 4);
+			this.stateLabel = function ()
+			{
+				if (this.abs(this.flag1.x - this.x) <= 100)
+				{
+					this.PlaySE(2717);
+					this.SetMotion(this.motion, 1);
+					this.SetSpeed_XY(10.00000000 * this.direction, 0.00000000);
+					this.stateLabel = function ()
+					{
+						this.VX_Brake(0.50000000);
+
+						if (this.direction == 1.00000000 && this.x > this.flag1.x || this.direction == -1.00000000 && this.x < this.flag1.x)
+						{
+							this.SetSpeed_XY(0.00000000, 0.00000000);
+							this.Warp(this.flag1.x, this.y);
+							this.count = 0;
+							this.stateLabel = function ()
+							{
+								if (this.count == 120)
+								{
+									this.SetMotion(this.motion, 3);
+									this.keyAction = function ()
+									{
+										this.EndtoFreeMove();
+										this.CommonBegin();
+									};
+								}
+							};
+						}
+					};
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.team.slave.Warp(this.x - 20 * this.direction, this.y - 76);
+
+		if (this.count == 30)
+		{
+			this.func[0].call(this);
+		}
+
+		if (this.count == 150)
+		{
+			this.func[1].call(this);
+		}
+
+		if (this.count == 240)
+		{
+			this.func[2].call(this);
+		}
+	};
+}
+
+function BeginBattle_Slave( t )
+{
+	this.LabelClear();
+	this.count = 0;
+	this.SetMotion(9002, 0);
+	this.demoObject = [];
+	this.freeMap = true;
+	this.Warp(640 - 960 * this.direction, this.y);
+	this.team.master.Warp(this.x - 20 * this.direction, this.y);
+	this.DrawActorPriority();
+	this.flag1 = this.Vector3();
+	this.flag1.x = ::battle.start_x[this.team.index];
+	this.flag1.y = ::battle.start_y[this.team.index];
+	this.func = [
+		function ()
+		{
+			this.PlaySE(2716);
+			this.SetSpeed_XY(20.00000000 * this.direction, 0.00000000);
+		},
+		function ()
+		{
+			this.direction = -this.direction;
+			this.team.master.direction = this.direction;
+			this.PlaySE(2716);
+			this.SetSpeed_XY(20.00000000 * this.direction, 0.00000000);
+			this.Warp(this.direction == 1.00000000 ? ::camera.camera2d.left - 128 : ::camera.camera2d.right + 128, this.y);
+		},
+		function ()
+		{
+			this.direction = -this.direction;
+			this.team.master.direction = this.direction;
+			this.PlaySE(2716);
+			this.SetSpeed_XY(15.00000000 * this.direction, 0.00000000);
+			this.Warp(this.direction == 1.00000000 ? ::camera.camera2d.left - 128 : ::camera.camera2d.right + 128, this.y);
+			this.count = 0;
+			this.stateLabel = function ()
+			{
+				this.team.master.Warp(this.x - 20 * this.direction, this.y - 76);
+
+				if (this.abs(this.flag1.x - this.x) <= 20.00000000)
+				{
+					this.team.master.func();
+					this.stateLabel = function ()
+					{
+					};
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.team.master.Warp(this.x - 20 * this.direction, this.y - 76);
+
+		if (this.count == 30)
+		{
+			this.func[0].call(this);
+		}
+
+		if (this.count == 150)
+		{
+			this.func[1].call(this);
+		}
+
+		if (this.count == 240)
+		{
+			this.func[2].call(this);
 		}
 	};
 }
@@ -1463,6 +1631,11 @@ function Atk_Throw( t )
 
 function Shot_Normal_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.LabelClear();
 	this.event_getAttack = null;
 	this.GetFront();
@@ -1522,6 +1695,11 @@ function Shot_Normal_Init( t )
 
 function Shot_Normal_Upper_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Normal_Init.call(this, t);
 	this.keyAction[0] = function ()
 	{
@@ -1557,6 +1735,11 @@ function Shot_Normal_Upper_Init( t )
 
 function Shot_Normal_Under_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Normal_Init.call(this, t);
 	this.keyAction[0] = function ()
 	{
@@ -1592,6 +1775,11 @@ function Shot_Normal_Under_Init( t )
 
 function Shot_Normal_Air_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.LabelClear();
 	this.event_getAttack = null;
 	this.GetFront();
@@ -1662,6 +1850,11 @@ function Shot_Normal_Air_Init( t )
 
 function Shot_Normal_Upper_Air_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Normal_Air_Init.call(this, t);
 	this.keyAction[0] = function ()
 	{
@@ -1717,6 +1910,11 @@ function Shot_Normal_Upper_Air_Init( t )
 
 function Shot_Normal_Under_Air_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Normal_Air_Init.call(this, t);
 	this.keyAction[0] = function ()
 	{
@@ -1772,6 +1970,11 @@ function Shot_Normal_Under_Air_Init( t )
 
 function Shot_Front_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.LabelClear();
 	this.event_getAttack = null;
 	this.GetFront();
@@ -1818,6 +2021,11 @@ function Shot_Front_Init( t )
 
 function Shot_Front_Air_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.LabelClear();
 	this.event_getAttack = null;
 	this.GetFront();
@@ -1869,6 +2077,11 @@ function Shot_Front_Air_Init( t )
 
 function Shot_Charge_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Charge_Common(t);
 	this.flag2.vx <- 4.50000000;
 	this.flag2.vy <- 2.75000000;
@@ -1948,12 +2161,22 @@ function Shot_Charge_Fire( t )
 
 function Shot_Charge_Air_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Charge_Init(t);
 	return true;
 }
 
 function Shot_Burrage_Init( t )
 {
+	if (this.target.debuff_animal.time > 0)
+	{
+		return false;
+	}
+
 	this.Shot_Burrage_Common(t);
 	this.flag2.vx <- 6.50000000;
 	this.flag2.vy <- 4.00000000;
@@ -2807,7 +3030,6 @@ function SP_Taiko_Init( t )
 		null,
 		function ()
 		{
-			this.event_getAttack = this.DamageLostRaccoon;
 			this.GetFront();
 			this.team.AddMP(-200, 120);
 			this.PlaySE(2627);
@@ -2876,7 +3098,6 @@ function SP_Taiko_Init( t )
 
 				if (this.count == 60)
 				{
-					this.event_getAttack = null;
 					this.SetFreeObject(this.x, this.y, this.direction, this.CommonSmoke_Core, {});
 
 					if (this.flag1)

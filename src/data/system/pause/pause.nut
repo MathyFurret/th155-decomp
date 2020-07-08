@@ -80,6 +80,8 @@ function Initialize( _mode )
 
 function Terminate()
 {
+	::input.ClearDeviceAssign(::battle.team[0].input);
+	::input.ClearDeviceAssign(::battle.team[1].input);
 	::input.SetDeviceAssign(0, ::battle.team[0].device_id, ::battle.team[0].input);
 	::input.SetDeviceAssign(1, ::battle.team[1].device_id, ::battle.team[1].input);
 	::menu.common.Terminate.call(this);

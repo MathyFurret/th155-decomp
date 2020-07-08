@@ -140,6 +140,11 @@ function Update()
 			{
 				v.Update();
 			}
+
+			if (this.pause_count > 0)
+			{
+				break;
+			}
 		}
 	}
 	else

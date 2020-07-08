@@ -170,8 +170,17 @@ function GenerateResultMessage( master_name_win, slave_name_win, master_name_los
 
 			c.push([
 				src["message" + i],
-				src["balloon" + i]
+				src["balloon" + i],
+				0,
+				0
 			]);
+
+			if (::config.lang == 1)
+			{
+				c.top().extend([
+					src["message_en" + i]
+				]);
+			}
 		}
 	}
 

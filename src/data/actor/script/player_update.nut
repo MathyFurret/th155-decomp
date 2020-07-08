@@ -180,6 +180,11 @@ function MainLoopCount()
 		this.graze--;
 	}
 
+	if (this.vx_slow > 0)
+	{
+		this.vx_slow--;
+	}
+
 	if (this.armor > 0)
 	{
 		this.armor--;
@@ -202,6 +207,11 @@ function MainLoopCount()
 
 	if (this.team.current == this)
 	{
+		if (this.team.kaiki_scale != 1.00000000 && this.IsFree())
+		{
+			this.team.kaiki_scale = 1.00000000;
+		}
+
 		if (this.team.combo_reset_count > 0 && this.g_timeStop[0] == 0 && this.g_timeStop[1] == 0)
 		{
 			this.team.combo_reset_count--;

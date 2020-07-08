@@ -11,14 +11,7 @@ function Team_BinbouCrash( t_ )
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.PlaySE(4680);
 	::camera.Shake(9.00000000);
-
-	for( local i = 0; i < 15; i++ )
-	{
-		local t_ = {};
-		t_.rot <- i * 24 * 0.01745329;
-		this.SetShot(this.x, this.y, 1.00000000, this.Binbou_Shot, t_);
-	}
-
+	this.SetShot(this.x, this.y, 1.00000000, this.Binbou_Shot_Core, {});
 	this.stateLabel = function ()
 	{
 		if (this.count == 30)

@@ -587,16 +587,8 @@ function Atk_HighUnder_Init( t )
 	this.atk_id = 128;
 	this.flag1 = true;
 	this.SetSpeed_XY(this.va.x * 0.50000000, this.va.y * 0.50000000);
-	this.subState = function ()
-	{
-		if (this.input.b1 <= 0)
-		{
-			this.flag1 = false;
-		}
-	};
 	this.stateLabel = function ()
 	{
-		this.subState();
 		this.Vec_Brake(0.50000000);
 	};
 	this.SetMotion(1210, 0);
@@ -604,7 +596,7 @@ function Atk_HighUnder_Init( t )
 		function ()
 		{
 			this.PlaySE(3010);
-			this.SetSpeed_XY(-10.00000000 * this.direction, -7.00000000);
+			this.SetSpeed_XY(-7.00000000 * this.direction, -8.50000000);
 			this.centerStop = -2;
 			this.stateLabel = function ()
 			{
@@ -788,7 +780,7 @@ function Atk_HighUpper_Init( t )
 		function ()
 		{
 			this.PlaySE(3008);
-			this.SetSpeed_XY(-8.00000000 * this.direction, null);
+			this.SetSpeed_XY(-2.50000000 * this.direction, null);
 			this.stateLabel = function ()
 			{
 				this.VX_Brake(0.50000000);
@@ -1510,6 +1502,13 @@ function Shot_Front_Init( t )
 			this.flag2.x -= this.x;
 			this.flag2.y -= this.y;
 			this.PlaySE(3024);
+			this.lavelClearEvent = function ()
+			{
+				if (this.flag1)
+				{
+					this.flag1.func[1].call(this.flag1);
+				}
+			};
 			this.count = 0;
 			this.SetSpeed_XY(-10.00000000 * this.direction, 0.00000000);
 			this.stateLabel = function ()
@@ -1520,9 +1519,10 @@ function Shot_Front_Init( t )
 				{
 					if (this.flag1)
 					{
-						this.flag1.func();
+						this.flag1.func[0].call(this.flag1);
 					}
 
+					this.lavelClearEvent = null;
 					this.SetMotion(2010, 3);
 					this.stateLabel = null;
 				}
@@ -1564,6 +1564,13 @@ function Shot_Front_Air_Init( t )
 			this.flag2.x -= this.x;
 			this.flag2.y -= this.y;
 			this.PlaySE(3024);
+			this.lavelClearEvent = function ()
+			{
+				if (this.flag1)
+				{
+					this.flag1.func[1].call(this.flag1);
+				}
+			};
 			this.count = 0;
 			this.SetSpeed_XY(-10.00000000 * this.direction, 0.00000000);
 			this.AjustCenterStop();
@@ -1576,9 +1583,10 @@ function Shot_Front_Air_Init( t )
 				{
 					if (this.flag1)
 					{
-						this.flag1.func();
+						this.flag1.func[0].call(this.flag1);
 					}
 
+					this.lavelClearEvent = null;
 					this.SetMotion(2011, 3);
 					this.stateLabel = function ()
 					{
@@ -1937,7 +1945,7 @@ function SP_B2_Init( t )
 	this.atk_id = 2097152;
 	this.SetMotion(3011, 0);
 	this.PlaySE(3039);
-	this.SetSpeed_XY(-8.00000000 * this.direction, 0.00000000);
+	this.SetSpeed_XY(-12.50000000 * this.direction, 0.00000000);
 	this.centerStop = -2;
 	this.count = 0;
 	this.team.AddMP(-200, 120);
@@ -1964,10 +1972,10 @@ function SP_B2_Init( t )
 			}
 			else
 			{
-				this.VX_Brake(0.75000000, -2.00000000 * this.direction);
+				this.VX_Brake(0.75000000, this.va.x <= 0.00000000 ? -2.00000000 : 2.00000000);
 			}
 		}
-		else if (this.VX_Brake(0.15000001, -2.00000000 * this.direction))
+		else if (this.VX_Brake(0.75000000, -6.00000000 * this.direction))
 		{
 			this.flag1 = true;
 		}
@@ -1995,10 +2003,19 @@ function SP_B2_Init( t )
 		{
 			this.count = 0;
 			this.eagle.Eagle_Wait(null);
+			local x_ = this.va.x;
+
+			if (this.input.x)
+			{
+				x_ = this.input.x * this.direction > 0 ? 4.50000000 * this.direction : -6.50000000 * this.direction;
+			}
+
+			this.SetSpeed_XY(x_, 0.00000000);
+			this.AjustCenterStop();
 			this.SetMotion(3011, 1);
 			this.stateLabel = function ()
 			{
-				if (this.count >= 10)
+				if (this.count >= 8)
 				{
 					this.EndtoFallLoop();
 					return;
@@ -2148,25 +2165,36 @@ function SP_C_Init( t )
 			};
 			this.flag2.SetParent(this, this.flag2.x - this.x, this.flag2.y - this.y);
 			this.count = 0;
+			this.PlaySE(3030);
 			this.stateLabel = function ()
 			{
 				this.subState();
 				this.CenterUpdate(0.20000000, 2.50000000);
 
-				if (this.count % 40 == 1)
+				if (this.centerStop == 0)
 				{
-					this.PlaySE(3030);
+					this.VX_Brake(1.00000000);
 				}
 
 				if (!this.flag1 && this.count >= 5 || this.count >= 120)
 				{
 					this.flag2.func[0].call(this.flag2);
-					this.SetMotion(3020, 2);
+
+					if (this.flag4 > 0)
+					{
+						this.SetMotion(3021, 2);
+					}
+					else
+					{
+						this.SetMotion(3020, 2);
+					}
+
 					this.stateLabel = function ()
 					{
 						this.CenterUpdate(0.20000000, 2.50000000);
 						this.VX_Brake(0.50000000);
 					};
+					return;
 				}
 
 				if (this.count >= 10)
@@ -2179,6 +2207,10 @@ function SP_C_Init( t )
 					if (this.count == 30 || this.count == 60)
 					{
 						this.flag4++;
+						this.PlaySE(3030);
+						local t_ = {};
+						t_.scale <- 64 + 64 * this.flag4;
+						this.SetFreeObjectDynamic(this.x - 55 * this.direction, this.y - 58, this.direction, this.SP_C_SparkCharge, t_);
 					}
 				}
 			};
@@ -2209,10 +2241,6 @@ function SP_C_Init( t )
 		if (this.centerStop * this.centerStop <= 1)
 		{
 			this.VX_Brake(1.00000000);
-		}
-		else
-		{
-			this.VX_Brake(0.10000000);
 		}
 	};
 	return true;
@@ -2253,7 +2281,14 @@ function SP_D_Init( t )
 
 				y_ = this.ball.y + y_ + 200;
 				y_ = this.Math_MinMax(y_, this.centerY - 200, this.centerY + 300);
-				this.SetShotStencil(this.ball.x + this.ball.va.x * 15, y_, this.direction, this.SPShot_D, {});
+				local d_ = 1.00000000;
+
+				if (this.ball.x > this.target.x)
+				{
+					d_ = -1.00000000;
+				}
+
+				this.SetShotStencil(this.ball.x + this.ball.va.x * 15, y_, d_, this.SPShot_D, {});
 			}
 			else
 			{
@@ -2305,7 +2340,14 @@ function SP_D_Air_Init( t )
 
 				y_ = this.ball.y + y_ + 200;
 				y_ = this.Math_MinMax(y_, this.centerY - 200, this.centerY + 300);
-				this.SetShotStencil(this.ball.x + this.ball.va.x * 15, y_, this.direction, this.SPShot_D, {});
+				local d_ = 1.00000000;
+
+				if (this.ball.x > this.target.x)
+				{
+					d_ = -1.00000000;
+				}
+
+				this.SetShotStencil(this.ball.x + this.ball.va.x * 15, y_, d_, this.SPShot_D, {});
 			}
 			else
 			{

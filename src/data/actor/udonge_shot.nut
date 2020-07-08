@@ -148,7 +148,7 @@ function SAN_Gauge( t )
 		},
 		function ( val_ )
 		{
-			if (this.owner.motion == 4901)
+			if (this.owner.motion == 4901 && this.owner.keyTake <= 1)
 			{
 				return;
 			}
@@ -699,7 +699,7 @@ function Shot_Front( t )
 	this.SetSpeed_Vec(15.00000000, this.rz, this.direction);
 	this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 	this.atk_id = 65536;
-	this.cancelCount = 1;
+	this.cancelCount = 2;
 	local t_ = {};
 	t_.rot <- this.rz;
 	this.SetFreeObject(this.x, this.y, this.direction, this.Shot_FrontFire, t_);
@@ -759,11 +759,11 @@ function Shot_Front( t )
 		}
 		else
 		{
-			this.sy += 0.02500000;
+			this.sy += 0.03250000;
 
-			if (this.sy > 1.50000000)
+			if (this.sy > 2.00000000)
 			{
-				this.sy = 1.50000000;
+				this.sy = 2.00000000;
 			}
 		}
 
@@ -2673,7 +2673,7 @@ function SPShot_C( t )
 	];
 	this.stateLabel = function ()
 	{
-		if (this.IsScreen(50) || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
+		if (this.y > ::battle.scroll_bottom + 50 || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
 		{
 			if (this.flag1)
 			{
@@ -2705,7 +2705,7 @@ function SPShot_C( t )
 				this.count = 0;
 				this.stateLabel = function ()
 				{
-					if (this.IsScreen(50) || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
+					if (this.y > ::battle.scroll_bottom + 50 || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
 					{
 						if (this.flag1)
 						{
@@ -2740,7 +2740,7 @@ function SPShot_C( t )
 				this.SetMotion(this.motion, 1);
 				this.stateLabel = function ()
 				{
-					if (this.IsScreen(50) || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
+					if (this.y > ::battle.scroll_bottom + 50 || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
 					{
 						if (this.flag1)
 						{
@@ -2761,7 +2761,7 @@ function SPShot_C( t )
 						this.callbackGroup = 0;
 						this.stateLabel = function ()
 						{
-							if (this.IsScreen(50) || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
+							if (this.y > ::battle.scroll_bottom + 50 || this.Damage_ConvertOP.call(this, this.x, this.y, 10))
 							{
 								if (this.flag1)
 								{
@@ -2877,8 +2877,15 @@ function SPShot_C_Splash( t )
 		}
 
 		this.VX_Brake(0.05000000);
-		this.sx += (3.00000000 - this.sx) * 0.05000000;
-		this.sy += 0.20000000;
+		local s_ = (5.00000000 - this.sx) * 0.05000000;
+
+		if (s_ < 0.02500000)
+		{
+			s_ = 0.02500000;
+		}
+
+		this.sx += s_;
+		this.sy += 0.30000001;
 		this.rz *= 0.85000002;
 		this.FitBoxfromSprite();
 

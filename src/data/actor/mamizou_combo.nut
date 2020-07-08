@@ -1,9 +1,12 @@
 function Rush_AA()
 {
-	if (this.Cancel_Check(20) && this.Atk_RushA_Init(null))
+	if (this.command.rsv_y == 0 && this.command.rsv_x * this.direction <= 0)
 	{
-		this.combo_func = this.Rush_Smash;
-		return true;
+		if (this.Cancel_Check(20) && this.Atk_RushA_Init(null))
+		{
+			this.combo_func = this.Rush_Smash;
+			return true;
+		}
 	}
 
 	return false;

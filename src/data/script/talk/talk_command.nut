@@ -15,7 +15,7 @@ function Message( arg )
 		st = st.slice(0, -1);
 	}
 
-	if (arg.len() <= 1 || arg.len() >= 2 && arg[1].len() == 0)
+	if (arg.len() <= 3)
 	{
 		if (this.message == null)
 		{
@@ -31,6 +31,11 @@ function Message( arg )
 		else
 		{
 			this.message.Add(st);
+		}
+
+		if (::config.lang == 1 && arg.len() > 1)
+		{
+			this.message.SetSubtitle(arg[1], arg.len() == 3 ? arg[2] : null);
 		}
 
 		this.message.Show();
@@ -49,6 +54,11 @@ function Message( arg )
 		else
 		{
 			balloon.Create(st, this.default_balloon, this.current_obj);
+		}
+
+		if (::config.lang == 1 && arg.len() >= 5)
+		{
+			balloon.SetSubtitle(arg[4]);
 		}
 	}
 
@@ -118,6 +128,17 @@ function ImageFile( arg )
 	}
 
 	return false;
+}
+
+function ImageFileLocal( arg )
+{
+	if (::config.lang == 1)
+	{
+		local s = arg[3];
+		arg[3] = s.slice(0, s.len() - 4) + "_en" + s.slice(-4);
+	}
+
+	this.ImageFile(arg);
 }
 
 function ImageDef( arg )
@@ -233,6 +254,14 @@ function Hide( arg )
 	if (arg[2] in this.object_list)
 	{
 		this.object_list[arg[2]].Hide();
+	}
+
+	if (arg[2] in this)
+	{
+		if (this[arg[2]])
+		{
+			this[arg[2]].Hide();
+		}
 	}
 
 	return false;
@@ -371,5 +400,16 @@ function LoadAnimation( arg )
 {
 	::actor.AddStoryEffect(arg[2]);
 	return false;
+}
+
+function LoadAnimationLocal( arg )
+{
+	if (::config.lang == 1)
+	{
+		local s = arg[2];
+		arg[2] = s.slice(0, s.len() - 4) + "_en" + s.slice(-4);
+	}
+
+	this.LoadAnimation(arg);
 }
 

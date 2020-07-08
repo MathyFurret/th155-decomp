@@ -10,7 +10,7 @@ local func_init = function ( i, _page )
 	this.frame.Init(this.anime_set);
 	this.frame.SetMotion(910, _page);
 	this.frame_parts.push(this.frame);
-	local s = "ランダムセレクト";
+	local s = ::menu.common.GetMessageText("random_select");
 	local a;
 
 	if (i in ::sound.bgm.data)

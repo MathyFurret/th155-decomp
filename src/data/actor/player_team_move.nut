@@ -139,7 +139,7 @@ function Team_Update_Slave()
 				}
 			}
 		}
-		else if (this.life < this.regain_life && !this.current.IsDamage())
+		else if (this.life < this.regain_life && this.enable_regain && !this.current.IsDamage())
 		{
 			this.SetDamage(-2, false);
 		}
@@ -245,6 +245,7 @@ function Team_Change_Common()
 	this.enableKO = true;
 	this.freeMap = false;
 	this.collisionFree = false;
+	this.ResetSpeed();
 	this.team.Change();
 	this.target.team.master.target = this.target.team.target.weakref();
 
@@ -883,7 +884,8 @@ function Team_ChangeDashBack_Init( t )
 	this.ResetSpeed();
 	this.SetMotion(45, 0);
 	this.PlaySE(818);
-	this.team.op_leak += 500;
+	this.team.op_stop = 180;
+	this.team.op_stop_max = this.team.op_stop;
 	this.SetEffect(this.x, this.y - 20, this.direction, this.EF_GuardCancel, {});
 	this.SetSpeed_XY(-10.00000000 * this.direction, -5.00000000);
 	this.centerStop = -3;
@@ -910,7 +912,8 @@ function Team_ChangeDashBack_Air_Init( t )
 	this.SetMotion(46, 0);
 	this.ResetSpeed();
 	this.PlaySE(818);
-	this.team.op_leak += 500;
+	this.team.op_stop = 180;
+	this.team.op_stop_max = this.team.op_stop;
 	this.SetEffect(this.x, this.y - 20, this.direction, this.EF_GuardCancel, {});
 
 	if (this.y < this.centerY)
@@ -1044,6 +1047,8 @@ function Team_Change_CounterB( dir_ )
 	this.SetCommonShot(this.x, this.y, this.direction, this.CallAttack_Shot, {});
 	local val_ = this.team.op;
 	this.team.op_leak += 2000;
+	this.team.op_stop = (600 - 540 * ((val_ - 1000) / 1000.00000000)).tointeger();
+	this.team.op_stop_max = this.team.op_stop;
 	this.PlaySE(903);
 	this.SetEffect(this.x, this.y - 20, this.direction, this.EF_Team_Change, {}, this.weakref());
 }
@@ -1129,7 +1134,8 @@ function Team_ChangeRecover_Init( t, leak_ )
 {
 	this.LabelClear();
 	this.ResetSpeed();
-	this.team.op_leak += leak_;
+	this.team.op_stop = 240;
+	this.team.op_stop_max = this.team.op_stop;
 	this.Team_Change_Common();
 	this.Team_Bench_In();
 	this.PlaySE(900);
@@ -1142,7 +1148,8 @@ function Team_ChangeStandUp_Init( t )
 {
 	this.LabelClear();
 	this.ResetSpeed();
-	this.team.op_leak += 500;
+	this.team.op_stop = 240;
+	this.team.op_stop_max = this.team.op_stop;
 	this.Team_Change_Common();
 	this.Team_Bench_In();
 	this.PlaySE(900);
@@ -1244,7 +1251,7 @@ function Team_Change_Shot( t )
 		this.target.team.kaiki_scale = scale_;
 	}
 
-	this.team.op_leak += 1000;
+	this.team.op_leak += 500;
 	this.PlaySE(900);
 	this.SetEffect(this.x, this.y - 20, this.direction, this.EF_Team_ChangeB, {}, this.weakref());
 	this.team.current.Team_Change_ShotB(v_);

@@ -82,6 +82,7 @@ function Master_Spell_1()
 	this.cpuState = null;
 	this.com_flag1 = -1.00000000;
 	this.com_flag2 = 1;
+	this.resist_baria = true;
 	this.invin = 30;
 	this.invinGrab = 30;
 	this.invinObject = 30;
@@ -187,6 +188,7 @@ function Master_Spell_1_Attack( t )
 		break;
 
 	case 3:
+	case 4:
 		this.flag5.shotCycle = 5;
 		break;
 	}
@@ -234,7 +236,7 @@ function Master_Spell_1_ModeChange_B()
 		return;
 	}
 
-	this.boss_shot.Foreach(function ()
+	this.shot_actor.Foreach(function ()
 	{
 		this.func[0].call(this);
 	});
@@ -291,6 +293,7 @@ function Master_Spell_1_Attack2( t )
 		break;
 
 	case 3:
+	case 4:
 		this.flag5.shotCycle = 5;
 		break;
 	}
@@ -406,7 +409,7 @@ function Master_Spell_1_YakuBarrage2()
 function Master_Spell_1_ModeChange_C()
 {
 	this.SetMotion(200, 0);
-	this.boss_shot.Foreach(function ()
+	this.shot_actor.Foreach(function ()
 	{
 		this.func[0].call(this);
 	});
@@ -465,6 +468,7 @@ function Master_Spell_1_Attack3( t )
 		break;
 
 	case 3:
+	case 4:
 		this.flag5.shotCycle = 5;
 		this.flag5.shotNum = 24;
 		break;
@@ -577,6 +581,7 @@ function Master_Spell_2()
 	this.boss_cpu = null;
 	this.com_flag1 = -1.00000000;
 	this.com_flag2 = 1;
+	this.resist_baria = true;
 	this.invin = 30;
 	this.invinGrab = 30;
 	this.invinObject = 30;
@@ -658,6 +663,7 @@ function Master_Spell_2_Start( t )
 		break;
 
 	case 3:
+	case 4:
 		this.atkRate = 1.50000000;
 		break;
 	}
@@ -711,7 +717,7 @@ function Master_Spell_2_Start( t )
 
 		if (this.flag5.totalCount == 1200)
 		{
-			this.boss_shot.Foreach(function ()
+			this.shot_actor.Foreach(function ()
 			{
 				this.func[0].call(this);
 			});
@@ -731,7 +737,7 @@ function Master_Spell_2_Start( t )
 
 		if (this.flag5.totalCount == 2400)
 		{
-			this.boss_shot.Foreach(function ()
+			this.shot_actor.Foreach(function ()
 			{
 				this.func[0].call(this);
 			});
@@ -751,7 +757,7 @@ function Master_Spell_2_Start( t )
 
 		if (this.flag5.totalCount == 3300)
 		{
-			this.boss_shot.Foreach(function ()
+			this.shot_actor.Foreach(function ()
 			{
 				this.func[0].call(this);
 			});
@@ -772,7 +778,7 @@ function Master_Spell_2_Start( t )
 
 		if (this.flag5.totalCount == 3780)
 		{
-			this.boss_shot.Foreach(function ()
+			this.shot_actor.Foreach(function ()
 			{
 				this.func[0].call(this);
 			});
@@ -961,6 +967,7 @@ function Master_Spell_2_Break( t )
 	this.SetSpeed_XY(-12.50000000 * this.direction, -3.00000000);
 	this.count = 0;
 	this.PlaySE(4686);
+	::battle.Begin_BattleDemo();
 	this.SetFreeObject(640, 720, 1.00000000, this.Shion_BackHeaven, {});
 	this.stateLabel = function ()
 	{
@@ -977,7 +984,16 @@ function Master_Spell_2_Break( t )
 				};
 				this.keyAction = function ()
 				{
-					this.Master_Spell_2_Attack_B(null);
+					this.stateLabel = function ()
+					{
+						this.Vec_Brake(0.20000000);
+
+						if (::battle.state == 8)
+						{
+							this.target.team.current.ForceSpecialCall_Init();
+							this.Master_Spell_2_Attack_B(null);
+						}
+					};
 				};
 			}
 		}
@@ -1002,6 +1018,31 @@ function Master_Spell_2_Attack_B( t )
 	this.flag5.pos <- this.Vector3();
 	this.flag5.pos.x = 640 - 320 * this.direction;
 	this.flag5.pos.y = 240;
+	this.flag5.bigCycle <- 0;
+
+	switch(this.com_difficulty)
+	{
+	case 0:
+		this.flag5.bigCycle = 360;
+		break;
+
+	case 1:
+		this.flag5.bigCycle = 300;
+		break;
+
+	case 2:
+		this.flag5.bigCycle = 240;
+		break;
+
+	case 3:
+		this.flag5.bigCycle = 210;
+		break;
+
+	case 4:
+		this.flag5.bigCycle = 150;
+		break;
+	}
+
 	::camera.Shake(15.00000000);
 	this.PlaySE(4680);
 	this.aura = this.SetFreeObject(this.x, this.y, this.direction, this.Shion_BerserkAura, {}).weakref();
@@ -1046,7 +1087,31 @@ function Master_Spell_2_Attack_B( t )
 	};
 	this.stateLabel = function ()
 	{
-		this.target.team.AddSP(10);
+		if (this.target.team.sp < this.target.team.sp_max2 && this.target.team.sp + 1 >= this.target.team.sp_max2)
+		{
+			this.PlaySE(866);
+			local t_ = {};
+			t_.owner <- this.target.team.current.weakref();
+			t_.type <- 1;
+			this.target.team.current.SetEffect(this.target.team.index == 0 ? 40 : 1240, 664, 1.00000000, ::actor.effect_class.EF_SpellCharge, t_);
+		}
+
+		if (this.target.team.sp < this.target.team.sp_max && this.target.team.sp + 1 >= this.target.team.sp_max)
+		{
+			this.PlaySE(865);
+			local t_ = {};
+			t_.owner <- this.target.team.current.weakref();
+			t_.type <- 0;
+			this.target.team.current.SetEffect(this.target.team.index == 0 ? 40 : 1240, 664, 1.00000000, ::actor.effect_class.EF_SpellCharge, t_);
+		}
+
+		this.target.team.sp += 1;
+
+		if (this.target.team.sp > this.target.team.sp_max2)
+		{
+			this.target.team.sp = this.target.team.sp_max2;
+		}
+
 		this.target.team.AddMP(10, 0);
 		this.subState[0].call(this);
 		this.subState[1].call(this);
@@ -1068,7 +1133,7 @@ function Master_Spell_2_Move()
 		this.flag5.pos.x -= 128;
 	}
 
-	this.flag5.pos.y = 240 + this.rand() % 180;
+	this.flag5.pos.y = 240 + this.rand() % 360;
 	this.flag2 = 1.00000000;
 	this.flag5.moveCount = 0;
 	this.subState[0] = function ()
@@ -1102,6 +1167,30 @@ function Master_Spell_2_Move()
 function Master_Spell_2_YakuBarrage()
 {
 	this.flag5.shotCount++;
+	local cycle_ = 150;
+
+	if (this.team.life <= 5000)
+	{
+		cycle_ = 120;
+	}
+
+	if (this.team.life <= 3000)
+	{
+		cycle_ = 90;
+	}
+
+	if (this.team.life <= 1750)
+	{
+		cycle_ = 60;
+	}
+
+	if (this.flag5.bigCycle > 0 && this.flag5.shotCount % cycle_ == 0)
+	{
+		local t_ = {};
+		t_.v <- 1.00000000;
+		t_.rot <- this.rand() % 360 * 0.01745329;
+		this.SetShot(this.point0_x, this.point0_y, 1.00000000, this.Master_Spell_2_ShotBig, t_);
+	}
 
 	if (this.flag5.shotCount % this.flag5.shotCycle == 1)
 	{
@@ -1118,6 +1207,7 @@ function Slave_Jyoon_1()
 	this.cpuState = null;
 	this.com_flag1 = 0;
 	this.com_flag2 = 0;
+	this.resist_baria = true;
 	this.pEvent_getDamage = this.BossDamageFunc;
 	this.boss_cpu = function ()
 	{
@@ -1136,7 +1226,7 @@ function Slave_Attack_Jyoon( t )
 	this.flag1 = null;
 	this.flag5 = {};
 	this.flag5.shotCycle <- 6;
-	this.flag5.shotCount <- 60;
+	this.flag5.shotCount <- 60 + 60;
 	this.flag5.scale <- 1.00000000;
 
 	switch(this.team.master.com_difficulty)
@@ -1157,6 +1247,11 @@ function Slave_Attack_Jyoon( t )
 	case 3:
 		this.flag5.shotCycle = 1;
 		this.flag5.scale = 4.00000000;
+		break;
+
+	case 4:
+		this.flag5.shotCycle = 1;
+		this.flag5.scale = 5.00000000;
 		break;
 	}
 
@@ -1182,7 +1277,15 @@ function Slave_Attack_Jyoon( t )
 				{
 					local t_ = {};
 					t_.scale <- this.flag5.scale;
-					this.SetShot(this.point0_x, this.point0_y, 1.00000000, this.Boss_Shot_SL1, t_);
+
+					if (this.com_difficulty == 4)
+					{
+						this.SetShot(this.point0_x, this.point0_y, 1.00000000, this.Boss_Shot_SL1_OD, t_);
+					}
+					else
+					{
+						this.SetShot(this.point0_x, this.point0_y, 1.00000000, this.Boss_Shot_SL1, t_);
+					}
 				}
 
 				if (this.flag5.shotCount == this.count)
@@ -1190,7 +1293,7 @@ function Slave_Attack_Jyoon( t )
 					this.flag4 = this.SetEffect(this.x, this.y - 25, 1.00000000, this.Boss_SpellCharge, {}, this.weakref()).weakref();
 				}
 
-				if (this.count >= this.flag5.shotCount + 240)
+				if (this.count >= this.flag5.shotCount + 180)
 				{
 					this.Change_Master_Jyoon(null);
 					return;
@@ -1240,6 +1343,7 @@ function Slave_Attack_Jyoon2( x_, y_ )
 		break;
 
 	case 3:
+	case 4:
 		break;
 	}
 
@@ -1261,7 +1365,42 @@ function Slave_Attack_Jyoon2( x_, y_ )
 			this.ConvertTotalSpeed();
 		}
 
+		if (this.count == this.flag5.moveCount - 120 && this.com_difficulty == 4)
+		{
+			this.Slave_Attack_Jyoon2B(null);
+			return;
+		}
+
 		if (this.count >= this.flag5.moveCount)
+		{
+			this.Change_Master_Jyoon2(null);
+			return;
+		}
+	};
+}
+
+function Slave_Attack_Jyoon2B( t_ )
+{
+	this.LabelClear();
+	this.SetMotion(4920, 1);
+	this.armor = -1;
+	this.count = 0;
+	this.centerStop = -2;
+	this.AjustCenterStop();
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.PlaySE(4680);
+	::camera.Shake(9.00000000);
+
+	for( local i = 0; i < 36; i++ )
+	{
+		local t_ = {};
+		t_.rot <- i * 0.17453292;
+		this.SetShot(this.point0_x, this.point0_y, 1.00000000, this.Boss_Shot_SL2_OD, t_);
+	}
+
+	this.stateLabel = function ()
+	{
+		if (this.count >= 120)
 		{
 			this.Change_Master_Jyoon2(null);
 			return;
@@ -1288,6 +1427,7 @@ function Slave_Jyoon_3()
 	this.cpuState = null;
 	this.com_flag1 = 0;
 	this.com_flag2 = 0;
+	this.resist_baria = true;
 	this.pEvent_getDamage = this.BossDamageFunc;
 	this.boss_cpu = function ()
 	{

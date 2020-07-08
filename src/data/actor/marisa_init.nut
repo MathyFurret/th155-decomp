@@ -25,6 +25,13 @@ this.player_class.Init <- function ()
 	this.func_beginDemo = this.Func_BeginBattle;
 	this.func_timeDemo = this.Func_Lose;
 	this.func_winDemo = this.Func_Win;
+	this.practice_update = function ()
+	{
+		if (::battle.marisa[this.team.index] >= 0)
+		{
+			this.okltSelect = ::battle.marisa[this.team.index];
+		}
+	};
 	this.resetFunc = function ()
 	{
 		this.okltItem = null;

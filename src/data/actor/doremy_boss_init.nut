@@ -17,6 +17,24 @@ this.player_class.Init <- function ()
 	this.back_park = null;
 	this.back_hole = [];
 	this.mukon = ::manbow.Actor2DProcGroup();
+	this.balloon = ::manbow.Actor2DProcGroup();
+	this.mukon_se = 0;
+	this.mukon_charge = 0;
+	this.mukon_stock = [];
+	local vec_ = this.Vector3();
+	vec_.x = 100.00000000;
+	local vec2_ = this.Vector3();
+	vec2_.y = 100.00000000;
+	local vec3_ = this.Vector3();
+	vec3_.x = -100.00000000;
+	local vec4_ = this.Vector3();
+	vec4_.y = -100.00000000;
+	this.mukon_pos = [
+		vec_,
+		vec2_,
+		vec3_,
+		vec4_
+	];
 	this.Reset_PlayerCommon();
 	this.func_beginDemo = this.Func_BeginBattle;
 	this.func_timeDemo = this.Func_Lose;
@@ -29,9 +47,25 @@ this.player_class.Init <- function ()
 	{
 		this.back_park = null;
 		this.back_hole = [];
-		this.mukon.Clear();
+		this.mukon = ::manbow.Actor2DProcGroup();
+		this.balloon = ::manbow.Actor2DProcGroup();
 		this.mukon_se = 0;
 		this.mukon_charge = 0;
+		this.mukon_stock = [];
+		local vec_ = this.Vector3();
+		vec_.x = 100.00000000;
+		local vec2_ = this.Vector3();
+		vec2_.y = 100.00000000;
+		local vec3_ = this.Vector3();
+		vec3_.x = -100.00000000;
+		local vec4_ = this.Vector3();
+		vec4_.y = -100.00000000;
+		this.mukon_pos = [
+			vec_,
+			vec2_,
+			vec3_,
+			vec4_
+		];
 	};
 	this.motion_test = [
 		function ()

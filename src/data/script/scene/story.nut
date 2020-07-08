@@ -2,6 +2,7 @@ this.data <- [];
 this.spell <- 0;
 this.difficulty <- 0;
 this.device_id <- 0;
+this.seed <- 0;
 this.name <- null;
 this.stage <- 0;
 this.stock_init <- 2;
@@ -60,6 +61,7 @@ function Initialize( param )
 	this.spell = param.spell;
 	this.device_id = param.device_id;
 	this.difficulty = param.difficulty;
+	this.seed = param.seed;
 	this.continue_count = 0;
 	this.stock = this.stock_init;
 	this.is_continued = false;
@@ -124,12 +126,18 @@ function NextStage()
 		return;
 	}
 
-	::battle.Release();
-	::talk.Clear();
-	::stage.Clear();
-	this.is_continued = false;
-	this.stage++;
-	this.CreateStage(this.data[this.stage]);
+	local t = {};
+	t.Update <- function ()
+	{
+		::battle.Release();
+		::talk.Clear();
+		::stage.Clear();
+		::story.is_continued = false;
+		::story.stage++;
+		::story.CreateStage(::story.data[::story.stage]);
+		::loop.DeleteTask(this);
+	};
+	::loop.AddTask(t);
 }
 
 function Continue()
@@ -152,8 +160,10 @@ function BeginEnding()
 
 function CreateStage( param )
 {
+	::manbow.CompileFile("data/script/battle/battle_param.nut", ::battle);
 	local battle_param = ::battle.InitializeParam();
 	battle_param.game_mode = 10;
+	battle_param.seed = this.seed;
 	::actor.InitializeStoryEffect();
 	local _name = param.master_1p;
 
@@ -243,24 +253,35 @@ function CreateStage( param )
 	::stage.Load(param.background);
 	::talk.Load("data/event/script/" + this.name + "/stage" + (this.stage + 1) + ".pl");
 
-	if (::savedata.story[this.name].stage < this.stage)
+	if (::replay.GetState() != ::replay.PLAY)
 	{
-		::savedata.story[this.name].stage = this.stage;
-		::savedata.Save();
-	}
+		if (this.difficulty == 4)
+		{
+			if (::savedata.story[this.name].stage_overdrive < this.stage)
+			{
+				::savedata.story[this.name].stage_overdrive = this.stage;
+				::savedata.Save();
+			}
+		}
+		else if (::savedata.story[this.name].stage < this.stage)
+		{
+			::savedata.story[this.name].stage = this.stage;
+			::savedata.Save();
+		}
 
-	if (!(param.master_2p in ::savedata.character))
-	{
-		::savedata.character[param.master_2p] <- 1;
-		::savedata.UpdateFlag();
-		::savedata.Save();
-	}
+		if (!(param.master_2p in ::savedata.character))
+		{
+			::savedata.character[param.master_2p] <- 1;
+			::savedata.UpdateFlag();
+			::savedata.Save();
+		}
 
-	if (::replay.GetState() == ::replay.RECORD)
-	{
-		local t = {};
-		t.stage_end <- this.stage;
-		::replay.SetUserData(t);
+		if (::replay.GetState() == ::replay.RECORD)
+		{
+			local t = {};
+			t.stage_end <- this.stage;
+			::replay.SetUserData(t);
+		}
 	}
 
 	::battle.Create(battle_param);

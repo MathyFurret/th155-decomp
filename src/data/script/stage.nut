@@ -5,14 +5,39 @@ function Load( id )
 	this.background.Update <- function ()
 	{
 	};
-	local name = "data/script/background/bg" + (id < 10 ? "0" : "") + id + ".nut";
-	::manbow.CompileFile(name, this.background);
+	this.background.id <- id;
 
-	if (!(id in ::savedata.stage))
+	if (::config.graphics.background == 0)
 	{
-		::savedata.stage[id] <- 1;
-		::savedata.UpdateFlag();
-		::savedata.Save();
+		local name = "data/script/background/bg" + (id < 10 ? "0" : "") + id + ".nut";
+		::manbow.CompileFile(name, this.background);
+	}
+	else
+	{
+		switch(id)
+		{
+		case 43:
+			::manbow.CompileFile("data/script/background/bg_min_43.nut", this.background);
+			break;
+
+		case 46:
+			::manbow.CompileFile("data/script/background/bg_min_46.nut", this.background);
+			break;
+
+		default:
+			::manbow.CompileFile("data/script/background/bg_min.nut", this.background);
+			break;
+		}
+	}
+
+	if (::replay.GetState() != ::replay.PLAY)
+	{
+		if (!(id in ::savedata.stage))
+		{
+			::savedata.stage[id] <- 1;
+			::savedata.UpdateFlag();
+			::savedata.Save();
+		}
 	}
 }
 

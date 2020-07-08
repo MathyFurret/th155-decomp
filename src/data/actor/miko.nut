@@ -1919,6 +1919,65 @@ function Okult_Init( t )
 	return true;
 }
 
+function Okult_GrabInit( t )
+{
+	this.LabelClear();
+	this.GetFront();
+	this.HitReset();
+	this.SetMotion(2501, 0);
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.AjustCenterStop();
+	this.keyAction = [
+		function ()
+		{
+			this.team.AddMP(-200, 120);
+			this.team.op_stop = 300;
+			this.team.op_stop_max = 300;
+			this.PlaySE(2128);
+			this.stateLabel = function ()
+			{
+				this.VX_Brake(0.50000000);
+
+				if (this.hitResult & 1)
+				{
+					if (this.target.centerStop * this.target.centerStop <= 1)
+					{
+						this.PlaySE(806);
+						this.SetEffect(this.x + 50 * this.direction, this.y + 25, this.direction, this.EF_HitSmashC, {});
+						this.Okult_GrabHit(null);
+						return;
+					}
+					else
+					{
+						this.stateLabel = function ()
+						{
+							this.VX_Brake(0.50000000);
+						};
+					}
+				}
+			};
+		},
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.VX_Brake(0.50000000);
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.VX_Brake(0.50000000);
+	};
+	return true;
+}
+
+function Okult_GrabHit( t )
+{
+	this.Okult_Hit(t);
+	this.SetMotion(2503, 0);
+}
+
 function Okult_Hit( t )
 {
 	this.LabelClear();
@@ -2079,7 +2138,7 @@ function Okult_Hit( t )
 					{
 						this.func[0].call(this);
 					});
-					this.SetMotion(2502, 2);
+					this.SetMotion(this.motion, 2);
 					this.stateLabel = function ()
 					{
 						if (this.count == 102)

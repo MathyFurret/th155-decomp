@@ -124,21 +124,27 @@ function Update_Input()
 		{
 			if (this.command.rsv_y < 0)
 			{
-				this.SP_B_First_Init(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_B_First_Init(t_);
 				this.command.ResetReserve();
 				return true;
 			}
 
 			if (this.command.rsv_y > 0)
 			{
-				this.SP_F_Init(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_F_Init(t_);
 				this.command.ResetReserve();
 				return true;
 			}
 
 			if (this.command.rsv_x * this.direction < 0)
 			{
-				this.SP_E_Set(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_E_Set(t_);
 				this.command.ResetReserve();
 				return true;
 			}
@@ -147,6 +153,7 @@ function Update_Input()
 			{
 				local t_ = {};
 				t_.force <- false;
+				t_.change <- false;
 				this.SP_D2_Init(t_);
 				this.command.ResetReserve();
 				return true;
@@ -154,7 +161,9 @@ function Update_Input()
 
 			if (this.command.rsv_x == 0)
 			{
-				this.SP_G_Init(null);
+				local t_ = {};
+				t_.change <- false;
+				this.SP_G_Init(t_);
 				this.command.ResetReserve();
 				return true;
 			}

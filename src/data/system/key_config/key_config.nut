@@ -9,6 +9,9 @@ this.item <- [
 	"b2",
 	"b3",
 	"b4",
+	"t0",
+	"t1",
+	"t2",
 	"b10"
 ];
 this.key <- {};
@@ -22,6 +25,9 @@ this.help <- [
 	null,
 	"B2",
 	"return",
+	null,
+	"B3",
+	"delete_assign",
 	null,
 	"UDLR",
 	"select"
@@ -95,7 +101,7 @@ function SelectItem()
 	{
 		::input_all.Lock();
 
-		if (this.cursor.y == 10)
+		if (this.cursor.y == 13)
 		{
 			::loop.End();
 		}
@@ -119,6 +125,24 @@ function SelectItem()
 	{
 		::input_all.Lock();
 		::loop.End();
+	}
+
+	if (::input_all.b2 == 1)
+	{
+		local c = this.item[this.cursor.y];
+
+		if (this.cursor.x == 0)
+		{
+			::config.input.pad[this.side][c] = this.pad[c] = -2;
+			::config.Save();
+		}
+		else
+		{
+			::config.input.key[this.side][c] = this.key[c] = -2;
+			::config.Save();
+		}
+
+		return;
 	}
 }
 

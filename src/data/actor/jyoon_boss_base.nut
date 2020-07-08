@@ -55,6 +55,34 @@ function Update_Input()
 				this.command.ResetReserve();
 				return true;
 			}
+
+			if (this.command.rsv_y > 0)
+			{
+				this.SP_E_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
+
+			if (this.command.rsv_x * this.direction > 0)
+			{
+				this.SP_A_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
+
+			if (this.command.rsv_x * this.direction < 0)
+			{
+				this.SP_C_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
+
+			if (this.command.rsv_x == 0)
+			{
+				this.SP_D_Init(null);
+				this.command.ResetReserve();
+				return true;
+			}
 		}
 	}
 

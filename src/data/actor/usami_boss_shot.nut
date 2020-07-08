@@ -9,7 +9,7 @@ function Boss_Shot_M1_Bullet( t )
 	this.func = [
 		function ()
 		{
-			this.SetMotion(4919, this.flag2);
+			this.SetMotion(4919, this.flag2 * 2);
 			this.stateLabel = function ()
 			{
 				this.alpha = this.red = this.green = this.blue -= 0.02500000;
@@ -70,6 +70,12 @@ function Boss_Shot_M1( t )
 		this.flag4 = 20;
 		this.flag5.rad_1 = 275;
 		this.flag5.rad_2 = 550;
+		break;
+
+	case 4:
+		this.flag4 = 24;
+		this.flag5.rad_1 = 300;
+		this.flag5.rad_2 = 575;
 		break;
 	}
 
@@ -168,6 +174,11 @@ function Boss_Doppel_Hole_D2( t )
 		this.life = 1200;
 		this.flag5.shotCycle = 270;
 		break;
+
+	case 4:
+		this.life = 1200;
+		this.flag5.shotCycle = 240;
+		break;
 	}
 
 	this.SetSpeed_XY(0.00000000, 0.00000000);
@@ -197,7 +208,7 @@ function Boss_Doppel_Hole_D2( t )
 			this.flag4 = null;
 			this.SetMotion(4929, 0);
 
-			if (this.life <= 0)
+			if (this.life <= 0 && this.owner.team.life > 0)
 			{
 				this.team.regain_life -= 1000;
 
@@ -230,6 +241,9 @@ function Boss_Doppel_Hole_D2( t )
 					this.ReleaseActor();
 				}
 			};
+			this.func[0] = function ()
+			{
+			};
 		},
 		function ()
 		{
@@ -237,6 +251,36 @@ function Boss_Doppel_Hole_D2( t )
 			this.SetMotion(4926, 0);
 			this.flag4 = this.SetEffect(this.x, this.y - 25, 1.00000000, this.Boss_SpellCharge, {}, this.weakref()).weakref();
 			this.subState = function ()
+			{
+			};
+		},
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			this.flag4 = null;
+			this.SetMotion(4929, 0);
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
 			{
 			};
 		}
@@ -253,10 +297,6 @@ function Boss_Doppel_Hole_D2( t )
 			this.SetShot(this.x + 100 * this.direction, ::battle.scroll_bottom, this.direction, this.Boss_Shot_D2_HoleCore, {});
 		},
 		null,
-		null,
-		function ()
-		{
-		},
 		function ()
 		{
 			this.count = 0;
@@ -274,6 +314,12 @@ function Boss_Doppel_Hole_D2( t )
 	];
 	this.stateLabel = function ()
 	{
+		if (this.owner.team.life <= 0)
+		{
+			this.func[2].call(this);
+			return;
+		}
+
 		if (this.life <= 0)
 		{
 			this.func[0].call(this);
@@ -313,6 +359,11 @@ function Boss_Doppel_Denchu_D2( t )
 		this.life = 1200;
 		this.flag5.shotCycle = 180;
 		break;
+
+	case 4:
+		this.life = 1200;
+		this.flag5.shotCycle = 150;
+		break;
 	}
 
 	this.SetSpeed_XY(0.00000000, 0.00000000);
@@ -342,7 +393,7 @@ function Boss_Doppel_Denchu_D2( t )
 			this.flag4 = null;
 			this.SetMotion(4929, 0);
 
-			if (this.life <= 0)
+			if (this.life <= 0 && this.owner.team.life > 0)
 			{
 				this.team.regain_life -= 1000;
 
@@ -375,6 +426,9 @@ function Boss_Doppel_Denchu_D2( t )
 					this.ReleaseActor();
 				}
 			};
+			this.func[0] = function ()
+			{
+			};
 		},
 		function ()
 		{
@@ -383,6 +437,36 @@ function Boss_Doppel_Denchu_D2( t )
 			this.PlaySE(3637);
 			this.flag4 = this.SetEffect(this.x, this.y - 25, 1.00000000, this.Boss_SpellCharge, {}, this.weakref()).weakref();
 			this.subState = function ()
+			{
+			};
+		},
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			this.flag4 = null;
+			this.SetMotion(4929, 0);
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
 			{
 			};
 		}
@@ -420,6 +504,12 @@ function Boss_Doppel_Denchu_D2( t )
 	];
 	this.stateLabel = function ()
 	{
+		if (this.owner.team.life <= 0)
+		{
+			this.func[2].call(this);
+			return;
+		}
+
 		if (this.life <= 0)
 		{
 			this.func[0].call(this);
@@ -459,6 +549,11 @@ function Boss_Doppel_Tower_D2( t )
 		this.life = 1200;
 		this.flag5.shotCycle = 270;
 		break;
+
+	case 4:
+		this.life = 1200;
+		this.flag5.shotCycle = 240;
+		break;
 	}
 
 	this.SetSpeed_XY(0.00000000, 0.00000000);
@@ -488,7 +583,7 @@ function Boss_Doppel_Tower_D2( t )
 			this.flag4 = null;
 			this.SetMotion(4929, 0);
 
-			if (this.life <= 0)
+			if (this.life <= 0 && this.owner.team.life > 0)
 			{
 				this.team.regain_life -= 1000;
 
@@ -521,6 +616,9 @@ function Boss_Doppel_Tower_D2( t )
 					this.ReleaseActor();
 				}
 			};
+			this.func[0] = function ()
+			{
+			};
 		},
 		function ()
 		{
@@ -528,6 +626,36 @@ function Boss_Doppel_Tower_D2( t )
 			this.SetMotion(4925, 0);
 			this.flag4 = this.SetEffect(this.x, this.y - 25, 1.00000000, this.Boss_SpellCharge, {}, this.weakref()).weakref();
 			this.subState = function ()
+			{
+			};
+		},
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			this.flag4 = null;
+			this.SetMotion(4929, 0);
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
 			{
 			};
 		}
@@ -565,6 +693,12 @@ function Boss_Doppel_Tower_D2( t )
 	];
 	this.stateLabel = function ()
 	{
+		if (this.owner.team.life <= 0)
+		{
+			this.func[2].call(this);
+			return;
+		}
+
 		if (this.life <= 0)
 		{
 			this.func[0].call(this);
@@ -601,6 +735,7 @@ function Boss_Shot_D2( t )
 		break;
 
 	case 3:
+	case 4:
 		this.flag2 = 100;
 		this.flag3 = 10;
 		break;
@@ -758,6 +893,12 @@ function Boss_Shot_D2_HoleCore( t )
 			case 3:
 				this.flag1 = 12;
 				this.flag2 = 20;
+				this.SetSpeed_XY(6.00000000 * this.direction, 0.00000000);
+				break;
+
+			case 4:
+				this.flag1 = 14;
+				this.flag2 = 15;
 				this.SetSpeed_XY(6.00000000 * this.direction, 0.00000000);
 				break;
 			}
@@ -928,6 +1069,1163 @@ function Boss_Shot_D2_Splash( t )
 				}
 			};
 		}
+	};
+}
+
+function Boss_Shot_D3_Aura( t )
+{
+	this.SetMotion(4969, 0);
+	this.DrawActorPriority(180);
+	this.SetParent(this.owner, 0, 0);
+	this.sx = 0.80000001 + this.rand() % 31 * 0.01000000;
+	this.sy = 0.69999999 + this.rand() % 11 * 0.01000000;
+	this.flag1 = this.Vector3();
+	this.flag1.x = 0.00500000;
+	this.flag1.y = 0.01000000;
+	this.alpha = 0.00000000;
+	this.func = [
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, -0.15000001);
+				this.sx += this.flag1.x;
+				this.sy += this.flag1.y;
+				this.alpha -= 0.20000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.AddSpeed_XY(0.00000000, -0.10000000);
+		this.sx += this.flag1.x;
+		this.sy += this.flag1.y;
+		this.alpha += 0.10000000;
+
+		if (this.alpha >= 1.00000000)
+		{
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, -0.10000000);
+				this.sx += this.flag1.x;
+				this.sy += this.flag1.y;
+				this.alpha -= 0.02500000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	};
+}
+
+function Boss_Shot_D3_Spark( t )
+{
+	this.SetMotion(4968, 0);
+	this.owner.shot_actor.Add(this);
+	this.SetParent(t.pare, this.x - t.pare.x, 0);
+	this.hitResult = 128;
+	this.cancelCount = 99;
+
+	switch(this.owner.com_difficulty)
+	{
+	case 0:
+		this.flag5 = 0;
+		break;
+
+	case 1:
+		this.flag5 = 45;
+		break;
+
+	case 2:
+		this.flag5 = 32;
+		break;
+
+	case 3:
+	case 4:
+		this.flag5 = 10;
+		break;
+	}
+
+	this.func = [
+		function ()
+		{
+			this.SetParent(null, 0, 0);
+			this.SetMotion(this.motion, 1);
+			this.keyAction = this.ReleaseActor;
+			this.stateLabel = null;
+			this.func[0] = function ()
+			{
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.HitCycleUpdate(20);
+		this.count++;
+
+		if (this.count % 12 == 1)
+		{
+			this.rx = this.rand() % 360 * 0.01745329;
+		}
+
+		if (this.flag5 > 0 && this.count % this.flag5 == 1)
+		{
+			this.SetShot(640 + 740 * this.direction, this.y, -this.direction, this.Boss_Shot_D3_Debri, {});
+		}
+	};
+}
+
+function Boss_Shot_D3_SparkB( t )
+{
+	this.SetMotion(4968, 0);
+	this.owner.shot_actor.Add(this);
+	this.SetParent(t.pare, this.x - t.pare.x, 0);
+	this.hitResult = 128;
+	this.cancelCount = 99;
+	this.flag1 = this.Vector3();
+
+	switch(this.owner.com_difficulty)
+	{
+	case 0:
+		this.flag5 = 0;
+		break;
+
+	case 1:
+		this.flag5 = 90;
+		break;
+
+	case 2:
+		this.flag5 = 60;
+		break;
+
+	case 3:
+	case 4:
+		this.flag5 = 10;
+		break;
+	}
+
+	this.func = [
+		function ()
+		{
+			this.SetParent(null, 0, 0);
+			this.SetMotion(this.motion, 1);
+			this.keyAction = this.ReleaseActor;
+			this.stateLabel = null;
+			this.func[0] = function ()
+			{
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		if (this.initTable.target == null)
+		{
+			this.func[0].call(this);
+			return;
+		}
+
+		this.flag1.x = this.initTable.target.x - this.x;
+		this.flag1.y = this.initTable.target.y - this.y;
+		this.sx = this.flag1.Length() / 1500;
+		this.rz = this.atan2(this.flag1.y, this.flag1.x * this.direction);
+		this.FitBoxfromSprite();
+		this.HitCycleUpdate(20);
+	};
+}
+
+function Boss_Shot_D3_SparkC( t )
+{
+	this.SetMotion(4968, 0);
+	this.owner.shot_actor.Add(this);
+	this.SetParent(t.pare, this.x - t.pare.x, 0);
+	this.hitResult = 128;
+	this.cancelCount = 99;
+
+	switch(this.owner.com_difficulty)
+	{
+	case 0:
+		this.flag5 = 0;
+		break;
+
+	case 1:
+		this.flag5 = 30;
+		break;
+
+	case 2:
+		this.flag5 = 32;
+		break;
+
+	case 3:
+	case 4:
+		this.flag5 = 6;
+		break;
+	}
+
+	this.func = [
+		function ()
+		{
+			this.SetParent(null, 0, 0);
+			this.SetMotion(this.motion, 1);
+			this.keyAction = this.ReleaseActor;
+			this.stateLabel = null;
+			this.func[0] = function ()
+			{
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.HitCycleUpdate(20);
+		this.count++;
+
+		if (this.flag5 > 0 && this.count % this.flag5 == 1)
+		{
+			this.SetShot(this.x + 740 * this.direction * this.cos(this.rz), this.y + 360 * this.sin(this.rz), this.cos(this.rz) * this.direction > 0.00000000 ? -1.00000000 : 1.00000000, this.Boss_Shot_D3_Debri, {});
+		}
+	};
+}
+
+function Boss_Shot_D3_Debri( t )
+{
+	this.SetMotion(4967, 1 + this.rand() % 4 * 2);
+	this.owner.shot_actor.Add(this);
+	this.rz = this.rand() % 360 * 0.01745329;
+	local r_ = (2 + this.rand() % 2) * (1 - 2 * this.rand() % 2) * 0.01745329;
+	this.SetTaskAddRotation(0.00000000, 0.00000000, r_);
+	this.SetSpeed_XY((15.00000000 + this.rand() % 6) * this.direction, 0.00000000);
+	this.SetEffect(this.x, this.y, this.direction, this.EF_HitSmashC, {});
+	this.func = [
+		function ()
+		{
+			this.SetMotion(this.motion, this.keyTake - 1);
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.stateLabel = function ()
+			{
+				this.alpha = this.red = this.green = this.blue -= 0.02500000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
+			{
+			};
+		}
+	];
+	this.cancelCount = 3;
+	this.subState = function ()
+	{
+		this.VX_Brake(0.75000000, 2.00000000 * this.direction);
+		this.count++;
+
+		if (this.count >= 60)
+		{
+			this.subState = function ()
+			{
+				this.AddSpeed_XY(0.50000000 * this.direction, 0.00000000, 7.50000000 * this.direction, 0.00000000);
+			};
+		}
+	};
+	this.stateLabel = function ()
+	{
+		if (this.IsScreen(200) || this.hitCount > 0 || this.cancelCount <= 0 || this.grazeCount > 5)
+		{
+			this.func[0].call(this);
+			return;
+		}
+
+		this.HitCycleUpdate(0);
+		this.subState();
+	};
+}
+
+function Boss_Shot_D3_DebriB( t )
+{
+	this.SetMotion(4967, this.rand() % 4 * 2);
+	this.flag1 = this.keyTake;
+	this.owner.shot_actor.Add(this);
+	this.rz = this.rand() % 360 * 0.01745329;
+	local r_ = (2 + this.rand() % 2) * (1 - 2 * this.rand() % 2) * 0.01745329;
+	this.SetTaskAddRotation(0.00000000, 0.00000000, r_);
+	this.SetSpeed_XY(0.00000000, -2.50000000);
+	this.alpha = 0.00000000;
+	this.func = [
+		function ()
+		{
+			this.SetMotion(this.motion, this.flag1);
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.stateLabel = function ()
+			{
+				this.alpha = this.red = this.green = this.blue -= 0.02500000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
+			{
+			};
+		},
+		function ()
+		{
+			this.SetMotion(this.motion, this.flag1 + 1);
+			this.subState = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 0.20000000, 0.00000000, 5.00000000);
+			};
+		}
+	];
+	this.cancelCount = 3;
+	this.subState = function ()
+	{
+		this.alpha += 0.05000000;
+
+		if (this.alpha >= 1.00000000)
+		{
+			this.alpha = 1.00000000;
+			this.subState = function ()
+			{
+				this.VY_Brake(0.05000000);
+				this.count++;
+
+				if (this.count >= 30)
+				{
+					this.func[1].call(this);
+				}
+			};
+		}
+	};
+	this.stateLabel = function ()
+	{
+		if (this.IsScreen(200) || this.hitCount > 0 || this.cancelCount <= 0 || this.grazeCount > 5)
+		{
+			this.func[0].call(this);
+			return;
+		}
+
+		this.HitCycleUpdate(0);
+		this.subState();
+	};
+}
+
+function Boss_Doppel_Start_D3( t )
+{
+	this.SetMotion(4960, 2);
+	this.flag3 = this.SetEffect(this.x, this.y, this.direction, this.EF_Shield, {}, this.weakref()).weakref();
+	this.flag4 = null;
+	this.life = 99999;
+	this.flag1 = 99999;
+	this.subState = function ()
+	{
+		this.Warp(1280 - this.owner.x, this.owner.y);
+	};
+	this.func = [
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			this.flag4 = null;
+			this.flag5 = null;
+			this.flag3 = null;
+			this.SetMotion(4929, 0);
+			this.func[0] = function ()
+			{
+			};
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		},
+		function ()
+		{
+			this.SetMotion(4960, 0);
+		}
+	];
+	this.stateLabel = function ()
+	{
+		if (this.flag1 > this.life && this.owner.team.life > 0)
+		{
+			this.team.regain_life -= (this.flag1 - this.life) * 0.10000000;
+			this.flag1 = this.life;
+
+			if (this.team.life >= this.team.regain_life)
+			{
+				this.team.regain_life = this.team.life;
+				this.owner.boss_shot.Foreach(function ()
+				{
+					this.func[0].call(this);
+				});
+				::camera.Shake(10);
+				local t_ = {};
+				t_.count <- 15;
+				t_.priority <- 210;
+				this.SetEffect(640, 360, 1.00000000, this.EF_SpeedLine, t_);
+				this.owner.Set_Boss_Shield(null);
+				this.team.current.SpellCrash_Init(null);
+				this.func[0].call(this);
+				return;
+			}
+		}
+
+		this.subState();
+	};
+}
+
+function Boss_DoppelA_D3( t )
+{
+	this.SetMotion(4960, 0);
+	this.flag3 = this.SetEffect(this.x, this.y, this.direction, this.EF_Shield, {}, this.weakref()).weakref();
+	this.flag4 = null;
+	this.flag5 = this.SetShot(this.x + 75 * this.direction, this.y, this.direction, this.Boss_Shot_D3_Spark, {}, this.weakref()).weakref();
+	this.life = 9999;
+	this.flag1 = 9999;
+	this.subState = function ()
+	{
+		this.Warp(1280 - this.owner.x, this.owner.y);
+	};
+	this.func = [
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			if (this.flag5)
+			{
+				this.flag5.func[0].call(this.flag5);
+			}
+
+			this.flag4 = null;
+			this.flag5 = null;
+			this.flag3 = null;
+			this.SetMotion(4929, 0);
+			this.func[0] = function ()
+			{
+			};
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		if (this.flag1 > this.life && this.owner.team.life > 0)
+		{
+			this.team.regain_life -= this.flag1 - this.life;
+			this.flag1 = this.life;
+
+			if (this.team.life >= this.team.regain_life)
+			{
+				this.team.regain_life = this.team.life;
+				this.owner.boss_shot.Foreach(function ()
+				{
+					this.func[0].call(this);
+				});
+				::camera.Shake(10);
+				local t_ = {};
+				t_.count <- 15;
+				t_.priority <- 210;
+				this.SetEffect(640, 360, 1.00000000, this.EF_SpeedLine, t_);
+				this.owner.Set_Boss_Shield(null);
+				this.team.current.SpellCrash_Init(null);
+				this.func[0].call(this);
+				return;
+			}
+		}
+
+		this.subState();
+	};
+}
+
+function Boss_DoppelB_D3( t )
+{
+	this.SetMotion(4961, 0);
+	this.flag3 = this.SetEffect(this.x, this.y, this.direction, this.EF_Shield, {}, this.weakref()).weakref();
+	this.flag4 = null;
+	local t_ = {};
+	t_.target <- this.owner.weakref();
+	this.flag5 = this.SetShot(this.x + 75 * this.direction, this.y, this.direction, this.Boss_Shot_D3_SparkB, t_, this.weakref()).weakref();
+	this.life = 9999;
+	this.flag1 = 9999;
+	this.subState = function ()
+	{
+		this.Warp(1280 - this.owner.x, this.owner.y);
+	};
+	this.func = [
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			if (this.flag5)
+			{
+				this.flag5.func[0].call(this.flag5);
+			}
+
+			this.flag4 = null;
+			this.flag5 = null;
+			this.flag3 = null;
+			this.SetMotion(4929, 0);
+			this.func[0] = function ()
+			{
+			};
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		if (this.flag1 > this.life && this.owner.team.life > 0)
+		{
+			this.team.regain_life -= this.flag1 - this.life;
+			this.flag1 = this.life;
+
+			if (this.team.life >= this.team.regain_life)
+			{
+				this.team.regain_life = this.team.life;
+				this.owner.boss_shot.Foreach(function ()
+				{
+					this.func[0].call(this);
+				});
+				::camera.Shake(10);
+				local t_ = {};
+				t_.count <- 15;
+				t_.priority <- 210;
+				this.SetEffect(640, 360, 1.00000000, this.EF_SpeedLine, t_);
+				this.owner.Set_Boss_Shield(null);
+				this.team.current.SpellCrash_Init(null);
+				this.func[0].call(this);
+				return;
+			}
+		}
+
+		this.subState();
+	};
+}
+
+function Boss_DoppelC_D3( t )
+{
+	this.SetMotion(4960, 0);
+	this.flag3 = this.SetEffect(this.x, this.y, this.direction, this.EF_Shield, {}, this.weakref()).weakref();
+	this.flag4 = null;
+	this.flag5 = null;
+	this.life = 9999;
+	this.flag1 = 9999;
+	this.func = [
+		function ()
+		{
+			if (this.flag3)
+			{
+				this.flag3.func[0].call(this.flag3);
+			}
+
+			if (this.flag4)
+			{
+				this.flag4.func();
+			}
+
+			if (this.flag5)
+			{
+				this.flag5.func[0].call(this.flag5);
+			}
+
+			this.flag4 = null;
+			this.flag5 = null;
+			this.flag3 = null;
+			this.SetMotion(4929, 0);
+			this.func[0] = function ()
+			{
+			};
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.89999998;
+				this.sy *= 1.04999995;
+				this.SetSpeed_XY(0.00000000, -10 * this.sy);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		},
+		function ()
+		{
+			this.flag5 = this.SetShot(this.x + 75 * this.direction, this.y, this.direction, this.Boss_Shot_D3_SparkC, {}, this.weakref()).weakref();
+		},
+		function ()
+		{
+			if (this.flag5)
+			{
+				if (this.flag5)
+				{
+					this.flag5.func[0].call(this.flag5);
+				}
+
+				this.flag5 = null;
+			}
+		},
+		function ()
+		{
+			this.SetMotion(4960, 0);
+		}
+	];
+	this.stateLabel = function ()
+	{
+		if (this.flag1 > this.life && this.owner.team.life > 0)
+		{
+			this.team.regain_life -= this.flag1 - this.life;
+			this.flag1 = this.life;
+
+			if (this.team.life >= this.team.regain_life)
+			{
+				this.team.regain_life = this.team.life;
+				this.owner.boss_shot.Foreach(function ()
+				{
+					this.func[0].call(this);
+				});
+				::camera.Shake(10);
+				local t_ = {};
+				t_.count <- 15;
+				t_.priority <- 210;
+				this.SetEffect(640, 360, 1.00000000, this.EF_SpeedLine, t_);
+				this.owner.Set_Boss_Shield(null);
+				this.team.current.SpellCrash_Init(null);
+				this.func[0].call(this);
+				return;
+			}
+		}
+	};
+}
+
+function Boss_Shot_D4_BulletB_Core( t )
+{
+	this.owner.shot_actor.Add(this);
+	this.rz = this.rand() % 360 * 0.01745329;
+
+	switch(this.owner.com_difficulty)
+	{
+	case 0:
+		this.flag1 = 1;
+		break;
+
+	case 1:
+		this.flag1 = 3;
+		break;
+
+	case 2:
+		this.flag1 = 4;
+		break;
+
+	case 3:
+		this.flag1 = 6;
+		break;
+
+	case 4:
+		this.flag1 = 8;
+		break;
+	}
+
+	this.func = [
+		function ()
+		{
+			this.ReleaseActor();
+		},
+		function ()
+		{
+			this.ReleaseActor();
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.count++;
+
+		if (this.count % 15 == 1)
+		{
+			this.flag1--;
+			local t_ = {};
+			t_.rot <- this.rz;
+			this.SetShot(this.x, this.y, this.owner.direction, this.Boss_Shot_D4_BulletB, t_, this.weakref());
+
+			if (this.flag1 <= 0)
+			{
+				this.ReleaseActor();
+			}
+		}
+	};
+}
+
+function Boss_Shot_D4_BulletB( t )
+{
+	this.SetMotion(4949, 1 + this.rand() % 4 * 2);
+	this.owner.shot_actor.Add(this);
+	this.SetTaskAddRotation(0.00000000, 0.00000000, 0.05235988);
+	this.rz = this.rand() % 360 * 0.01745329;
+	this.cancelCount = 3;
+	this.flag1 = this.Vector3();
+	this.flag1.x = 1.00000000;
+	this.flag1.RotateByRadian(t.rot);
+	this.flag2 = this.Vector3();
+	this.flag3 = 100.00000000;
+	this.flag4 = this.Vector3();
+	this.flag4.x = this.x;
+	this.flag4.y = this.y;
+	this.flag5 = 3.00000000;
+
+	switch(this.owner.com_difficulty)
+	{
+	case 0:
+		this.flag5 = 6.00000000;
+		break;
+
+	case 1:
+		this.flag5 = 7.00000000;
+		break;
+
+	case 2:
+		this.flag5 = 8.00000000;
+		break;
+
+	case 3:
+	case 4:
+		this.flag5 = 9.00000000;
+		break;
+	}
+
+	this.func = [
+		function ()
+		{
+			this.callbackGroup = 0;
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 0.50000000);
+				this.red = this.green = this.blue -= 0.05000000;
+
+				if (this.y > ::battle.scroll_bottom + 100)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
+			{
+			};
+		},
+		function ()
+		{
+			this.SetSpeed_XY(this.va.x * 0.25000000, this.va.y * 0.25000000);
+			this.subState = null;
+		}
+	];
+	this.subState = function ()
+	{
+		this.flag2.x = this.flag1.x * this.direction * this.flag3;
+		this.flag2.y = this.flag1.y * this.flag3 * 0.40000001;
+		this.SetSpeed_XY(this.flag4.x + this.flag2.x - this.x, this.flag4.y + this.flag2.y - this.y);
+		local r_ = this.flag5 / this.flag3;
+		this.flag1.RotateByRadian(r_);
+		local l_ = (350 - this.flag3) * 0.02500000;
+
+		if (l_ < 2.00000000)
+		{
+			l_ = 2.00000000;
+		}
+
+		this.flag3 += l_;
+	};
+	this.flag2.x = this.flag1.x * this.direction * this.flag3;
+	this.flag2.y = this.flag1.y * this.flag3 * 0.40000001;
+	this.Warp(this.initTable.pare.x + this.flag2.x, this.initTable.pare.y + this.flag2.y);
+	this.stateLabel = function ()
+	{
+		if (this.IsScreen(500))
+		{
+			this.ReleaseActor();
+		}
+
+		if (this.hitCount > 0 || this.grazeCount > 0 || this.cancelCount <= 0)
+		{
+			this.func[0].call(this);
+		}
+
+		if (this.subState)
+		{
+			this.subState();
+		}
+	};
+}
+
+function Boss_Shot_D4_Bullet( t )
+{
+	this.SetMotion(4949, t.take);
+	this.owner.shot_actor.Add(this);
+	this.rz = this.rand() % 360 * 0.01745329;
+	this.cancelCount = 3;
+	this.flag1 = this.Vector3();
+	this.flag1.x = 1.00000000;
+	this.flag1.RotateByDegree(t.rot);
+	this.flag3 = 100.00000000;
+	this.flag4 = t.rot;
+	this.flag2 = this.Vector3();
+	this.func = [
+		function ()
+		{
+			this.callbackGroup = 0;
+			this.SetSpeed_XY(this.va.x * 0.25000000, this.va.y * 0.25000000);
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 0.50000000);
+				this.red = this.green = this.blue -= 0.05000000;
+
+				if (this.y > ::battle.scroll_bottom + 100)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
+			{
+			};
+		},
+		function ()
+		{
+			this.HitReset();
+			this.cancelCount = 3;
+			this.SetMotion(4949, this.keyTake + 1);
+			this.SetSpeed_XY((this.owner.x - this.x) * 0.01000000, (this.owner.y - this.y) * 0.01000000);
+			this.stateLabel = function ()
+			{
+				if (this.IsScreen(100))
+				{
+					this.ReleaseActor();
+				}
+
+				if (this.hitCount > 0 || this.grazeCount > 0 || this.cancelCount <= 0)
+				{
+					this.func[0].call(this);
+				}
+			};
+		}
+	];
+	this.subState = function ()
+	{
+		this.flag2.x = this.flag1.x * this.flag3;
+		this.flag2.y = this.flag1.y * this.flag3 * 0.50000000;
+		this.flag2.RotateByRadian(this.flag4);
+		this.Warp(this.initTable.pare.x + this.flag2.x * this.direction, this.initTable.pare.y + this.flag2.y);
+	};
+	this.subState();
+	this.stateLabel = function ()
+	{
+		this.subState();
+		this.flag1.RotateByDegree(8.00000000);
+	};
+	this.func = [
+		function ()
+		{
+			this.callbackGroup = 0;
+			this.SetSpeed_XY(this.va.x * 0.25000000, this.va.y * 0.25000000);
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 0.50000000);
+				this.red = this.green = this.blue -= 0.05000000;
+
+				if (this.y > ::battle.scroll_bottom + 100)
+				{
+					this.ReleaseActor();
+				}
+			};
+			this.func[0] = function ()
+			{
+			};
+		},
+		function ()
+		{
+			this.HitReset();
+			this.cancelCount = 3;
+			this.SetMotion(4949, this.keyTake + 1);
+			this.SetSpeed_XY((this.owner.x - this.x) * 0.01000000, (this.owner.y - this.y) * 0.01000000);
+			this.stateLabel = function ()
+			{
+				if (this.IsScreen(100))
+				{
+					this.ReleaseActor();
+				}
+
+				if (this.hitCount > 0 || this.grazeCount > 0 || this.cancelCount <= 0)
+				{
+					this.func[0].call(this);
+				}
+			};
+		}
+	];
+}
+
+function Boss_Shot_D4( t )
+{
+	this.owner.shot_actor.Add(this);
+	this.SetMotion(4949, 9);
+	this.DrawActorPriority(180);
+	this.sx = this.sy = 0.01000000;
+	this.flag1 = 0.33000001;
+	this.flag2 = ::manbow.Actor2DProcGroup();
+	this.flag3 = ::manbow.Actor2DProcGroup();
+	this.flag4 = 0;
+	local a_ = this.SetFreeObject(this.x, this.y, this.direction, this.Boss_Shot_D4_A, {});
+	a_.SetParent(this, 0, 0);
+	this.flag2.Add(a_);
+	local a_ = this.SetFreeObject(this.x, this.y, this.direction, this.Boss_Shot_D4_B, {});
+	a_.SetParent(this, 0, 0);
+	this.flag2.Add(a_);
+	local a_ = this.SetFreeObjectDynamic(this.x, this.y, this.direction, this.Boss_Shot_D4_C, {});
+	a_.SetParent(this, 0, 0);
+	this.flag2.Add(a_);
+	this.func = [
+		function ()
+		{
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.flag3.Foreach(function ()
+			{
+				this.func[0].call(this);
+			});
+			this.flag2.Foreach(function ()
+			{
+				this.func[0].call(this);
+			});
+			this.sx = this.sy = 2.00000000;
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy *= 0.69999999;
+				this.alpha -= 0.10000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		},
+		function ()
+		{
+			this.SetMotion(4949, 8);
+			this.HitReset();
+			this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+			this.SetSpeed_XY(0.00000000, 0.00000000);
+			this.flag3.Foreach(function ()
+			{
+				this.func[1].call(this);
+			});
+			this.flag2.Foreach(function ()
+			{
+				this.func[0].call(this);
+			});
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += (6.00000000 - this.sx) * 0.25000000;
+				this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.count++;
+
+		if (this.count % 60 == 59)
+		{
+			this.PlaySE(3631);
+			this.flag3.Add(this.SetShot(this.x, this.y, this.direction, this.Boss_Shot_D4_BulletB_Core, {}));
+		}
+
+		this.SetSpeed_XY((this.owner.point0_x - this.x) * 0.10000000, (this.owner.point0_y - this.y) * 0.10000000);
+		this.flag1 += 0.01000000;
+
+		if (this.flag1 > 2.00000000)
+		{
+			this.flag1 = 2.00000000;
+		}
+
+		this.sx = this.sy += (this.flag1 - this.sx) * 0.20000000;
+		this.flag2.Foreach(function ( sx_ = this.sx, sy_ = this.sy )
+		{
+			this.sx = this.flag1.x * sx_;
+			this.sy = this.flag1.y * sy_;
+		});
+		this.Vec_Brake(0.50000000);
+	};
+}
+
+function Boss_Shot_D4_A( t )
+{
+	this.SetMotion(4949, 11);
+	this.DrawActorPriority(180);
+	this.rx = 75 * 0.01745329;
+	this.flag1 = this.Vector3();
+	this.flag1.x = 0.00000000;
+	this.flag1.y = 0.00000000;
+	this.flag2 = 1.00000000;
+	this.sx = this.sy = 0.00000000;
+	this.func = [
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy *= 0.80000001;
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.rz -= 0.01745329;
+
+		if (this.flag2 < 2.00000000)
+		{
+			this.flag2 += 0.01000000;
+		}
+
+		this.flag1.x = this.flag1.y += this.flag2 - this.flag1.x - 0.10000000;
+	};
+}
+
+function Boss_Shot_D4_B( t )
+{
+	this.SetMotion(4949, 12);
+	this.DrawActorPriority(180);
+	this.flag1 = this.Vector3();
+	this.flag1.x = 0.50000000;
+	this.flag1.y = 0.50000000;
+	this.sx = this.sy = 0.00000000;
+	this.func = [
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.sx *= 0.80000001;
+				this.sy *= 1.04999995;
+				this.alpha -= 0.02500000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.flag1.y += 0.02500000;
+	};
+}
+
+function Boss_Shot_D4_C( t )
+{
+	this.SetMotion(4949, 13);
+	this.DrawActorPriority(180);
+	this.DrawActorPriority(180);
+	this.anime.vertex_alpha1 = 0.00000000;
+	this.alpha = 0.00000000;
+	this.flag1 = this.Vector3();
+	this.flag1.x = 1.75000000;
+	this.flag1.y = 1.75000000;
+	this.func = [
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				this.anime.top += 10.00000000;
+				this.alpha -= 0.10000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.alpha += this.alpha <= 0.94999999 ? 0.05000000 : 0.00000000;
+		this.anime.top += 10.00000000;
+	};
+}
+
+function Boss_Shot_D4_Spark( t )
+{
+	this.SetMotion(4949, 10);
+	this.DrawActorPriority(199);
+	this.rz = t.rot;
+	this.sx = this.sy = 0.50000000 + this.rand() % 15 * 0.10000000;
+	this.keyAction = this.ReleaseActor;
+	this.stateLabel = function ()
+	{
+		this.sx += 0.05000000;
 	};
 }
 
