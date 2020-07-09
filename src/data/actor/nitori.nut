@@ -1199,6 +1199,7 @@ function Atk_HighDash_Init( t )
 	];
 	this.stateLabel = function ()
 	{
+		this.VX_Brake(0.30000001);
 	};
 	return true;
 }
@@ -2337,7 +2338,7 @@ function OkultC_Init( t )
 
 			if (this.robo && this.occult == 1)
 			{
-				this.robo.func[1].call(this.robo);
+				this.robo.func[6].call(this.robo);
 				return;
 			}
 		},
@@ -3115,6 +3116,8 @@ function SP_Dorill_Init( t )
 	this.SetMotion(3070, 0);
 	this.flag1 = true;
 	this.flag2 = 0;
+	this.flag3 = 3;
+	this.hitCount = 0;
 	this.SetSpeed_XY(-5.00000000 * this.direction, 0.00000000);
 	this.func = function ()
 	{
@@ -3158,6 +3161,7 @@ function SP_Dorill_Init( t )
 				{
 					this.PlaySE(2291);
 					this.flag2 = 1;
+					this.flag3 = 99;
 				}
 
 				if (this.count >= 4 && !this.flag1)
@@ -3178,7 +3182,10 @@ function SP_Dorill_Init( t )
 					this.team.AddMP(-200, 120);
 					this.stateLabel = function ()
 					{
-						this.HitCycleUpdate(3);
+						if (this.hitCount <= this.flag3)
+						{
+							this.HitCycleUpdate(3);
+						}
 
 						if (this.hitResult & 1)
 						{
@@ -3186,19 +3193,10 @@ function SP_Dorill_Init( t )
 							return;
 						}
 
-						if (this.count == 35)
+						if (this.count == 25)
 						{
-							this.HitTargetReset();
-
-							if (this.flag2 == 1)
-							{
-								this.SetMotion(3070, 5);
-							}
-							else
-							{
-								this.SetMotion(3070, 4);
-							}
-
+							this.SetMotion(3070, 6);
+							this.SetSpeed_XY(6.00000000 * this.direction, 0.00000000);
 							this.stateLabel = function ()
 							{
 							};

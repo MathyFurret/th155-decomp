@@ -137,7 +137,7 @@ function Mukon_Item( t )
 {
 	this.SetMotion(2508, 0);
 	this.alpha = 0.00000000;
-	this.SetTeamSelfShot();
+	this.SetTeamSelfPlayerShot();
 	this.sx = this.sy = 2.00000000;
 	this.stateLabel = function ()
 	{
@@ -204,7 +204,7 @@ function Reset_Mukon_Item( t )
 	this.SetMotion(2508, 0);
 	this.HitReset();
 	this.owner.mukon.Add(this);
-	this.SetTeamSelfShot();
+	this.SetTeamSelfPlayerShot();
 	this.sx = this.sy = 2.00000000;
 	this.count = 0;
 	this.stateLabel = function ()
@@ -292,7 +292,7 @@ function Reset_Mukon_Item( t )
 function Mukon_Item_AutoGet( t )
 {
 	this.SetMotion(2508, 0);
-	this.SetTeamSelfShot();
+	this.SetTeamSelfPlayerShot();
 	this.alpha = 0.00000000;
 	this.sx = this.sy = 2.00000000;
 	this.stateLabel = function ()
@@ -345,7 +345,7 @@ function Mukon_Item_Mid( t )
 {
 	this.SetMotion(2508, 3);
 	this.alpha = 0.00000000;
-	this.SetTeamSelfShot();
+	this.SetTeamSelfPlayerShot();
 	this.sx = this.sy = 2.00000000;
 	this.stateLabel = function ()
 	{
@@ -412,7 +412,7 @@ function Reset_Mukon_Item_Mid( t )
 	this.SetMotion(2508, 3);
 	this.HitReset();
 	this.owner.mukon.Add(this);
-	this.SetTeamSelfShot();
+	this.SetTeamSelfPlayerShot();
 	this.sx = this.sy = 2.00000000;
 	this.count = 0;
 	this.stateLabel = function ()
@@ -502,7 +502,7 @@ function Mukon_Item_ChargeShot( t )
 	this.SetMotion(2508, 3);
 	this.owner.mukon.Add(this);
 	this.alpha = 0.00000000;
-	this.SetTeamSelfShot();
+	this.SetTeamSelfPlayerShot();
 	this.SetSpeed_Vec(6.00000000, t.rot, this.direction);
 	this.stateLabel = function ()
 	{
@@ -1000,10 +1000,10 @@ function Shot_Normal( t )
 function Shot_Front( t )
 {
 	this.SetMotion(2019, 0);
-	this.cancelCount = 1;
+	this.cancelCount = 2;
 	this.atk_id = 65536;
 	this.flag1 = this.y + 100;
-	this.SetSpeed_XY(10.00000000 * this.direction, -7.50000000);
+	this.SetSpeed_XY(6.00000000 * this.direction, -2.50000000);
 	this.func = [
 		function ()
 		{
@@ -1057,7 +1057,7 @@ function Shot_Front( t )
 		{
 			this.PlaySE(4026);
 			this.SetMotion(this.motion, 0);
-			this.SetSpeed_XY(14.00000000 * this.direction, -14.50000000);
+			this.SetSpeed_XY(17.50000000 * this.direction, -14.50000000);
 		}
 	};
 }
@@ -1119,6 +1119,8 @@ function Shot_Charge( t )
 {
 	this.SetMotion(2029, 0);
 	this.SetSpeed_XY(17.50000000 * this.direction, -6.50000000);
+	this.va.RotateByRadian(t.rot * this.direction);
+	this.ConvertTotalSpeed();
 	this.cancelCount = 3;
 	this.atk_id = 131072;
 	this.flag1 = 0.52359873;
@@ -1162,7 +1164,7 @@ function Shot_Charge( t )
 	];
 	this.stateLabel = function ()
 	{
-		if (this.Damage_ConvertOP.call(this, this.x, this.y, 10) || this.IsScreen(100))
+		if (this.Damage_ConvertOP.call(this, this.x, this.y, 10) || this.IsScreenB(100) || this.y < -200)
 		{
 			this.ReleaseActor();
 			return;
@@ -1173,7 +1175,7 @@ function Shot_Charge( t )
 		this.VX_Brake(0.40000001, 4.00000000 * this.direction);
 		this.AddSpeed_XY(0.00000000, this.va.y < 0.00000000 ? 0.50000000 : 0.50000000);
 
-		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.count >= 45)
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.count >= 30)
 		{
 			this.func[1].call(this);
 			return;
@@ -1308,6 +1310,7 @@ function SPShot_Bound_Main( t )
 	this.SetTaskAddRotation(0, 0, -0.08726646);
 	this.rz = 0.01745329 * (this.rand() % 360);
 	this.SetSpeed_Vec(13.00000000, t.rot, this.direction);
+	this.Warp(this.x + this.va.x * 6, this.y + this.va.y * 6);
 	this.cancelCount = 2;
 	this.atk_id = 2097152;
 	this.func = [
@@ -1331,14 +1334,6 @@ function SPShot_Bound_Main( t )
 	this.subState = function ()
 	{
 		this.AddSpeed_XY(0.00000000, 0.20000000);
-
-		if (this.Vec_Brake(0.50000000, 6.00000000))
-		{
-			this.subState = function ()
-			{
-				this.AddSpeed_XY(0.00000000, 0.20000000);
-			};
-		}
 	};
 	this.stateLabel = function ()
 	{
@@ -1356,6 +1351,78 @@ function SPShot_Bound_Main( t )
 		}
 
 		if (this.grazeCount > 0 || this.cancelCount <= 0)
+		{
+			this.func[0].call(this);
+			return;
+		}
+
+		this.subState();
+	};
+}
+
+function SPShot_Bound_Big( t )
+{
+	this.SetMotion(3019, 6);
+	this.rz = 0.01745329 * (this.rand() % 360);
+	this.SetSpeed_Vec(17.50000000, t.rot, this.direction);
+	this.Warp(this.x + this.va.x * 5, this.y + this.va.y * 5);
+	this.cancelCount = 3;
+	this.atk_id = 2097152;
+	this.sx = this.sy = 0.75000000;
+	this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+	this.func = [
+		function ()
+		{
+			this.callbackGroup = 0;
+			this.stateLabel = function ()
+			{
+				if (this.Vec_Brake(0.75000000, 1.00000000))
+				{
+					this.stateLabel = function ()
+					{
+						this.AddSpeed_XY(0.00000000, 0.20000000);
+						this.alpha -= 0.02500000;
+
+						if (this.alpha <= 0.00000000)
+						{
+							this.ReleaseActor();
+						}
+					};
+				}
+
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		}
+	];
+	this.subState = function ()
+	{
+		if (this.Vec_Brake(0.75000000, 1.00000000))
+		{
+			this.subState = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 0.20000000);
+			};
+		}
+
+		this.sx = this.sy += (2.50000000 - this.sx) * 0.15000001;
+		this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+	};
+	this.stateLabel = function ()
+	{
+		if (this.IsScreen(100) || this.Damage_ConvertOP(this.x, this.y, 6))
+		{
+			this.ReleaseActor();
+			return;
+		}
+
+		this.count++;
+
+		if (this.cancelCount <= 0 || this.count >= 12)
 		{
 			this.func[0].call(this);
 			return;
@@ -1838,6 +1905,7 @@ function Occult_Hole( t )
 	this.flag5.shotRotSpeed <- -30;
 	this.flag5.shotPos <- this.Vector3();
 	this.flag5.shotPos.y = 1.00000000;
+	this.flag5.damage <- false;
 	this.sx = this.sy = 0.10000000;
 	this.func = [
 		function ()
@@ -1891,26 +1959,39 @@ function Occult_Hole( t )
 					}
 				}
 
-				if (this.flag3 >= 25 && this.count % 3 == 1)
+				if (this.flag5.damage == false)
 				{
-					if (this.flag5.shotRot == 90.00000000 || this.flag5.shotRot == -90.00000000)
+					if (this.owner.team.current.IsDamage())
 					{
-						this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
-					}
-					else
-					{
-						this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
-						this.SetShot(this.x - this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+						this.flag5.damage = true;
 					}
 
-					if (this.flag5.shotRot <= -90.00000000)
+					if (this.flag3 >= 25 && this.count % 3 == 1)
 					{
-						this.func[0].call(this);
-						return;
-					}
+						if (this.flag5.shotRot == 90.00000000 || this.flag5.shotRot == -90.00000000)
+						{
+							this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+						}
+						else
+						{
+							this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+							this.SetShot(this.x - this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+						}
 
-					this.flag5.shotRot += this.flag5.shotRotSpeed;
-					this.flag5.shotPos.RotateByDegree(this.flag5.shotRotSpeed);
+						if (this.flag5.shotRot <= -90.00000000)
+						{
+							this.func[0].call(this);
+							return;
+						}
+
+						this.flag5.shotRot += this.flag5.shotRotSpeed;
+						this.flag5.shotPos.RotateByDegree(this.flag5.shotRotSpeed);
+					}
+				}
+				else
+				{
+					this.func[0].call(this);
+					return;
 				}
 			};
 
@@ -1928,6 +2009,7 @@ function Occult_Hole( t )
 			t_.scale <- this.flag1;
 			this.SetFreeObject(this.x, this.y, this.direction, this.Occult_ReactRing, t_);
 			this.PlaySE(4046);
+			this.flag5.damage = false;
 			this.subState = function ()
 			{
 				if (this.count >= 1200)
@@ -1955,22 +2037,30 @@ function Occult_Hole( t )
 					}
 				}
 
-				if (this.flag3 >= 25 && this.count % 3 == 1)
+				if (this.flag5.damage == false)
 				{
-					if (this.flag5.shotRot >= -90.00000000)
+					if (this.owner.team.current.IsDamage())
 					{
-						if (this.flag5.shotRot == 90.00000000 || this.flag5.shotRot == -90.00000000)
-						{
-							this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
-						}
-						else
-						{
-							this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
-							this.SetShot(this.x - this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
-						}
+						this.flag5.damage = true;
+					}
 
-						this.flag5.shotRot += this.flag5.shotRotSpeed;
-						this.flag5.shotPos.RotateByDegree(this.flag5.shotRotSpeed);
+					if (this.flag3 >= 25 && this.count % 3 == 1)
+					{
+						if (this.flag5.shotRot >= -90.00000000)
+						{
+							if (this.flag5.shotRot == 90.00000000 || this.flag5.shotRot == -90.00000000)
+							{
+								this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+							}
+							else
+							{
+								this.SetShot(this.x + this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+								this.SetShot(this.x - this.flag5.shotPos.x * this.flag5.range * this.flag1, this.y + this.flag5.shotPos.y * this.flag5.range * this.flag1, this.direction, this.Occult_Mukon, {});
+							}
+
+							this.flag5.shotRot += this.flag5.shotRotSpeed;
+							this.flag5.shotPos.RotateByDegree(this.flag5.shotRotSpeed);
+						}
 					}
 				}
 			};
@@ -2359,6 +2449,7 @@ function SpellShot_C( t )
 	this.rz = t.rot;
 	this.cancelCount = 1;
 	this.atk_id = 67108864;
+	this.flag1 = 0.03490658;
 	this.func = [
 		function ()
 		{
@@ -2385,13 +2476,20 @@ function SpellShot_C( t )
 	];
 	this.stateLabel = function ()
 	{
-		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.IsScreen(200))
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.IsScreenB(200) || this.y < -360)
 		{
 			this.func[0].call(this);
 			return;
 		}
 
-		this.TargetHoming(this.team.target, 0.03490658, this.direction);
+		this.TargetHoming(this.team.target, this.flag1, this.direction);
+		this.flag1 -= 0.01000000 * 0.01745329;
+
+		if (this.flag1 < 0)
+		{
+			this.flag1 = 0;
+		}
+
 		this.rz = this.atan2(this.va.y, this.va.x * this.direction);
 	};
 }

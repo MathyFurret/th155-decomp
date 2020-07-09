@@ -717,7 +717,7 @@ function Shot_Change( t )
 		},
 		function ()
 		{
-			this.rz = this.atan2(this.owner.target.y - this.y, (this.owner.target.x - this.x) * this.direction);
+			this.rz = this.flag3;
 			this.flag2.x = this.cos(this.rz) * this.direction * 0.25000000;
 			this.flag2.y = this.sin(this.rz) * 0.25000000;
 			this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
@@ -764,6 +764,11 @@ function Shot_Change( t )
 
 		this.Vec_Brake(0.50000000, 1.00000000);
 		this.count++;
+
+		if (this.count == 30)
+		{
+			this.flag3 = this.atan2(this.owner.target.y - this.y, (this.owner.target.x - this.x) * this.direction);
+		}
 
 		if (this.count >= this.initTable.wait)
 		{
@@ -1633,7 +1638,7 @@ function Climax_Shot( t )
 	{
 		this.count++;
 
-		if (this.count == 30)
+		if (this.count == 20)
 		{
 			this.PlaySE(4452);
 		}
@@ -1652,7 +1657,7 @@ function Climax_ShotSlash( t )
 		this.sy += (5.00000000 - this.sy) * 0.10000000;
 		this.count++;
 
-		if (this.count >= 30)
+		if (this.count >= 20)
 		{
 			this.sx *= 10.00000000;
 			this.SetMotion(4907, 3);

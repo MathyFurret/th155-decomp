@@ -1217,7 +1217,7 @@ function Atk_HighDash_Init( t )
 					if (this.flag1 >= 8)
 					{
 						this.flag1 = 0;
-						this.HitReset();
+						this.HitTargetReset();
 					}
 				}
 			};
@@ -2956,12 +2956,7 @@ function SP_F_Init( t )
 		{
 			if (this.centerStop * this.centerStop <= 1)
 			{
-				this.SetMotion(3051, 3);
-				this.stateLabel = function ()
-				{
-					this.VX_Brake(0.50000000);
-				};
-				return true;
+				this.VX_Brake(0.50000000);
 			}
 		};
 		this.keyAction = [
@@ -2976,6 +2971,18 @@ function SP_F_Init( t )
 			},
 			function ()
 			{
+				this.subState = function ()
+				{
+					if (this.centerStop * this.centerStop <= 1)
+					{
+						this.SetMotion(3051, 3);
+						this.stateLabel = function ()
+						{
+							this.VX_Brake(0.50000000);
+						};
+						return true;
+					}
+				};
 				this.stateLabel = function ()
 				{
 					this.VX_Brake(0.05000000);

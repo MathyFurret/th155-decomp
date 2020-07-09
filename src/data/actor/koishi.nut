@@ -380,9 +380,10 @@ function DashFront_Init( t )
 		this.LabelClear();
 		this.HitReset();
 		this.SetMotion(40, 0);
-		this.SetSpeed_XY(5.00000000 * this.direction, 0.00000000);
+		this.SetSpeed_XY(6.00000000 * this.direction, 0.00000000);
 		this.count = 0;
 		this.flag1 = false;
+		this.flag2 = 0;
 		this.keyAction = [
 			null,
 			function ()
@@ -394,6 +395,8 @@ function DashFront_Init( t )
 				};
 				this.stateLabel = function ()
 				{
+					this.flag2++;
+
 					if (this.count % 24 == 10)
 					{
 						this.PlaySE(2592);
@@ -413,6 +416,7 @@ function DashFront_Init( t )
 
 						this.stateLabel = function ()
 						{
+							this.flag2++;
 							this.masterAlpha += 0.03300000;
 
 							if (this.masterAlpha > 1.00000000)
@@ -421,12 +425,59 @@ function DashFront_Init( t )
 								this.masterAlpha = 1.00000000;
 							}
 
-							if ((this.keyTake == 1 || this.keyTake == 2) && this.input.x * this.direction <= 0 || this.count >= 150)
+							if ((this.keyTake == 1 || this.keyTake == 2) && this.input.x * this.direction <= 0 || this.flag2 >= 150)
 							{
 								this.GetFront();
 								this.SetMotion(this.motion, 5);
+								this.count = 0;
 								this.stateLabel = function ()
 								{
+									this.flag2++;
+
+									if (this.count == 10 && this.input.x * this.direction > 0 && this.flag2 < 150)
+									{
+										this.SetMotion(this.motion, 6);
+										this.count = 0;
+										this.flag1 = false;
+										this.lavelClearEvent = null;
+										this.masterAlpha = 1.00000000;
+										this.stateLabel = function ()
+										{
+											this.flag2++;
+											this.AddSpeed_XY(0.50000000 * this.direction, 0.00000000, 5.00000000 * this.direction, null);
+
+											if (this.count >= 12 && this.input.x * this.direction <= 0)
+											{
+												this.SetMotion(this.motion, 4);
+												this.stateLabel = function ()
+												{
+													this.VX_Brake(0.25000000);
+												};
+												return;
+											}
+
+											if (this.centerStop * this.centerStop <= 1)
+											{
+												if (this.input.y > 0)
+												{
+													this.SlideFall_Init(null);
+													return;
+												}
+												else if (this.input.y < 0)
+												{
+													this.SlideUp_Init(null);
+													return;
+												}
+											}
+
+											if (this.count % 24 == 10)
+											{
+												this.PlaySE(2592);
+											}
+										};
+										return;
+									}
+
 									this.masterAlpha += 0.03300000;
 
 									if (this.masterAlpha > 1.00000000)
@@ -466,10 +517,18 @@ function DashFront_Init( t )
 			},
 			null,
 			null,
-			this.EndtoFreeMove
+			this.EndtoFreeMove,
+			this.EndtoFreeMove,
+			function ()
+			{
+				this.SetMotion(40, 2);
+				this.keyAction[1].call(this);
+			}
 		];
 		this.stateLabel = function ()
 		{
+			this.flag2++;
+
 			if (this.count >= 12 && this.input.x * this.direction <= 0)
 			{
 				this.SetMotion(this.motion, 4);
@@ -517,7 +576,7 @@ function DashFront_Air_Init( t )
 		function ()
 		{
 			this.count = 0;
-			this.SetSpeed_XY(5.00000000 * this.direction, 0.00000000);
+			this.SetSpeed_XY(6.00000000 * this.direction, 0.00000000);
 			this.stateLabel = function ()
 			{
 				if (this.count % 24 == 1)
@@ -795,6 +854,70 @@ function Atk_Mid_Air_Init( t )
 			{
 				this.VX_Brake(0.50000000);
 			};
+		}
+	};
+	return true;
+}
+
+function Atk_Fake_Set( t )
+{
+	local t_ = {};
+	t_.autoCount <- 180;
+	t_.preAutoCount <- 0;
+	t_.autoAttack <- function ( table_ )
+	{
+		return false;
+	};
+	t_.attackType <- 2;
+	t_.autoTable <- {};
+	t_.autoFunc <- function ( init_ )
+	{
+		return true;
+	};
+	t_.timeFunc <- function ( init_ )
+	{
+		return true;
+	};
+	t_.autoCancelLevel <- 30;
+	this.AutoAttackSet(t_);
+	this.keyAction = [
+		function ()
+		{
+			this.PlaySE(2450);
+			this.CommonAutoAttackReset(0);
+			this.CommonAutoAttackSet(this.flag2, 0);
+			this.autoAttackTimes[0] = 0;
+
+			for( local i = 0; i < 360; i = i + 45 )
+			{
+				local t_ = {};
+				t_.keyTake <- 0;
+				t_.rot <- (i + 45 + this.rand() % 5) * 0.01745329;
+				this.SetFreeObject(this.x, this.y, this.direction, this.SetEffect_Koishi, t_);
+			}
+		},
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					this.VX_Brake(0.75000000);
+				}
+				else
+				{
+					this.VX_Brake(0.10000000);
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.CenterUpdate(0.25000000, 2.00000000);
+
+		if (this.centerStop * this.centerStop <= 1)
+		{
+			this.VX_Brake(0.75000000);
 		}
 	};
 	return true;
@@ -1686,6 +1809,12 @@ function Atk_HighUpper_Init( t )
 
 function Atk_HighUpperAuto_Init( t )
 {
+	if (this.centerStop * this.centerStop >= 2)
+	{
+		this.Atk_HighUpperAuto_Air_Init(t);
+		return true;
+	}
+
 	if (this.attackType[0] == 8)
 	{
 		this.CommonAutoAttackReset(0);
@@ -1724,6 +1853,56 @@ function Atk_HighUpperAuto_Init( t )
 		},
 		function ()
 		{
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.VX_Brake(1.00000000);
+	};
+	return true;
+}
+
+function Atk_HighUpperAuto_Air_Init( t )
+{
+	if (this.attackType[0] == 8)
+	{
+		this.CommonAutoAttackReset(0);
+	}
+	else
+	{
+		this.Atk_HighUpper_Air_SetB();
+	}
+
+	this.LabelClear();
+	this.HitReset();
+	this.atk_id = 512;
+	this.SetMotion(1220, 0);
+	this.keyAction = [
+		function ()
+		{
+			this.flag1 = this.y;
+			this.centerStop = -2;
+			this.PlaySE(2411);
+			this.SetSpeed_XY(0.00000000, -10.00000000);
+			this.stateLabel = function ()
+			{
+				if (this.va.y < 0.00000000)
+				{
+					this.AddSpeed_XY(null, 0.94999999);
+				}
+				else
+				{
+					this.AddSpeed_XY(null, 0.25000000);
+				}
+
+				this.VX_Brake(0.50000000);
+			};
+		},
+		function ()
+		{
+			this.stateLabel = function ()
+			{
+			};
 		}
 	];
 	this.stateLabel = function ()
@@ -3337,7 +3516,7 @@ function Okult_Init( t )
 					this.CenterUpdate(this.flag5.g, 3.00000000);
 				}
 
-				if (this.input.b0 == 0 && this.input.b1 == 0)
+				if (this.input.b0 == 0 && this.input.b1 == 0 || ::battle.state != 8)
 				{
 					this.flag2 = false;
 				}
@@ -4417,7 +4596,7 @@ function SP_E_Set( t )
 		local t2_ = {};
 		t2_.rot <- 3.14159203;
 		t2_.rotSpeed <- -0.01745329;
-		this.skillE_line = this.SetFreeObject(this.x, this.y, this.direction, this.SPShot_E, t2_).weakref();
+		this.skillE_line = this.SetShot(this.x, this.y, this.direction, this.SPShot_E, t2_).weakref();
 	}
 	else if (this.y <= this.centerY)
 	{
@@ -4425,7 +4604,7 @@ function SP_E_Set( t )
 		local t2_ = {};
 		t2_.rot <- 3.14159203;
 		t2_.rotSpeed <- -0.01745329;
-		this.skillE_line = this.SetFreeObject(this.x, this.y, this.direction, this.SPShot_E, t2_).weakref();
+		this.skillE_line = this.SetShot(this.x, this.y, this.direction, this.SPShot_E, t2_).weakref();
 	}
 	else
 	{
@@ -4433,7 +4612,7 @@ function SP_E_Set( t )
 		local t2_ = {};
 		t2_.rot <- -3.14159203;
 		t2_.rotSpeed <- 0.01745329;
-		this.skillE_line = this.SetFreeObject(this.x, this.y, this.direction, this.SPShot_E, t2_).weakref();
+		this.skillE_line = this.SetShot(this.x, this.y, this.direction, this.SPShot_E, t2_).weakref();
 	}
 
 	return true;

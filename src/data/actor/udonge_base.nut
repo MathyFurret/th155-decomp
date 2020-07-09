@@ -392,7 +392,7 @@ function Input_CommonAttack()
 
 			if (this.command.Check(this.BB))
 			{
-				if (this.Cancel_Check(50, 200, 0, true) && (this.motion >= 2000 && this.motion <= 2019) && this.flagState & 16384)
+				if (this.Cancel_Check(50, 200, 0, true) && this.motion >= 2000 && this.motion <= 2019)
 				{
 					if (this.centerStop * this.centerStop <= 1)
 					{

@@ -1,8 +1,5 @@
 local replay_task = {};
-local help = [
-	"B2",
-	"menu"
-];
+local help = [];
 replay_task.Update <- function ()
 {
 	::menu.help.Set(help);

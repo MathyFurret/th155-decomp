@@ -4,30 +4,7 @@ function Init()
 	this.InitBase();
 	this.CPU_Clear();
 	this.com_difficulty = this.difficulty;
-
-	switch(this.difficulty)
-	{
-	case 0:
-		this.com_level = 0;
-		break;
-
-	case 1:
-		this.com_level = 33;
-		break;
-
-	case 2:
-		this.com_level = 66;
-		break;
-
-	case 3:
-		this.com_level = 100;
-		break;
-
-	case 4:
-		this.com_level = 100;
-		break;
-	}
-
+	this.CPU_SetLevel(this.com_difficulty);
 	this.cpuState = this.CPU_Update_VS;
 	this.com_senser = ::manbow.Sensor();
 	this.com_senser.Init(this, 128, 192, 352);
@@ -72,30 +49,7 @@ function Run_Basic_Com()
 {
 	this.CPU_Clear();
 	this.com_difficulty = this.difficulty;
-
-	switch(this.difficulty)
-	{
-	case 0:
-		this.com_level = 0;
-		break;
-
-	case 1:
-		this.com_level = 33;
-		break;
-
-	case 2:
-		this.com_level = 66;
-		break;
-
-	case 3:
-		this.com_level = 100;
-		break;
-
-	case 4:
-		this.com_level = 100;
-		break;
-	}
-
+	this.CPU_SetLevel(this.com_difficulty);
 	this.cpuState = this.CPU_Update_VS;
 	this.com_senser = ::manbow.Sensor();
 	this.com_senser.Init(this, 128, 192, 352);
@@ -206,26 +160,31 @@ function CPU_SetLevel( diff_ )
 	switch(diff_)
 	{
 	case 0:
+		this.com_level = 0;
 		this.com_baria_rate = 0;
 		this.com_guard_rate = 25;
 		break;
 
 	case 1:
+		this.com_level = 33;
 		this.com_baria_rate = 25;
 		this.com_guard_rate = 33;
 		break;
 
 	case 2:
+		this.com_level = 66;
 		this.com_baria_rate = 33;
 		this.com_guard_rate = 50;
 		break;
 
 	case 3:
+		this.com_level = 100;
 		this.com_baria_rate = 66;
 		this.com_guard_rate = 90;
 		break;
 
 	case 4:
+		this.com_level = 100;
 		this.com_baria_rate = 90;
 		this.com_guard_rate = 95;
 		break;

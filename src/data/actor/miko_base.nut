@@ -188,7 +188,7 @@ function TeamSkillChain_Input( input_ )
 	if (input_.command.rsv_y > 0)
 	{
 		local t_ = {};
-		t_.kx <- this.command.rsv_x;
+		t_.kx <- input_.command.rsv_x;
 		this.SP_E_Init(t_);
 		this.command.ResetReserve();
 		return true;

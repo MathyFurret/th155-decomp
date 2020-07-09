@@ -365,9 +365,9 @@ function Team_Change_AirSlideUnderB( t_ )
 function DashFront_Init( t )
 {
 	local t_ = {};
-	t_.speed <- 4.50000000;
-	t_.addSpeed <- 0.20000000;
-	t_.maxSpeed <- 12.50000000;
+	t_.speed <- 5.00000000;
+	t_.addSpeed <- 0.30000001;
+	t_.maxSpeed <- 14.00000000;
 	t_.wait <- 120;
 	this.DashFront_Common(t_);
 }
@@ -375,7 +375,7 @@ function DashFront_Init( t )
 function DashFront_Air_Init( t )
 {
 	local t_ = {};
-	t_.speed <- 6.50000000;
+	t_.speed <- 7.25000000;
 	t_.g <- 0.10000000;
 	t_.minWait <- 12;
 	t_.wait <- 75;
@@ -1808,7 +1808,7 @@ function Okult_Init( t )
 						return;
 					}
 
-					if (this.count >= 20 && (this.input.b0 == 0 || this.input.b1 == 0) || this.flag1.cancelCount <= 0 || this.flag1.hitCount > 0 || this.count > 60 || this.flag1.va.x > 0.00000000 && this.flag1.x > ::battle.scroll_right || this.flag1.va.x < 0.00000000 && this.flag1.x < ::battle.scroll_left)
+					if (this.count >= 20 && (this.input.b0 == 0 || this.input.b1 == 0 || ::battle.state != 8) || this.flag1.cancelCount <= 0 || this.flag1.hitCount > 0 || this.count > 60 || this.flag1.va.x > 0.00000000 && this.flag1.x > ::battle.scroll_right || this.flag1.va.x < 0.00000000 && this.flag1.x < ::battle.scroll_left)
 					{
 						this.flag1.func[2].call(this.flag1);
 						this.stateLabel = function ()
@@ -1999,7 +1999,7 @@ function SP_B2_Init( t )
 			}
 		}
 
-		if (this.count >= 120 || this.count >= 15 && this.input.y > 0)
+		if (this.count >= 120 || this.count >= 15 && (this.input.y > 0 || ::battle.state != 8))
 		{
 			this.count = 0;
 			this.eagle.Eagle_Wait(null);
@@ -2142,12 +2142,12 @@ function SP_C_Init( t )
 	{
 		if (this.flag5)
 		{
-			if (this.input.b0 == 0)
+			if (this.input.b0 == 0 || ::battle.state != 8)
 			{
 				this.flag1 = false;
 			}
 		}
-		else if (this.input.b2 == 0)
+		else if (this.input.b2 == 0 || ::battle.state != 8)
 		{
 			this.flag1 = false;
 		}

@@ -91,6 +91,18 @@ function Update_Normal()
 
 	if (::battle.state == 8)
 	{
+		if (this.team.current != this)
+		{
+			this.sub_chant++;
+
+			if (this.sub_chant >= 420)
+			{
+				this.sub_chant = 0;
+				this.Add_ChantCount();
+				this.PlaySE(1740);
+			}
+		}
+
 		if (this.airByke && this.centerStop * this.centerStop <= 1)
 		{
 			this.airByke = false;

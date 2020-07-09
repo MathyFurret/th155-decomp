@@ -140,9 +140,28 @@ function SetDeviceAssign( index, device_id, target_device )
 		}
 	}
 
+	if (device_id >= 0)
+	{
+		devmap.up = 516;
+		devmap.down = 513;
+		devmap.left = 515;
+		devmap.right = 512;
+	}
+
 	local d = ::manbow.InputSingle();
 	d.SetDeviceAssign(devmap);
 	target_device.Append(d);
+
+	if (device_id >= 0)
+	{
+		devmap.up = 524;
+		devmap.down = 526;
+		devmap.left = 527;
+		devmap.right = 525;
+		local d = ::manbow.InputSingle();
+		d.SetDeviceAssign(devmap);
+		target_device.Append(d);
+	}
 
 	for( local i = 0; i < 3; i = ++i )
 	{

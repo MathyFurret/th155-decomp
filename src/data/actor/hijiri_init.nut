@@ -1,6 +1,7 @@
 this.player_class.sn <- {};
 this.player_class.shotNum <- 0;
 this.player_class.chant <- 0;
+this.player_class.sub_chant <- 0;
 this.player_class.byke <- null;
 this.player_class.airByke <- false;
 this.player_class.chantCountBall <- null;
@@ -46,6 +47,7 @@ this.player_class.Init <- function ()
 	];
 	this.change_reset = function ()
 	{
+		this.sub_chant = 0;
 	};
 	this.resetFunc = function ()
 	{
@@ -53,6 +55,7 @@ this.player_class.Init <- function ()
 		this.chant = 0;
 		this.byke = null;
 		this.airByke = false;
+		this.sub_chant = 0;
 		local t1_ = {};
 		t1_.rot <- 0.00000000;
 		local t2_ = {};

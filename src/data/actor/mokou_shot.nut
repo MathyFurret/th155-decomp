@@ -2322,7 +2322,7 @@ function Climax_Ball( t )
 			this.SetFreeObject(this.x, this.y, this.direction, this.Climax_Ring, {});
 			this.sx = this.sy = 5.00000000;
 			this.callbackGroup = this.team.callback_group_shot;
-			this.flag1 = 16.00000000;
+			this.flag1 = 20.00000000;
 			this.flag3 = this.SetFreeObject(this.owner.x, this.owner.y, this.direction, this.Climax_Shadow, {}).weakref();
 			this.stateLabel = function ()
 			{

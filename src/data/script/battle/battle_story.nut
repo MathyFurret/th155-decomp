@@ -4,6 +4,7 @@ this.camera_pos <- this.Vector3();
 this.camera_zoom <- 1.00000000;
 this.is_continued <- false;
 this.enable_win_demo <- true;
+this.enable_demo_talk <- false;
 this.enable_KO_exp <- true;
 this.enable_KO_stand <- false;
 this.enable_slave <- [
@@ -20,7 +21,19 @@ this.bgm <- null;
 this.change_slave <- false;
 this.GuardCrash_Check = this.GuardCrash_Check_Story;
 this.boss_spell <- [];
-::manbow.LoadCSVtoArray("data/story/spell_list/" + ::story.name + "_stage_" + (::story.stage + 1) + ".csv", this.boss_spell);
+
+if (::story.difficulty == 4)
+{
+	if (!::manbow.LoadCSVtoArray("data/story/spell_list/" + ::story.name + "_stage_" + (::story.stage + 1) + "_od.csv", this.boss_spell))
+	{
+		::manbow.LoadCSVtoArray("data/story/spell_list/" + ::story.name + "_stage_" + (::story.stage + 1) + ".csv", this.boss_spell);
+	}
+}
+else
+{
+	::manbow.LoadCSVtoArray("data/story/spell_list/" + ::story.name + "_stage_" + (::story.stage + 1) + ".csv", this.boss_spell);
+}
+
 function Pause()
 {
 	::sound.PlaySE(111);
@@ -350,6 +363,24 @@ function Begin_StartDemo_Update()
 {
 }
 
+function Begin_BattleDemo()
+{
+	this.gauge.Hide();
+	this.demoCount = 0;
+	this.state = 1;
+	this.battleUpdate = this.BattleDemo_Update;
+}
+
+function BattleDemo_Update()
+{
+	this.demoCount++;
+
+	if (this.demoCount == 60)
+	{
+		::talk.Begin("demo_1");
+	}
+}
+
 function Battle_Ready()
 {
 	this.Hide_EnemyName();
@@ -393,10 +424,37 @@ function Battle_Fight()
 
 function Battle_Restart()
 {
+	if (this.enable_demo_talk)
+	{
+		this.enable_demo_talk = false;
+		this.Begin_BattleDemo();
+		return;
+	}
+
 	this.demoCount = 0;
 	this.state = 8;
 	this.battleUpdate = this.Fight_Update;
 	this.enable_contact_test = true;
+}
+
+function Battle_Restart_Demo()
+{
+	this.gauge.Show(25);
+	this.demoCount = 0;
+	this.battleUpdate = this.Restart_Demo_Update;
+}
+
+function Restart_Demo_Update()
+{
+	this.demoCount++;
+
+	if (this.demoCount == 15)
+	{
+		this.demoCount = 0;
+		this.state = 8;
+		this.battleUpdate = this.Fight_Update;
+		this.enable_contact_test = true;
+	}
 }
 
 function Fight_Update()
@@ -410,6 +468,16 @@ function Fight_Update()
 			this.bgm.Deactivate();
 			this.bgm = null;
 		}
+	}
+
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
 	}
 
 	local p1_ko = this.team[0].CheckKO();
@@ -488,6 +556,16 @@ function Player_KO()
 
 function Player_KO_Update()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	if (this.team[0].current.centerStop == 0)
 	{
 		this.demoCount++;
@@ -536,6 +614,16 @@ function Player_Defeat()
 
 function Player_Defeat_Update()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	this.demoCount++;
 
 	if (this.demoCount == 120)
@@ -596,6 +684,16 @@ function Enemy_KO()
 
 function Enemy_KO_Update()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	this.demoCount++;
 
 	if (this.demoCount > 60 && this.team[0].current.IsFree() && (!this.team[1].current.isVisible || this.team[1].current.centerStop == 0))
@@ -607,6 +705,8 @@ function Enemy_KO_Update()
 
 			if (this.demoCount >= 60)
 			{
+				this.team[1].current.stanCount = 0;
+				this.team[1].current.stanBossCount = 0;
 				this.team[1].current.enableStandUp = true;
 				this.team[1].current.enableKO = false;
 				this.Boss_Spell_Lost();
@@ -650,6 +750,16 @@ function Enemy_Defeat()
 
 function Enemy_Defeat_Update()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	this.demoCount++;
 
 	if (this.demoCount >= 300 && this.team[0].life <= 0)
@@ -734,6 +844,16 @@ function Double_KO()
 
 function Double_KO_Update()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	this.demoCount++;
 
 	if (this.demoCount > 60 && this.team[0].current.centerStop == 0 && (!this.team[1].current.isVisible || this.team[1].current.centerStop == 0))
@@ -750,6 +870,8 @@ function Double_KO_Update()
 				this.team[0].damage_life = this.team[0].life_max;
 				this.team[0].master.enableStandUp = true;
 				this.team[0].slave.enableStandUp = true;
+				this.team[1].current.stanCount = 0;
+				this.team[1].current.stanBossCount = 0;
 				this.team[1].current.enableStandUp = true;
 				this.team[1].current.enableKO = false;
 				this.Boss_Spell_Lost();
@@ -781,8 +903,12 @@ function Win()
 		false
 	];
 	local a = this.team[0].current;
-	a.autoCamera = false;
-	::camera.SetTarget(a.x, a.y - 20, 2.00000000, false);
+
+	if (!this.enable_KO_stand)
+	{
+		a.autoCamera = false;
+		::camera.SetTarget(a.x, a.y - 20, 2.00000000, false);
+	}
 
 	if (this.enable_win_demo)
 	{
@@ -875,6 +1001,7 @@ function Game_WinCallUpdate()
 		if (this.enable_KO_stand)
 		{
 			::battle.team[1].current.enableStandUp = true;
+			::battle.team[1].life = 1;
 		}
 
 		this.infoActor = null;
@@ -915,7 +1042,7 @@ function Continue_Update()
 
 	if (this.demoCount == 10)
 	{
-		::Dialog(1, "ÉRÉìÉeÉBÉjÉÖÅ[Ç\x2561Ç\x2584Ç\x2556Ç\x2310ÅH", function ( t )
+		::Dialog(1, ::menu.common.GetMessageText("_continue"), function ( t )
 		{
 			if (t)
 			{
@@ -1063,6 +1190,12 @@ function Enable_BossKo_StandUp()
 	{
 		boss.slave.koExp = false;
 	}
+}
+
+function Move_TalkPosition()
+{
+	this.team[0].current.TalkPosition(null);
+	this.team[1].current.TalkPosition(null);
 }
 
 function FightEndFunction()

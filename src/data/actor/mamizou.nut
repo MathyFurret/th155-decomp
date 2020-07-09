@@ -225,6 +225,7 @@ function BeginBattle_Mokou( t )
 									this.SetMotion(this.motion, 3);
 									this.keyAction = function ()
 									{
+										this.freeMap = false;
 										this.EndtoFreeMove();
 										this.CommonBegin();
 									};
@@ -299,6 +300,7 @@ function BeginBattle_Slave( t )
 				if (this.abs(this.flag1.x - this.x) <= 20.00000000)
 				{
 					this.team.master.func();
+					this.freeMap = false;
 					this.stateLabel = function ()
 					{
 					};
@@ -1163,7 +1165,7 @@ function Atk_HighFront_Init( t )
 		},
 		function ()
 		{
-			this.HitReset();
+			this.HitTargetReset();
 			this.PlaySE(2612);
 			this.SetSpeed_XY(-6.00000000 * this.direction, null);
 			this.stateLabel = function ()
@@ -1208,7 +1210,7 @@ function Atk_RushA_Air_Init( t )
 		},
 		function ()
 		{
-			this.HitReset();
+			this.HitTargetReset();
 			this.PlaySE(2612);
 		},
 		function ()
@@ -1322,7 +1324,7 @@ function Atk_HighFront_Air_Init( t )
 		},
 		function ()
 		{
-			this.HitReset();
+			this.HitTargetReset();
 			this.PlaySE(2612);
 		},
 		function ()
@@ -1994,6 +1996,7 @@ function Shot_Front_Init( t )
 		{
 			this.team.AddMP(-200, 120);
 			this.PlaySE(2625);
+			local a_ = [];
 
 			for( local i = 0.00000000; i < 360.00000000; i = i + 36.00000000 )
 			{
@@ -2012,7 +2015,12 @@ function Shot_Front_Init( t )
 					t.shotRot <- -90.00000000 * 0.01745329;
 				}
 
-				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t);
+				a_.append(this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t).weakref());
+			}
+
+			foreach( a in a_ )
+			{
+				a.flag3 = a_;
 			}
 		}
 	];
@@ -2050,6 +2058,7 @@ function Shot_Front_Air_Init( t )
 		{
 			this.team.AddMP(-200, 120);
 			this.PlaySE(2625);
+			local a_ = [];
 
 			for( local i = 0.00000000; i < 360.00000000; i = i + 36.00000000 )
 			{
@@ -2068,7 +2077,12 @@ function Shot_Front_Air_Init( t )
 					t.shotRot <- -90.00000000 * 0.01745329;
 				}
 
-				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t);
+				a_.append(this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t).weakref());
+			}
+
+			foreach( a in a_ )
+			{
+				a.flag3 = a_;
 			}
 		}
 	];
@@ -3026,6 +3040,7 @@ function SP_Taiko_Init( t )
 	this.flag1 = null;
 	this.flag2 = this.centerStop;
 	this.flag3 = 0;
+	this.flag4 = 40;
 	this.keyAction = [
 		null,
 		function ()
@@ -3040,11 +3055,13 @@ function SP_Taiko_Init( t )
 			{
 				this.centerStop = -3;
 				this.SetSpeed_XY(-5.00000000 * this.direction, -4.50000000);
+				this.SetSpeed_XY(0.00000000, 0.00000000);
 			}
 			else
 			{
 				this.centerStop = 3;
 				this.SetSpeed_XY(-5.00000000 * this.direction, 4.50000000);
+				this.SetSpeed_XY(0.00000000, 0.00000000);
 			}
 
 			this.stateLabel = function ()
@@ -3070,7 +3087,9 @@ function SP_Taiko_Init( t )
 			}
 
 			this.SetFreeObject(this.flag1.point0_x, this.flag1.point0_y, this.direction, this.SPShot_TaikoBeat, {});
-			this.SetShot(this.flag1.point0_x, this.flag1.point0_y, this.direction, this.SPShot_TaikoShot, {});
+			local t_ = {};
+			t_.rot <- (this.flag4 + this.rand() % 25) * 0.01745329;
+			this.SetShot(this.flag1.point0_x, this.flag1.point0_y, this.direction, this.SPShot_TaikoShot, t_);
 			this.flag3++;
 			this.stateLabel = function ()
 			{
@@ -3082,7 +3101,9 @@ function SP_Taiko_Init( t )
 					this.PlaySE(2711);
 					this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_HitSmashB2, {});
 					this.SetFreeObject(this.flag1.point0_x, this.flag1.point0_y, this.direction, this.SPShot_TaikoBeat, {});
-					this.SetShot(this.flag1.point0_x, this.flag1.point0_y, this.direction, this.SPShot_TaikoShot, {});
+					local t_ = {};
+					t_.rot <- (this.flag4 + this.rand() % 25) * 0.01745329;
+					this.SetShot(this.flag1.point0_x, this.flag1.point0_y, this.direction, this.SPShot_TaikoShot, t_);
 					this.flag3++;
 
 					if (this.flag3 == 3)
@@ -3411,11 +3432,15 @@ function Spell_C_Hit()
 			this.spellC_Hit = true;
 			this.stateLabel = function ()
 			{
-				if (this.count >= 30)
+				if (this.target.centerStop * this.target.centerStop <= 1)
 				{
-					this.SetMotion(this.motion, 3);
+					this.count = 0;
 					this.stateLabel = function ()
 					{
+						if (this.count == 21)
+						{
+							this.SetMotion(this.motion, 3);
+						}
 					};
 				}
 			};

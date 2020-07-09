@@ -1206,8 +1206,9 @@ function SPShot_B_Gem( t )
 	this.SetMotion(3018, 2 + this.rand() % 4);
 	this.SetFreeObject(this.x, this.y, this.direction, this.SPShot_B_GemFire, {});
 	this.rz = this.rand() % 360 * 0.01745329;
-	this.SetSpeed_XY(0.00000000, -2.00000000 - this.rand() % 10 * 0.10000000);
-	this.flag1 = (3 - this.rand() % 7) * 0.01745329;
+	this.sx = this.sy = 0.50000000 + this.rand() % 6 * 0.10000000;
+	this.SetSpeed_XY(0.00000000, -5.00000000 - this.rand() % 10 * 0.10000000);
+	this.flag1 = (6 - this.rand() % 15) * 0.01745329;
 	this.cancelCount = 1;
 	this.atk_id = 262144;
 	this.SetTaskAddRotation(0.00000000, 0.00000000, this.flag1);
@@ -1215,6 +1216,7 @@ function SPShot_B_Gem( t )
 	{
 		this.SetMotion(3018, 1);
 		this.sx = this.sy = 1.00000000;
+		this.SetSpeed_XY(0.00000000, 0.00000000);
 		this.stateLabel = function ()
 		{
 			this.sx = this.sy *= 0.89999998;
@@ -1234,7 +1236,8 @@ function SPShot_B_Gem( t )
 			return;
 		}
 
-		this.AddSpeed_XY(0.00000000, 0.20000000);
+		this.count++;
+		this.AddSpeed_XY(0.00000000, 0.20000000 + 0.20000000);
 	};
 }
 
@@ -1288,7 +1291,7 @@ function SPShot_B( t )
 				for( local i = 0; i < 12; i++ )
 				{
 					this.SetShot(this.x - 50 + this.rand() % 100, this.y - y_ - this.rand() % 50, this.direction, this.SPShot_B_Gem, {});
-					y_ = y_ + 80;
+					y_ = y_ + 40;
 				}
 			}
 
@@ -1319,7 +1322,7 @@ function SPShot_B( t )
 			return;
 		}
 
-		if (this.Damage_ConvertOP(this.x, this.y, 5) || this.cancelCount <= 0 || this.hitCount >= 4 || this.count >= 30)
+		if (this.Damage_ConvertOP(this.x, this.y, 5) || this.cancelCount <= 0 || this.hitCount >= 4 || this.count >= 15)
 		{
 			this.func[0].call(this);
 			return true;
@@ -1327,7 +1330,7 @@ function SPShot_B( t )
 
 		if (this.hitCount <= 3)
 		{
-			this.HitCycleUpdate(6);
+			this.HitCycleUpdate(3);
 		}
 	};
 }
@@ -1417,7 +1420,7 @@ function SPShot_E_Trail( t )
 	this.SetMotion(3049, 3);
 	this.DrawActorPriority(180);
 	this.rz = t.rot;
-	this.rx = 0.52359873;
+	this.rx = 0.78539813;
 	this.stateLabel = function ()
 	{
 		this.sx = this.sy += 0.01000000;
@@ -1434,9 +1437,9 @@ function SPShot_E_Trail( t )
 function SPShot_E( t )
 {
 	this.SetMotion(3049, 1);
-	this.SetSpeed_Vec(20.00000000, t.rot, this.direction);
+	this.SetSpeed_Vec(24.00000000, t.rot, this.direction);
 	this.SetTaskAddRotation(0.00000000, 0.00000000, 0.34906584);
-	this.rx = 0.52359873;
+	this.rx = 0.78539813;
 	this.cancelCount = 3;
 	this.atk_id = 16777216;
 	this.flag1 = 0;
@@ -1444,7 +1447,7 @@ function SPShot_E( t )
 	this.flag3 = this.Vector3();
 	this.flag3.x = this.va.x;
 	this.flag3.y = this.va.y;
-	this.SetSpeed_XY(this.flag3.x, this.flag3.y * 0.66000003);
+	this.SetSpeed_XY(this.flag3.x, this.flag3.y * 0.50000000);
 	this.func = [
 		function ()
 		{
@@ -1471,7 +1474,7 @@ function SPShot_E( t )
 			return;
 		}
 
-		if (this.cancelCount == 0 || this.owner.motion != 3040 && this.owner.motion != 3041)
+		if (this.cancelCount <= 0 || this.owner.motion != 3040 && this.owner.motion != 3041)
 		{
 			this.func[0].call(this);
 			return;
@@ -1483,8 +1486,8 @@ function SPShot_E( t )
 		}
 
 		this.flag3.RotateByRadian(this.initTable.rotSpeed * this.direction);
-		this.SetSpeed_XY(this.flag3.x, this.flag3.y * 0.66000003);
-		this.flag1 += 0.08726646;
+		this.SetSpeed_XY(this.flag3.x, this.flag3.y * 0.50000000);
+		this.flag1 += this.initTable.rotSpeed;
 		this.count++;
 
 		if (this.hitCount <= 3)

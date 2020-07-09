@@ -122,7 +122,7 @@ function SummonMask()
 			local t_ = {};
 			t_.type <- i;
 			t_.rot <- 120 * i * 0.01745329;
-			this.mask.append(this.SetShot(this.x, ::battle.scroll_top - 128, this.direction, this.MaskObject, t_).weakref());
+			this.mask.append(this.SetShot(this.x, this.y, this.direction, this.MaskObject, t_).weakref());
 		}
 	}
 }

@@ -12,11 +12,6 @@ function MainLoopFirst()
 		this.colorFunction.call(this);
 	}
 
-	if (this.command && this == this.team.current)
-	{
-		this.command.Update(this.direction, this.hitStopTime <= 0 && this.damageStopTime <= 0);
-	}
-
 	if (this.spellBackTime > 0)
 	{
 		this.spellBackTime--;

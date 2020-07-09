@@ -1853,7 +1853,7 @@ function Shot_Normal_Upper_Init( t )
 			this.team.AddMP(-200, 60);
 			this.PlaySE(1071);
 
-			for( local i = -3; i <= 3; i++ )
+			for( local i = -2; i <= 2; i++ )
 			{
 				if (i == 0)
 				{
@@ -1912,7 +1912,7 @@ function Shot_Normal_Upper_Air_Init( t )
 			this.team.AddMP(-200, 60);
 			this.PlaySE(1071);
 
-			for( local i = -3; i <= 3; i++ )
+			for( local i = -2; i <= 2; i++ )
 			{
 				if (i == 0)
 				{
@@ -1978,7 +1978,7 @@ function Shot_Normal_Under_Init( t )
 			this.team.AddMP(-200, 60);
 			this.PlaySE(1071);
 
-			for( local i = -3; i <= 3; i++ )
+			for( local i = -2; i <= 2; i++ )
 			{
 				if (i == 0)
 				{
@@ -2045,7 +2045,7 @@ function Shot_Normal_Under_Air_Init( t )
 			this.centerStop = -3;
 			this.SetSpeed_XY(-4.00000000 * this.direction, -6.50000000);
 
-			for( local i = -3; i <= 3; i++ )
+			for( local i = -2; i <= 2; i++ )
 			{
 				if (i == 0)
 				{
@@ -2506,6 +2506,7 @@ function Okult_Side_Init( t )
 	this.keyAction = [
 		function ()
 		{
+			this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_ChargeO, {});
 			this.PlaySE(1074);
 			this.team.op_stop = 300;
 			this.team.op_stop_max = 300;
@@ -3446,6 +3447,8 @@ function Spell_C_Kick( t )
 	this.HitReset();
 	this.hitResult = 1;
 	this.SetMotion(4021, 0);
+	this.flag1 = this.Vector3();
+	this.flag1.x = this.input.x;
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.SetTimeStop(60);
 	this.PlaySE(820);

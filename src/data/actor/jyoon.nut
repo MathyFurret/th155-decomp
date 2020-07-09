@@ -802,6 +802,45 @@ function StandUp_Init( t )
 	}
 }
 
+function DamageAnimalBegin_Init( t )
+{
+	this.LabelClear();
+
+	if (this.shion)
+	{
+		this.shion.Shion_DamageVanish();
+	}
+
+	this.centerStop = -3;
+
+	if (this.y > this.centerY)
+	{
+		this.centerStop = 3;
+	}
+
+	this.direction = t.direction;
+	this.SetSpeed_XY(-4.50000000 * this.direction, this.centerStop < 0 ? -10.00000000 : 10.00000000);
+	this.SetMotion(289, 0);
+	this.count = 0;
+	this.flag1 = 0;
+	this.stateLabel = function ()
+	{
+		this.CenterUpdate(0.50000000, null);
+
+		if (this.centerStop * this.centerStop <= 1)
+		{
+			this.VX_Brake(0.25000000);
+			this.flag1++;
+
+			if (this.flag1 > 30)
+			{
+				this.StandAnimal_Init(null);
+				this.SetSpeed_XY(0.00000000, 0.00000000);
+			}
+		}
+	};
+}
+
 function DamageAnimalB_Init( t )
 {
 	this.LabelClear();
@@ -1790,7 +1829,7 @@ function Shot_Normal_Upper_Init( t )
 			pos_.x = 60;
 			pos_.RotateByRadian(-80 * 0.01745329);
 
-			for( local i = -8; i <= -2; i++ )
+			for( local i = -8; i <= -4; i++ )
 			{
 				local t = {};
 				t.rot <- i * 10 * 0.01745329;
@@ -1842,7 +1881,7 @@ function Shot_Normal_Upper_Air_Init( t )
 			pos_.x = 60;
 			pos_.RotateByRadian(-80 * 0.01745329);
 
-			for( local i = -8; i <= -2; i++ )
+			for( local i = -8; i <= -4; i++ )
 			{
 				local t = {};
 				t.rot <- i * 10 * 0.01745329;
@@ -1907,7 +1946,7 @@ function Shot_Normal_Under_Init( t )
 			pos_.x = 60;
 			pos_.RotateByRadian(20 * 0.01745329);
 
-			for( local i = 2; i <= 8; i++ )
+			for( local i = 4; i <= 8; i++ )
 			{
 				local t = {};
 				t.rot <- i * 10 * 0.01745329;
@@ -1960,7 +1999,7 @@ function Shot_Normal_Under_Air_Init( t )
 			pos_.x = 60;
 			pos_.RotateByRadian(20 * 0.01745329);
 
-			for( local i = 2; i <= 8; i++ )
+			for( local i = 4; i <= 8; i++ )
 			{
 				local t = {};
 				t.rot <- i * 10 * 0.01745329;
@@ -2878,7 +2917,7 @@ function SP_E_Init( t )
 			this.hitResult = 1;
 			local t_ = {};
 			t_.rot <- 90 * 0.01745329;
-			t_.rotSpeed <- -0.08726646;
+			t_.rotSpeed <- -0.10471975;
 			this.flag1 = this.SetShot(this.x, this.y, this.direction, this.SPShot_E, t_).weakref();
 			this.flag1.SetParent(this, 0, 0);
 			this.PlaySE(4645);

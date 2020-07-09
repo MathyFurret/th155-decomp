@@ -20,7 +20,7 @@ function Update_Normal()
 
 		if (this.occult_cycle <= 0)
 		{
-			this.occult_cycle = 300;
+			this.occult_cycle = 360;
 			this.SetShot(this.target.x, this.target.y, this.direction, this.Shot_Occult_Lightning, {});
 		}
 
@@ -70,7 +70,7 @@ function Update_Normal()
 		{
 			this.momo_time--;
 
-			if (this.IsDamage())
+			if (this.IsDamage() && this.motion != 131 && (this.motion <= 299 || this.motion >= 312))
 			{
 				this.momo_time = 0;
 			}
@@ -100,7 +100,7 @@ function Update_Input()
 
 	if (this.occult_time == 0 && this.team.op >= 1000 && this.team.op_stop == 0 && this.command.rsv_k01 > 0)
 	{
-		if (this.Cancel_Check(9, 200, 0, false))
+		if (this.Cancel_Check(60, 200, 0, false))
 		{
 			this.Okult_Init(null);
 			this.command.ResetReserve();

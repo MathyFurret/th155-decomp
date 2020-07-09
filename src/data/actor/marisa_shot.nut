@@ -1820,6 +1820,8 @@ function Shot_OkultF( t )
 			this.SetMotion(2509, 16);
 			this.count = 0;
 			this.PlaySE(1270);
+			this.HitReset();
+			this.hitCount = 0;
 			this.stateLabel = function ()
 			{
 				if (this.IsScreen(150))
@@ -1844,7 +1846,7 @@ function Shot_OkultF( t )
 					this.VY_Brake(0.30000001);
 				}
 
-				this.AddSpeed_XY(this.va.x * this.direction <= 12.50000000 ? 0.50000000 * this.direction : 0.05000000, -0.25000000);
+				this.AddSpeed_XY(this.va.x * this.direction <= 12.50000000 ? 0.50000000 * this.direction : 0.05000000, -0.25000000, null, -6.00000000);
 
 				if (this.hitCount <= this.flag4)
 				{
@@ -1872,7 +1874,7 @@ function Shot_OkultF( t )
 
 		this.count++;
 
-		if (this.count >= 30)
+		if (this.count >= 20)
 		{
 			this.func[1].call(this);
 		}
@@ -2995,7 +2997,7 @@ function SpellC_ShotCore( t )
 			if (this.flag1[i])
 			{
 				this.flag1[i].x = this.x + this.flag2.x * this.flag3;
-				this.flag1[i].y = this.y + this.flag2.y * this.flag3 * 0.33000001;
+				this.flag1[i].y = this.y + this.flag2.y * this.flag3 * 0.89999998;
 
 				if (this.flag1[i].drawPriority == 200)
 				{
@@ -3013,7 +3015,7 @@ function SpellC_ShotCore( t )
 			this.flag2.RotateByDegree(60.00000000);
 		}
 
-		this.flag2.RotateByDegree(6.00000000);
+		this.flag2.RotateByDegree(4.00000000);
 		this.flag3 += (120 - this.flag3) * 0.10000000;
 
 		if (this.count == 25)

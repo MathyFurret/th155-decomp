@@ -521,7 +521,7 @@ function Occult_Sprash( t )
 
 function Occult_NessyPod( t )
 {
-	this.SetMotion(2509, 4);
+	this.SetMotion(2509, 5);
 	this.DrawActorPriority(171);
 	this.flag1 = this.Vector3();
 	this.flag1.x = 1.00000000;
@@ -537,12 +537,21 @@ function Occult_NessyPod( t )
 			t.rot <- this.rz;
 			t.vec <- 32.50000000;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Occult_Shot, t);
-			this.team.op -= 50;
+			this.team.op -= 20;
 
 			if (this.team.op <= 0)
 			{
 				this.team.op = 0;
 			}
+		},
+		function ()
+		{
+			this.SetMotion(2509, 4);
+			this.stateLabel = function ()
+			{
+				this.x += (this.initTable.pare.point0_x - this.x) * 0.25000000;
+				this.y += (this.initTable.pare.point0_y - this.y) * 0.25000000;
+			};
 		}
 	];
 	this.stateLabel = function ()
@@ -551,6 +560,19 @@ function Occult_NessyPod( t )
 		this.rz = this.atan2(this.flag1.y, this.flag1.x);
 		this.x += (this.initTable.pare.point0_x - this.x) * 0.25000000;
 		this.y += (this.initTable.pare.point0_y - this.y) * 0.25000000;
+		this.count++;
+		local c_ = this.count % 120;
+
+		if (c_ == 75 || c_ == 81 || c_ == 87 || c_ == 93 || c_ == 99)
+		{
+			this.func[1].call(this);
+
+			if (this.team.op <= 0)
+			{
+				this.func[2].call(this);
+				return;
+			}
+		}
 	};
 }
 
@@ -574,6 +596,11 @@ function Occult_Robo( t )
 		},
 		function ()
 		{
+			if (this.flag2)
+			{
+				this.flag2.func[2].call(this.flag2);
+			}
+
 			this.keyAction = null;
 			this.owner.occult = 2;
 			this.SetMotion(2509, 1);
@@ -628,22 +655,6 @@ function Occult_Robo( t )
 					return;
 				}
 
-				local c_ = this.count % 120;
-
-				if (c_ == 75 || c_ == 81 || c_ == 87 || c_ == 93 || c_ == 99)
-				{
-					if (this.flag2)
-					{
-						this.flag2.func[1].call(this.flag2);
-					}
-
-					if (this.team.op <= 0)
-					{
-						this.func[1].call(this);
-						return;
-					}
-				}
-
 				this.flag5.y = (::battle.scroll_bottom - this.y) * 0.10000000;
 				this.flag5.y = this.Math_MinMax(this.flag5.y, -10.00000000, 10.00000000);
 				this.SetSpeed_XY(this.flag5.x, this.flag5.y);
@@ -657,6 +668,13 @@ function Occult_Robo( t )
 			if (this.team.op <= 0)
 			{
 				this.team.op = 0;
+
+				if (this.team.op_stop < 300)
+				{
+					this.team.op_stop = 300;
+					this.team.op_stop_max = 300;
+				}
+
 				this.func[1].call(this);
 				return;
 			}
@@ -784,6 +802,35 @@ function Occult_Robo( t )
 							this.SetSpeed_XY(0.00000000, null);
 						}
 					};
+				}
+			};
+		},
+		function ()
+		{
+			if (this.flag2)
+			{
+				this.flag2.func[2].call(this.flag2);
+			}
+
+			this.keyAction = null;
+			this.owner.occult = 2;
+			this.SetMotion(2509, 1);
+			this.count = 0;
+			this.PlaySE(2275);
+			this.stateLabel = function ()
+			{
+				this.count++;
+
+				if (this.count % 6 == 1 && this.y < ::battle.scroll_bottom + 350)
+				{
+					this.SetFreeObject(this.x + (160 - this.rand() % 60) * this.direction, ::battle.scroll_bottom + this.rand() % 25, this.direction, this.Occult_Sprash, {});
+				}
+
+				this.AddSpeed_XY(0.25000000 * this.direction, this.va.y < 10.00000000 ? 0.50000000 : 0.01000000);
+
+				if (this.y > ::battle.scroll_bottom + 500)
+				{
+					this.func[0].call(this);
 				}
 			};
 		}

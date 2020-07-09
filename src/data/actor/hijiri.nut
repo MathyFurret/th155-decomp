@@ -1686,6 +1686,7 @@ function Shot_Normal_Init( t )
 			local t = {};
 			t.rot <- this.flag1;
 			t.v <- 12.50000000;
+			t.type <- this.shotNum;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 
 			if (this.shotNum >= 1)
@@ -1693,6 +1694,7 @@ function Shot_Normal_Init( t )
 				local t = {};
 				t.rot <- this.flag1 + this.flag2;
 				t.v <- 11.00000000;
+				t.type <- this.shotNum;
 				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			}
 
@@ -1701,6 +1703,7 @@ function Shot_Normal_Init( t )
 				local t = {};
 				t.rot <- this.flag1 + this.flag2 * 2.00000000;
 				t.v <- 9.50000000;
+				t.type <- this.shotNum;
 				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			}
 
@@ -1724,6 +1727,12 @@ function Shot_Normal_Air_Init( t )
 	this.count = 0;
 	this.flag1 = 0;
 	this.flag2 = -10 * 0.01745329;
+
+	if (this.y < this.centerY)
+	{
+		this.flag2 = 10 * 0.01745329;
+	}
+
 	this.SetSpeed_XY(this.va.x * 0.50000000, this.va.y * 0.25000000);
 	this.AjustCenterStop();
 	this.keyAction = [
@@ -1734,6 +1743,7 @@ function Shot_Normal_Air_Init( t )
 			local t = {};
 			t.rot <- this.flag1;
 			t.v <- 12.50000000;
+			t.type <- this.shotNum;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 
 			if (this.shotNum >= 1)
@@ -1741,6 +1751,7 @@ function Shot_Normal_Air_Init( t )
 				local t = {};
 				t.rot <- this.flag1 + this.flag2;
 				t.v <- 11.00000000;
+				t.type <- this.shotNum;
 				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			}
 
@@ -1749,6 +1760,7 @@ function Shot_Normal_Air_Init( t )
 				local t = {};
 				t.rot <- this.flag1 + this.flag2 * 2.00000000;
 				t.v <- 9.50000000;
+				t.type <- this.shotNum;
 				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Normal, t);
 			}
 
@@ -2220,7 +2232,7 @@ function SP_Chant( t )
 	];
 	this.subState = function ()
 	{
-		if (this.input.b2 == 0)
+		if (this.input.b2 == 0 || ::battle.state != 8)
 		{
 			this.flag1 = false;
 		}
@@ -2624,7 +2636,7 @@ function SP_D_Init( t )
 	this.flag5 = t.rush;
 	this.subState = function ()
 	{
-		if (this.flag1 && (this.input.b2 == 0 && this.flag5 == false || this.input.b0 == 0 && this.flag5))
+		if (this.flag1 && (this.input.b2 == 0 && this.flag5 == false || this.input.b0 == 0 && this.flag5 || ::battle.state != 8))
 		{
 			this.flag1 = false;
 		}
@@ -3477,9 +3489,11 @@ function Spell_Climax_Init( t )
 			this.BackFadeIn(0.00000000, 0.00000000, 0.00000000, 0);
 			this.count = 0;
 			this.PlaySE(1730);
-			this.SetSpeed_XY(40.00000000 * this.direction, 0.00000000);
+			this.SetSpeed_XY(20.00000000 * this.direction, 0.00000000);
 			this.stateLabel = function ()
 			{
+				this.AddSpeed_XY(10.00000000 * this.direction, 0.00000000, 40.00000000 * this.direction, null);
+
 				if (this.hitResult & 1 && this.target.damageTarget == this)
 				{
 					this.Climax_Hit(null);

@@ -235,7 +235,7 @@ function DebuffSet_Animal( time_ )
 	local t_ = {};
 	t_.direction <- this.direction;
 	t_.atkRank <- 2;
-	this.DamageAnimalB_Init.call(this, t_);
+	this.DamageAnimalBegin_Init.call(this, t_);
 }
 
 function DebuffEnd_Animal()

@@ -427,6 +427,10 @@ function PlayerhitAction_Normal( t_ )
 			this.endure = 0;
 			t_.stopVecX = 0.00000000;
 			t_.stopVecY = 0.00000000;
+			this.team.current.vf.x = 0.00000000;
+			this.team.current.vf.y = 0.00000000;
+			this.team.current.vfBaria.x = 0.00000000;
+			this.team.current.vfBaria.y = 0.00000000;
 			this.team.master.PlayerhitAction_Normal(t_);
 			return;
 		}
@@ -2405,7 +2409,7 @@ function BariaGuard_Init( t )
 		local v_ = this.va.x * 0.50000000;
 	}
 
-	if (this.forceBariaCount >= 10)
+	if (this.forceBariaCount >= 10 && this.input.b4 <= 6)
 	{
 		this.forceBariaCount = 9;
 		v_ = v_ * 1.50000000;
@@ -2705,11 +2709,23 @@ function Recover_Init( t )
 	{
 		this.stateLabel = function ()
 		{
-			this.VX_Brake(0.40000001);
+			this.VX_Brake(0.40000001, 3.00000000 * this.direction);
 			this.AddSpeed_XY(0.00000000, 0.50000000);
 		};
 		this.SetMotion(30, 0);
-		this.SetSpeed_XY(12.00000000 * this.direction, -10.00000000);
+		this.SetSpeed_XY(this.va.x + 12.00000000 * this.direction, -10.00000000);
+
+		if (this.va.x * this.direction > 12.00000000)
+		{
+			this.va.x = 12.00000000 * this.direction;
+		}
+
+		if (this.va.x * this.direction < 3.00000000)
+		{
+			this.va.x = 3.00000000 * this.direction;
+		}
+
+		this.ConvertTotalSpeed();
 	}
 	else
 	{
@@ -5595,6 +5611,39 @@ function StandAnimal_Init( t )
 	};
 }
 
+function DamageAnimalBegin_Init( t )
+{
+	this.LabelClear();
+	this.centerStop = -3;
+
+	if (this.y > this.centerY)
+	{
+		this.centerStop = 3;
+	}
+
+	this.direction = t.direction;
+	this.SetSpeed_XY(-4.50000000 * this.direction, this.centerStop < 0 ? -10.00000000 : 10.00000000);
+	this.SetMotion(289, 0);
+	this.count = 0;
+	this.flag1 = 0;
+	this.stateLabel = function ()
+	{
+		this.CenterUpdate(0.50000000, null);
+
+		if (this.centerStop * this.centerStop <= 1)
+		{
+			this.VX_Brake(0.25000000);
+			this.flag1++;
+
+			if (this.flag1 > 30)
+			{
+				this.StandAnimal_Init(null);
+				this.SetSpeed_XY(0.00000000, 0.00000000);
+			}
+		}
+	};
+}
+
 function DamageAnimalB_Init( t )
 {
 	this.LabelClear();
@@ -5644,15 +5693,26 @@ function Atk_Grab_Init( t )
 	this.LabelClear();
 	this.HitReset();
 	this.SetMotion(1800, 0);
+	this.flag4 = 4;
 	this.flag5 = false;
 	this.stateLabel = function ()
 	{
 		this.VX_Brake(0.75000000);
+		this.flag4--;
 
 		if (this.hitResult & 1)
 		{
 			if (this.target.centerStop * this.target.centerStop <= 1)
 			{
+				if (this.target.motion == 1800 && this.target.flag4 > 0)
+				{
+					this.PlaySE(807);
+					this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_HitSmashB, {});
+					this.Grab_Blocked(null);
+					this.team.current.target.Grab_Blocked(null);
+					return;
+				}
+
 				if (this.team.current.target.IsGuard())
 				{
 					this.PlaySE(816);
@@ -5700,6 +5760,7 @@ function Grab_Blocked( t )
 	this.LabelClear();
 	this.HitReset();
 	this.SetMotion(131, 0);
+	this.Warp(this.target.team.current.x - 48 * this.direction, this.centerY);
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	::battle.enableTimeUp = true;
 	this.keyAction = [
@@ -5727,6 +5788,16 @@ function Grab_Block( t )
 	this.HitReset();
 	this.SetMotion(1801, 0);
 
+	if (this.x > ::battle.corner_right - 64 && this.direction == 1.00000000)
+	{
+		this.Warp(::battle.corner_right - 64, this.y);
+	}
+
+	if (this.x < ::battle.corner_left + 64 && this.direction == -1.00000000)
+	{
+		this.Warp(::battle.corner_left + 64, this.y);
+	}
+
 	if (!this.layerSwitch)
 	{
 		this.target.layerSwitch = false;
@@ -5738,6 +5809,8 @@ function Grab_Block( t )
 		function ()
 		{
 			this.PlaySE(807);
+			this.target.team.current.damageTarget = this.weakref();
+			this.target.team.current.hitBackFlag = 0.89999998;
 			this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_HitSmashB, {});
 		}
 	];

@@ -2282,7 +2282,8 @@ function SPShot_F( t )
 	this.SetMotion(3079, 0);
 	this.SetParent(this.owner, this.x - this.owner.x, this.y - this.owner.y);
 	this.cancelCount = 3;
-	this.sx = this.sy = 0.50000000;
+	this.sx = this.sy = 0.30000001;
+	this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 	this.func = [
 		function ()
 		{
@@ -2295,7 +2296,7 @@ function SPShot_F( t )
 			this.SetKeyFrame(2);
 			this.stateLabel = function ()
 			{
-				this.sx = this.sy += (2.50000000 - this.sx) * 0.25000000;
+				this.sx = this.sy += (3.00000000 - this.sx) * 0.25000000;
 				this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 			};
 		}
@@ -2303,7 +2304,7 @@ function SPShot_F( t )
 	this.stateLabel = function ()
 	{
 		this.count++;
-		this.sx = this.sy += 0.02500000;
+		this.sx = this.sy += 0.02000000;
 		this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 
 		if (this.hitCount <= 2)

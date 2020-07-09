@@ -78,6 +78,22 @@ function SetTeamSelfShot()
 	}
 }
 
+function SetTeamSelfPlayerShot()
+{
+	this.group = this.team.group_object;
+
+	if (this.team.index != 0)
+	{
+		this.callbackGroup = 16;
+		this.callbackMask = 2;
+	}
+	else
+	{
+		this.callbackGroup = 32;
+		this.callbackMask = 1;
+	}
+}
+
 function SetTeamObject()
 {
 	this.group = this.team.group_object;

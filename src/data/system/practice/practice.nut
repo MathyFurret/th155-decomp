@@ -51,17 +51,31 @@ this.item_list <- [
 		"ret_title",
 		"hide",
 		"config"
+	],
+	[
+		"exit",
+		null,
+		"macro_index",
+		"macro_play",
+		"macro_record",
+		null,
+		"ret_select",
+		"ret_title",
+		"hide",
+		"config"
 	]
 ];
 this.item <- this.item_list[0];
 this.cursor_item_list <- [
 	::menu.common.CreateCursor(this.item_list[0]),
 	::menu.common.CreateCursor(this.item_list[1]),
-	::menu.common.CreateCursor(this.item_list[2])
+	::menu.common.CreateCursor(this.item_list[2]),
+	::menu.common.CreateCursor(this.item_list[3])
 ];
 this.cursor_item <- this.cursor_item_list[0];
 this.cursor_page <- this.Cursor(1, this.item_list.len(), ::input_all);
 this.page <- [
+	{},
 	{},
 	{},
 	{}
@@ -110,6 +124,9 @@ cursor.ex_guard_mode <- this.Cursor(1, 2, ::input_all);
 cursor.recover_mode <- this.Cursor(1, 7, ::input_all);
 cursor.slave_2p <- this.Cursor(1, 3, ::input_all);
 this.page[2].cursor <- cursor;
+local cursor = {};
+cursor.macro_index <- this.Cursor(1, 9, ::input_all);
+this.page[3].cursor <- cursor;
 this.proc <- clone ::menu.common.proc;
 this.help_list <- [
 	[
@@ -215,17 +232,32 @@ function Initialize()
 		}
 	}
 
+	if (::battle.macro_state)
+	{
+		::battle.StopMacro();
+	}
+
 	this.BeginAnime();
 }
 
 function Terminate()
 {
 	::config.Save();
-	::input.ClearDeviceAssign(::battle.team[0].input);
-	::input.ClearDeviceAssign(::battle.team[1].input);
-	::input.SetDeviceAssign(0, ::battle.team[0].device_id, ::battle.team[0].input);
-	::input.SetDeviceAssignPractice2P(::battle.team[1].device_id, ::battle.team[1].input);
-	::battle.Apply();
+
+	if (::battle.macro_state)
+	{
+		::battle.Apply();
+		::battle.PracticeRestart();
+	}
+	else
+	{
+		::input.ClearDeviceAssign(::battle.team[0].input);
+		::input.ClearDeviceAssign(::battle.team[1].input);
+		::input.SetDeviceAssign(0, ::battle.team[0].device_id, ::battle.team[0].input);
+		::input.SetDeviceAssignPractice2P(::battle.team[1].device_id, ::battle.team[1].input);
+		::battle.Apply();
+	}
+
 	::menu.common.Terminate.call(this);
 	this.EndAnime();
 }
@@ -483,4 +515,20 @@ this.proc.recover_mode <- function ()
 this.proc.slave_2p <- function ()
 {
 	this.SetCommonProc("slave_2p", 2);
+};
+this.proc.macro_index <- function ()
+{
+	this.SetCommonProc("macro_index", 3);
+};
+this.proc.macro_play <- function ()
+{
+	if (::battle.PlayMacro(::battle.team[1].master_name, ::battle.team[1].slave_name, this.page[3].cursor.macro_index.val))
+	{
+		::loop.End();
+	}
+};
+this.proc.macro_record <- function ()
+{
+	::battle.RecordMacro(::battle.team[1].master_name, ::battle.team[1].slave_name, this.page[3].cursor.macro_index.val);
+	::loop.End();
 };

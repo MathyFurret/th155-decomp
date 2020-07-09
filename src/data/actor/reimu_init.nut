@@ -18,6 +18,7 @@ this.player_class.Init <- function ()
 	this.type = 0;
 	this.baseGravity = 0.69999999;
 	this.baseSlideSpeed = 17.00000000;
+	this.atkRange = 70;
 	this.Reset_PlayerCommon();
 	this.func_beginDemo = this.Func_BeginBattle;
 	this.func_timeDemo = this.Func_Lose;

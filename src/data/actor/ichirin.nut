@@ -2375,6 +2375,7 @@ function SP_B_Air_Init( t )
 	this.LabelClear();
 	this.HitReset();
 	this.atk_id = 2097152;
+	this.skillB_air = true;
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.AjustCenterStop();
 	this.flag1 = 10;
@@ -2388,7 +2389,7 @@ function SP_B_Air_Init( t )
 			{
 				if (this.hitResult & 1)
 				{
-					this.SP_B_Air_Hit(null);
+					this.SP_B_Hit(null);
 					return;
 				}
 			};
@@ -2400,7 +2401,7 @@ function SP_B_Air_Init( t )
 			};
 		}
 	];
-	this.SetMotion(3011, 0);
+	this.SetMotion(3012, 0);
 	return true;
 }
 
@@ -2814,12 +2815,13 @@ function SP_RingFlight_Init( t )
 	this.team.AddMP(-200, 120);
 	this.count = 0;
 	this.SetMotion(3070, 0);
-	this.va.x = this.Math_MinMax(this.va.x, -6.00000000, 6.00000000);
-	this.va.y = this.Math_MinMax(this.va.y, -4.50000000, 4.50000000);
+	this.va.x = this.Math_MinMax(this.va.x, -7.50000000, 7.50000000);
+	this.va.y = this.Math_MinMax(this.va.y, -7.50000000, 7.50000000);
 	this.SetSpeed_XY(this.va.x, this.va.y);
 	this.hitCount = 0;
 	this.grazeCount = 0;
 	this.flag1 = [
+		null,
 		null,
 		null,
 		null
@@ -2835,6 +2837,16 @@ function SP_RingFlight_Init( t )
 		{
 			this.flag1[1].func();
 		}
+
+		if (this.flag1[2])
+		{
+			this.flag1[2].func();
+		}
+
+		if (this.flag1[3])
+		{
+			this.flag1[3].func();
+		}
 	};
 	this.keyAction = [
 		function ()
@@ -2842,6 +2854,8 @@ function SP_RingFlight_Init( t )
 			this.PlaySE(1546);
 			this.flag1[0] = this.SetShot(this.x - 40 * this.direction, this.y + 10, this.direction, this.SPShot_RingFlight_A, {}).weakref();
 			this.flag1[1] = this.SetShot(this.x + 100 * this.direction, this.y + 7, this.direction, this.SPShot_RingFlight_B, {}).weakref();
+			this.flag1[2] = this.SetShot(this.x, this.y, this.direction, this.SPShot_RingFlight_HitBox, {}).weakref();
+			this.flag1[3] = this.SetShot(this.x, this.y, this.direction, this.SPShot_RingFlight_CounterBox, {}).weakref();
 		},
 		function ()
 		{
@@ -2865,9 +2879,35 @@ function SP_RingFlight_Init( t )
 	{
 		this.CenterUpdate(0.34999999, null);
 
-		if (this.hitCount <= 3 && this.grazeCount <= 3)
+		if (this.flag1[3])
 		{
-			this.HitCycleUpdate(3);
+			if (this.hitCount <= 3 && this.grazeCount <= 3)
+			{
+				this.HitCycleUpdate(3);
+			}
+
+			if (this.flag1[3].cancelCount <= 0)
+			{
+				if (this.flag1[0])
+				{
+					this.flag1[0].func();
+				}
+
+				if (this.flag1[1])
+				{
+					this.flag1[1].func();
+				}
+
+				if (this.flag1[2])
+				{
+					this.flag1[2].func();
+				}
+
+				if (this.flag1[3])
+				{
+					this.flag1[3].func();
+				}
+			}
 		}
 
 		if (this.centerStop * this.centerStop <= 1)

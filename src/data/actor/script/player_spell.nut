@@ -179,12 +179,12 @@ function UseChangeSpellCard( time_, sp_ )
 function UseClimaxSpell( time_, name_ )
 {
 	this.PlaySE(824);
+	this.atkRate_Pat = 0.60000002 + 0.40000001 * ((this.team.sp - 1000) / 2000.00000000);
 	this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_ClimaxFlash, {});
 	this.SetTimeStop(time_);
 	this.lastword.Activate(name_);
-	this.team.AddOP(-2000, 9999);
+	this.team.AddOP(-2000, 60);
 	this.team.sp = 0;
-	this.team.sp2_enable = false;
 	this.EndSpellCard();
 }
 

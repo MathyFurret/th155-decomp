@@ -139,6 +139,7 @@ this.practice.guard_mode <- 0;
 this.practice.ex_guard_mode <- 0;
 this.practice.recover_mode <- 0;
 this.practice.slave_2p <- 0;
+this.practice.macro_index <- 0;
 this.difficulty <- {};
 this.difficulty.story <- 1;
 this.difficulty.vs <- 1;
@@ -148,12 +149,12 @@ function Initialize()
 
 function Save()
 {
-	return ::manbow.SaveTable("system.dat", this);
+	return ::manbow.SaveTable("system_beta.dat", this);
 }
 
 function Load()
 {
-	if (::manbow.LoadTableEx("system.dat", this, false))
+	if (::manbow.LoadTableEx("system_beta.dat", this, false))
 	{
 		return;
 	}

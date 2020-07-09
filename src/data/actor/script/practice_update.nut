@@ -10,21 +10,6 @@ function MainLoopFirst()
 
 	this.Practice_CommonUpdate();
 
-	if (this.team.index == 0)
-	{
-		if (this.command && this == this.team.current)
-		{
-			this.command.Update(this.direction, this.hitStopTime <= 0 && this.damageStopTime <= 0);
-		}
-	}
-	else if (!this.cpuState)
-	{
-		if (::config.practice.player2 == 4 && this.command && this == this.team.current)
-		{
-			this.command.Update(this.direction, this.hitStopTime <= 0 && this.damageStopTime <= 0);
-		}
-	}
-
 	if (this.spellBackTime > 0)
 	{
 		this.spellBackTime--;
@@ -106,7 +91,15 @@ function CommonPracticeLoop()
 
 function Practice_CommonUpdate()
 {
-	if (::config.practice.player2 >= 3)
+	if (::battle.macro_state)
+	{
+		if (this.cpuState)
+		{
+			this.Break_Basic_Com();
+			this.CPU_SetLevel(::config.practice.difficulty);
+		}
+	}
+	else if (::config.practice.player2 >= 3)
 	{
 		this.disableGuard = 0;
 		this.autoGuard = false;
@@ -117,25 +110,13 @@ function Practice_CommonUpdate()
 			if (!this.cpuState)
 			{
 				this.Run_Basic_Com();
+				this.CPU_SetLevel(::config.practice.difficulty);
 			}
 
-			switch(::config.practice.difficulty)
+			if (this.com_difficulty != ::config.practice.difficulty)
 			{
-			case 0:
-				this.com_level = 0;
-				break;
-
-			case 1:
-				this.com_level = 33;
-				break;
-
-			case 2:
-				this.com_level = 66;
-				break;
-
-			case 3:
-				this.com_level = 100;
-				break;
+				this.CPU_SetLevel(::config.practice.difficulty);
+				this.com_difficulty = ::config.practice.difficulty;
 			}
 		}
 		else if (this.cpuState)

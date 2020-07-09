@@ -670,6 +670,40 @@ function StandAnimal_Init( t )
 	};
 }
 
+function DamageAnimalBegin_Init( t )
+{
+	this.LabelClear();
+	this.stone.func[4].call(this.stone);
+	this.centerStop = -3;
+
+	if (this.y > this.centerY)
+	{
+		this.centerStop = 3;
+	}
+
+	this.direction = t.direction;
+	this.SetSpeed_XY(-4.50000000 * this.direction, this.centerStop < 0 ? -10.00000000 : 10.00000000);
+	this.SetMotion(289, 0);
+	this.count = 0;
+	this.flag1 = 0;
+	this.stateLabel = function ()
+	{
+		this.CenterUpdate(0.50000000, null);
+
+		if (this.centerStop * this.centerStop <= 1)
+		{
+			this.VX_Brake(0.25000000);
+			this.flag1++;
+
+			if (this.flag1 > 30)
+			{
+				this.StandAnimal_Init(null);
+				this.SetSpeed_XY(0.00000000, 0.00000000);
+			}
+		}
+	};
+}
+
 function DamageAnimalB_Init( t )
 {
 	this.LabelClear();
@@ -972,7 +1006,6 @@ function Atk_HighUpper_Air_Init( t )
 		function ()
 		{
 			this.PlaySE(4206);
-			this.AjustCenterStop();
 			this.stateLabel = function ()
 			{
 				if (this.centerStop * this.centerStop <= 1)
@@ -2129,8 +2162,9 @@ function Okult_Init( t )
 	this.keyAction = [
 		function ()
 		{
+			this.SetEffect(this.point0_x, this.point0_y, this.direction, this.EF_ChargeO, {});
 			this.team.AddMP(-200, 120);
-			this.occult_cycle = 120;
+			this.occult_cycle = 15;
 			this.team.op_stop = 300;
 			this.team.op_stop_max = 300;
 			this.occult_time = 360;
@@ -2517,7 +2551,7 @@ function SP_Hisou_Slash( t )
 			this.PlaySE(4275);
 			this.stateLabel = function ()
 			{
-				if (this.flag3 && this.input.b2 == 0)
+				if (this.flag3 && (this.input.b2 == 0 || ::battle.state != 8))
 				{
 					this.flag3 = false;
 				}
@@ -2582,7 +2616,7 @@ function SP_Hisou_Slash( t )
 	];
 	this.stateLabel = function ()
 	{
-		if (this.flag3 && this.input.b2 == 0)
+		if (this.flag3 && (this.input.b2 == 0 || ::battle.state != 8))
 		{
 			this.flag3 = false;
 		}
@@ -2617,7 +2651,7 @@ function SP_Hisou_Slash_Air( t )
 					this.VX_Brake(1.00000000);
 				}
 
-				if (this.flag3 && this.input.b2 == 0)
+				if (this.flag3 && (this.input.b2 == 0 || ::battle.state != 8))
 				{
 					this.flag3 = false;
 				}
@@ -2705,7 +2739,7 @@ function SP_Hisou_Slash_Air( t )
 	];
 	this.stateLabel = function ()
 	{
-		if (this.flag3 && this.input.b2 == 0)
+		if (this.flag3 && (this.input.b2 == 0 || ::battle.state != 8))
 		{
 			this.flag3 = false;
 		}
@@ -3023,20 +3057,25 @@ function Spell_Climax_Init( t )
 			this.BackFadeIn(0.00000000, 0.00000000, 0.00000000, 0);
 			local t_ = {};
 			t_.rot <- 0.00000000;
+			t_.rate <- this.atkRate_Pat;
 			local a_ = this.SetShot(this.point0_x, this.point0_y, this.direction, this.Climax_Shot, t_, null);
 			this.flag1 = a_.weakref();
 			this.flag3.Add(a_);
 			local t_ = {};
 			t_.rot <- 40.00000000 * 0.01745329;
+			t_.rate <- this.atkRate_Pat;
 			this.flag3.Add(this.SetShot(this.point0_x, this.point0_y, this.direction, this.Climax_Shot, t_, a_));
 			local t_ = {};
 			t_.rot <- -40.00000000 * 0.01745329;
+			t_.rate <- this.atkRate_Pat;
 			this.flag3.Add(this.SetShot(this.point0_x, this.point0_y, this.direction, this.Climax_Shot, t_, a_));
 			local t_ = {};
 			t_.rot <- 80.00000000 * 0.01745329;
+			t_.rate <- this.atkRate_Pat;
 			this.flag3.Add(this.SetShot(this.point0_x, this.point0_y, this.direction, this.Climax_Shot, t_, a_));
 			local t_ = {};
 			t_.rot <- -80.00000000 * 0.01745329;
+			t_.rate <- this.atkRate_Pat;
 			this.flag3.Add(this.SetShot(this.point0_x, this.point0_y, this.direction, this.Climax_Shot, t_, a_));
 			this.stateLabel = function ()
 			{
@@ -3284,7 +3323,9 @@ function Spell_Climax_Finish( t )
 	this.Warp(this.x, this.y - 75);
 	this.FadeIn(1.00000000, 1.00000000, 1.00000000, 20);
 	::camera.Shake(20.00000000);
-	this.flag5.hit = this.SetShot(640 - 640 * this.direction, 0, this.direction, this.Climax_HitBox, {}).weakref();
+	local t_ = {};
+	t_.rate <- this.atkRate_Pat;
+	this.flag5.hit = this.SetShot(640 - 640 * this.direction, 0, this.direction, this.Climax_HitBox, t_).weakref();
 	this.target.DamageGrab_Common(200, 0, this.target.direction);
 	this.func = [
 		function ()

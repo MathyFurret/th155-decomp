@@ -296,6 +296,7 @@ function WinC( t )
 	this.LabelClear();
 	this.SetMotion(9012, 0);
 	this.flag1 = 0;
+	this.freeMap = true;
 	this.keyAction = [
 		function ()
 		{
@@ -857,7 +858,16 @@ function Atk_HighUnder_Air_Init( t )
 	this.LabelClear();
 	this.HitReset();
 	this.atk_id = 1024;
-	this.SetMotion(1211, 0);
+
+	if (this.y >= this.centerY)
+	{
+		this.SetMotion(1214, 0);
+	}
+	else
+	{
+		this.SetMotion(1211, 0);
+	}
+
 	this.keyAction = [
 		function ()
 		{
@@ -1951,6 +1961,8 @@ function Okult_Init( t )
 	this.PlaySE(1831);
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.AjustCenterStop();
+	this.SetEffect(this.x, this.y - 30, this.direction, this.EF_ChargeO, {});
+	this.PlaySE(1074);
 	this.keyAction = [
 		function ()
 		{
@@ -2740,6 +2752,25 @@ function SP_F_Init( t )
 
 					if (this.va.LengthXY() < 9.00000000)
 					{
+						if (this.hitResult & 8)
+						{
+							this.count = 0;
+							this.stateLabel = function ()
+							{
+								this.Vec_Brake(2.50000000);
+
+								if (this.count == 5)
+								{
+									this.SetMotion(this.motion, 7);
+									this.stateLabel = function ()
+									{
+									};
+								}
+							};
+							return;
+						}
+
+						this.keyAction = this.EndtoFallLoop;
 						this.PlaySE(1918);
 						this.centerStop = -2;
 						this.SetSpeed_XY(this.va.x, -9.00000000);
@@ -2886,18 +2917,18 @@ function Spell_C_Init( t )
 	this.SetMotion(4020, 0);
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.AjustCenterStop();
+	this.UseSpellCard(60, -this.team.sp_max);
 	this.stateLabel = function ()
 	{
 	};
 	this.keyAction = [
 		function ()
 		{
-			this.UseSpellCard(60, -this.team.sp_max);
 			this.count = 0;
 			this.PlaySE(1967);
 			this.stateLabel = function ()
 			{
-				if (this.count >= 60)
+				if (this.count >= 35)
 				{
 					this.SetSpeed_XY(0.00000000, -7.50000000);
 					this.centerStop = -2;

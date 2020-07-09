@@ -2769,7 +2769,7 @@ function SP_A_Init( t )
 					this.SetFreeObject(this.x, 0, this.direction, this.SPShot_A, {});
 					this.SetFreeObject(this.x, this.y - 25, this.direction, this.SPShot_A2, {});
 
-					if ((this.input.x || this.input.y) && this.team.mp >= 200 && this.input.b2 > 0)
+					if ((this.input.x || this.input.y) && this.team.mp >= 200 && this.input.b2 > 0 && ::battle.state == 8)
 					{
 						this.flag3 += 10;
 						this.flag1 = this.input.x;
@@ -2994,7 +2994,7 @@ function SP_D_Init( t )
 					this.flag2++;
 				}
 
-				if (this.count >= 120 || this.count >= 35 && this.input.b2 <= 0)
+				if (this.count >= 120 || this.count >= 35 && (this.input.b2 <= 0 || ::battle.state != 8))
 				{
 					this.PlaySE(3631);
 					this.SetMotion(this.motion, 2);
@@ -3075,7 +3075,7 @@ function SP_E_Init( t )
 				this.lavelClearEvent = null;
 				this.stateLabel = function ()
 				{
-					if (this.skillE_shot && this.keyTake >= 3 && this.team.mp >= 200 && (this.command.rsv_k2 > 0 || this.flag5 && this.command.rsv_k0 > 0))
+					if (::battle.state == 8 && this.skillE_shot && this.keyTake >= 3 && this.team.mp >= 200 && ((this.command.rsv_k2 > 0 || this.input.b2 > 0) || this.flag5 && (this.command.rsv_k0 > 0 || this.input.b0 > 0)))
 					{
 						local t_ = {};
 						t_.rush <- false;
@@ -3150,7 +3150,7 @@ function SP_E_Air_Init( t )
 				this.lavelClearEvent = null;
 				this.stateLabel = function ()
 				{
-					if (this.skillE_shot && this.keyTake >= 3 && this.team.mp >= 200 && (this.command.rsv_k2 > 0 || this.flag5 && this.command.rsv_k0 > 0))
+					if (::battle.state == 8 && this.skillE_shot && this.keyTake >= 3 && this.team.mp >= 200 && ((this.command.rsv_k2 > 0 || this.input.b2 > 0) || this.flag5 && (this.command.rsv_k0 > 0 || this.input.b0 > 0)))
 					{
 						local t_ = {};
 						t_.rush <- false;
@@ -3177,7 +3177,7 @@ function SP_E_Air_Init( t )
 						this.VX_Brake(0.50000000);
 					}
 
-					if (this.skillE_shot && this.keyTake >= 3 && this.team.mp >= 200 && (this.command.rsv_k2 > 0 || this.flag5 && this.command.rsv_k0 > 0))
+					if (::battle.state == 8 && this.skillE_shot && this.keyTake >= 3 && this.team.mp >= 200 && (this.command.rsv_k2 > 0 || this.flag5 && this.command.rsv_k0 > 0))
 					{
 						local t_ = {};
 						t_.rush <- false;

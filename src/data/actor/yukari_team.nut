@@ -192,11 +192,11 @@ function Team_Change_ShotB( va_ )
 			{
 				local t_ = {};
 				t_.rot <- (11.25000000 + 22.50000000 * i) * 0.01745329;
-				t_.wait <- 30 + i * 5;
+				t_.wait <- 30 + i * 2;
 				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Change, t_);
 				local t_ = {};
 				t_.rot <- -(11.25000000 + 22.50000000 * i) * 0.01745329;
-				t_.wait <- 30 + i * 5;
+				t_.wait <- 30 + i * 2;
 				this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Change, t_);
 			}
 

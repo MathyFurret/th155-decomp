@@ -71,3 +71,4 @@ this.manbow.CompileFile("data/actor/script/com_function.nut", this.player_class)
 this.manbow.CompileFile("data/actor/script/com_update.nut", this.player_class);
 this.manbow.CompileFile("data/actor/com_common_action.nut", this.player_class);
 this.manbow.CompileFile("data/actor/kokoro_com_function.nut", this.player_class);
+this.manbow.CompileFile("data/actor/script/com_boss.nut", this.player_class);

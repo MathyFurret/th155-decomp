@@ -122,6 +122,12 @@ function Shot_Normal( t )
 	{
 		if (this.hitTarget)
 		{
+			if (this.flag1)
+			{
+				this.flag1.flag1 = null;
+				this.flag1 = null;
+			}
+
 			local t_ = {};
 			t_.keyTake <- this.keyTake;
 
@@ -143,6 +149,28 @@ function Shot_Normal( t )
 				{
 					this.ReleaseActor();
 				}
+			};
+		}
+	};
+	this.subState = function ()
+	{
+		this.count++;
+
+		if (this.keyTake != 5 && this.count == 27 && this.flag1)
+		{
+			local t_ = {};
+			t_.keyTake <- this.keyTake;
+
+			for( local i = 0; i < 4; i++ )
+			{
+				this.SetFreeObject(this.x, this.y, this.direction, this.owner.Shot_NormalHit, t_);
+			}
+
+			this.SetMotion(2009, 5);
+			this.subState = function ()
+			{
+				this.linkObject[0].red += (1.00000000 - this.linkObject[0].red) * 0.05000000;
+				this.linkObject[0].blue += (1.00000000 - this.linkObject[0].blue) * 0.05000000;
 			};
 		}
 	};
@@ -178,6 +206,7 @@ function Shot_Normal( t )
 		this.va.RotateByRadian(this.initTable.shotRot);
 		this.SetSpeed_XY(this.va.x * this.direction, this.va.y);
 		this.rz = this.atan2(this.vy, this.vx * this.direction);
+		this.subState();
 	};
 }
 
@@ -1968,12 +1997,14 @@ function SPShot_E( t )
 	this.rz = t.rot;
 	this.flag1 = null;
 	this.flag2 = false;
+	this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 	this.flag5 = false;
 	local t_ = {};
 	t_.rot <- this.rz;
 	this.linkObject = [
 		this.SetFreeObject(-this.sqrt(this.GetTargetDist(this.owner.target)), this.y, this.direction, this.SPShot_E_Pulse, t_, this.weakref()).weakref()
 	];
+	this.cancelCount = 99;
 	this.subState = function ()
 	{
 		if (this.team.current.IsDamage() || this.flag5)
@@ -2021,6 +2052,7 @@ function SPShot_E( t )
 		}
 
 		this.rz += this.initTable.rotSpeed;
+		this.SetCollisionRotation(0.00000000, 0.00000000, this.rz);
 
 		if (this.abs(this.rz) > 3.14159203)
 		{
@@ -2155,12 +2187,19 @@ function SPShot_F( t )
 {
 	this.SetMotion(6050, 0);
 	this.atk_id = 33554432;
+	this.flag1 = this.Vector3();
+	this.flag2 = 0;
+	this.flag3 = this.Vector3();
+	this.cancelCount = 3;
 	this.rz = 0.01745329 * (-45 + this.rand() % 90);
-	this.SetSpeed_Vec(t.vec - this.rand() % 3, t.rot, this.direction);
+	this.SetSpeed_Vec(1.00000000, t.rot, this.direction);
+	this.flag3.x = this.va.x;
+	this.flag3.y = this.va.y;
+	local v_ = t.vec;
+	this.SetSpeed_XY(this.va.x * v_, this.va.y * v_);
 	this.SetParent(this.owner, 0, 0);
 	this.DrawActorPriority(180);
 	this.alpha = 0.00000000;
-	this.flag1 = this.Vector3();
 	this.target = this.owner.target.weakref();
 	this.func = [
 		function ()
@@ -2168,6 +2207,14 @@ function SPShot_F( t )
 			this.SetSpeed_XY(0.00000000, 0.00000000);
 			this.SetMotion(6050, 1);
 			this.SetParent(null, 0, 0);
+			this.flag2 = 30 + this.count / 6;
+
+			if (this.flag2 >= 60)
+			{
+				this.flag2 = 60;
+			}
+
+			this.count = 0;
 			this.stateLabel = function ()
 			{
 				this.alpha += 0.10000000;
@@ -2181,11 +2228,12 @@ function SPShot_F( t )
 		},
 		function ()
 		{
-			this.cancelCount = 3;
+			this.callbackGroup = 0;
+			this.SetSpeed_XY(0.00000000, 0.00000000);
 			this.SetParent(null, 0, 0);
 			this.stateLabel = function ()
 			{
-				this.sx = this.sy *= 0.99000001;
+				this.sx = this.sy *= 0.89999998;
 				this.alpha -= 0.10000000;
 
 				if (this.alpha <= 0.00000000)
@@ -2229,12 +2277,21 @@ function SPShot_F( t )
 		null,
 		function ()
 		{
+			this.SetSpeed_XY(this.flag3.x * 9, this.flag3.y * 9);
 			this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 			local t_ = {};
 			t_.rot <- this.rz;
 			this.SetFreeObject(this.x, this.y, this.direction, this.owner.SPShot_F_Flash, t_);
+			this.count = 0;
 			this.stateLabel = function ()
 			{
+				this.count++;
+				this.SetSpeed_XY(this.va.x * 0.89999998, this.va.y * 0.89999998);
+
+				if (this.count >= this.flag2)
+				{
+					this.func[1].call(this);
+				}
 			};
 		},
 		function ()

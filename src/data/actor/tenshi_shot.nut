@@ -2375,6 +2375,7 @@ function Climax_Shot( t )
 {
 	this.DrawActorPriority(179);
 	this.SetMotion(4909, 1);
+	this.atkRate_Pat = t.rate;
 	this.rx = t.rot;
 	this.ry = 90 * 0.01745329;
 	this.sx = this.sy = this.sz = 0.10000000;
@@ -2642,6 +2643,7 @@ function Climax_Lightning( t )
 function Climax_HitBox( t )
 {
 	this.SetMotion(4908, 1);
+	this.atkRate_Pat = t.rate;
 	this.cancelCount = 99;
 	this.func = [
 		function ()

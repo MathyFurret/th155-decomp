@@ -1961,11 +1961,25 @@ function Okult_Init( t )
 			{
 				this.VX_Brake(1.00000000);
 
-				if (this.hitResult)
+				if (this.hitResult && this.count >= 7)
 				{
-					if (this.command.rsv_k2 > 0 && this.count >= 7)
+					if (this.command.rsv_k2 > 0)
 					{
 						if (this.command.rsv_x * this.direction >= 0)
+						{
+							this.Occult_End_Upper();
+							return;
+						}
+						else
+						{
+							this.Occult_End_Under();
+							return;
+						}
+					}
+
+					if (this.input.y != 0)
+					{
+						if (this.input.x * this.direction >= 0)
 						{
 							this.Occult_End_Upper();
 							return;
@@ -1997,6 +2011,20 @@ function Occult_Wait()
 		this.CenterUpdate(0.20000000, 3.00000000);
 		this.GetFront();
 
+		if (this.input.y != 0)
+		{
+			if (this.input.x * this.direction >= 0)
+			{
+				this.Occult_End_Upper();
+				return;
+			}
+			else
+			{
+				this.Occult_End_Under();
+				return;
+			}
+		}
+
 		if (this.command.rsv_k2 > 0 || ::battle.state != 8)
 		{
 			if (this.command.rsv_x * this.direction >= 0)
@@ -2013,6 +2041,12 @@ function Occult_Wait()
 
 		if (this.command.rsv_k1 > 0)
 		{
+			if (this.command.rsv_x * this.direction <= 0)
+			{
+				this.Okult_Slash();
+				return;
+			}
+
 			this.Occult_ClowB();
 			return;
 		}
@@ -2061,6 +2095,20 @@ function Occult_Clow()
 
 		if (this.hitResult)
 		{
+			if (this.input.y != 0)
+			{
+				if (this.input.x * this.direction >= 0)
+				{
+					this.Occult_End_Upper();
+					return;
+				}
+				else
+				{
+					this.Occult_End_Under();
+					return;
+				}
+			}
+
 			if (this.command.rsv_k2 > 0)
 			{
 				if (this.command.rsv_x * this.direction >= 0)
@@ -2077,6 +2125,12 @@ function Occult_Clow()
 
 			if (this.command.rsv_k1 > 0)
 			{
+				if (this.command.rsv_x * this.direction <= 0)
+				{
+					this.Okult_Slash();
+					return;
+				}
+
 				this.Occult_ClowB();
 				return;
 			}
@@ -2114,6 +2168,20 @@ function Occult_Clow_Rush()
 
 		if (this.hitResult)
 		{
+			if (this.input.y != 0)
+			{
+				if (this.input.x * this.direction >= 0)
+				{
+					this.Occult_End_Upper();
+					return;
+				}
+				else
+				{
+					this.Occult_End_Under();
+					return;
+				}
+			}
+
 			if (this.command.rsv_k2 > 0)
 			{
 				if (this.command.rsv_x * this.direction >= 0)
@@ -2130,6 +2198,12 @@ function Occult_Clow_Rush()
 
 			if (this.command.rsv_k1 > 0)
 			{
+				if (this.command.rsv_x * this.direction <= 0)
+				{
+					this.Okult_Slash();
+					return;
+				}
+
 				this.Occult_ClowB();
 				return;
 			}
@@ -2189,6 +2263,20 @@ function Occult_ClowB()
 
 				this.VX_Brake(1.25000000);
 
+				if (this.input.y != 0)
+				{
+					if (this.input.x * this.direction >= 0)
+					{
+						this.Occult_End_Upper();
+						return;
+					}
+					else
+					{
+						this.Occult_End_Under();
+						return;
+					}
+				}
+
 				if (this.command.rsv_k2 > 0)
 				{
 					if (this.command.rsv_x * this.direction >= 0)
@@ -2209,6 +2297,71 @@ function Occult_ClowB()
 	this.stateLabel = function ()
 	{
 	};
+}
+
+function Okult_Slash()
+{
+	this.LabelReset();
+	this.GetFront();
+	this.HitReset();
+	this.SetMotion(2507, 1);
+	this.atk_id = 524288;
+	this.AjustCenterStop();
+	this.SetSpeed_XY(8.00000000 * this.direction, 0.00000000);
+	this.stateLabel = function ()
+	{
+	};
+	this.keyAction = [
+		function ()
+		{
+			this.SetSpeed_XY(12.50000000 * this.direction, 0.00000000);
+			this.stateLabel = function ()
+			{
+			};
+		},
+		function ()
+		{
+			this.PlaySE(4472);
+			this.count = 0;
+			this.SetSpeed_XY(6.00000000 * this.direction, 0.00000000);
+			this.stateLabel = function ()
+			{
+				this.VX_Brake(1.00000000);
+
+				if (this.hitResult && this.count >= 7)
+				{
+					if (this.command.rsv_k2 > 0)
+					{
+						if (this.command.rsv_x * this.direction >= 0)
+						{
+							this.Occult_End_Upper();
+							return;
+						}
+						else
+						{
+							this.Occult_End_Under();
+							return;
+						}
+					}
+
+					if (this.input.y != 0)
+					{
+						if (this.input.x * this.direction >= 0)
+						{
+							this.Occult_End_Upper();
+							return;
+						}
+						else
+						{
+							this.Occult_End_Under();
+							return;
+						}
+					}
+				}
+			};
+		},
+		this.Occult_Wait
+	];
 }
 
 function Occult_End_Under()
@@ -2592,14 +2745,14 @@ function SP_D_Init( t )
 		this.VX_Brake(0.50000000);
 	};
 	local pos_ = this.Vector3();
-	pos_.x = 1600.00000000;
+	pos_.y = -1600.00000000;
 
 	for( local i = 0; i < 3; i++ )
 	{
 		local t_ = {};
 		t_.se <- i == 0;
-		pos_.RotateByDegree(100 + this.rand() % 40);
 		this.SetShot(this.target.x + pos_.x * this.direction, this.target.y + pos_.y, this.direction, this.SPShot_D, t_);
+		pos_.RotateByDegree(120);
 	}
 
 	this.keyAction = [
@@ -2703,7 +2856,7 @@ function Spell_A_Init( t )
 					this.hitResult = 1;
 				}
 
-				if (this.count >= 150)
+				if (this.count >= 110)
 				{
 					this.SetMotion(this.motion, 4);
 					this.stateLabel = function ()

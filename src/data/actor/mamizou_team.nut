@@ -166,11 +166,11 @@ function Team_Change_ShotB( va_ )
 			r_ = this.Math_MinMax(r_, -0.87266457, 0.87266457);
 			this.count = 0;
 			local t_ = {};
-			t_.v <- 0.10000000;
+			t_.v <- 0.15000001;
 			t_.rot <- r_;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Change, t_);
 			local t_ = {};
-			t_.v <- 0.20000000;
+			t_.v <- 0.22499999;
 			t_.rot <- r_;
 			this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Change, t_);
 			local t_ = {};

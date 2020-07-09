@@ -61,6 +61,7 @@ function Create( param )
 		::battle.Release();
 	});
 	this.Update = this.UpdateMain;
+	::manbow.CompileFile("data/script/battle/battle_param.nut", this);
 	::manbow.CompileFile("data/script/battle/battle_team.nut", this);
 
 	switch(param.game_mode)
@@ -147,7 +148,7 @@ function Create( param )
 				this.team[0].input,
 				this.team[1].input
 			], 0);
-			  // [322]  OP_JMP            0      0    0    0
+			  // [329]  OP_JMP            0      0    0    0
 		}
 	}
 }

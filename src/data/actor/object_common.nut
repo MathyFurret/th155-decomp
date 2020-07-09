@@ -41,6 +41,59 @@ function Debug_SmashShot( t )
 	this.keyAction = this.ReleaseActor;
 }
 
+function Debug_WaitFont( t )
+{
+	this.SetParent(this.owner, 0, 64);
+	this.flag2 = false;
+	this.flag3 = 0;
+	this.count = 0;
+	this.stateLabel = function ()
+	{
+		if (this.owner.team.current.IsFree())
+		{
+			if (this.owner.target.team.current.IsFree())
+			{
+				this.flag3 = 0;
+				this.flag2 = false;
+				this.count++;
+
+				if (this.count >= 120)
+				{
+					this.flag4 = null;
+				}
+			}
+			else
+			{
+			}
+		}
+		else if (this.owner.target.team.current.IsFree())
+		{
+			if (this.flag2)
+			{
+				this.count = 0;
+				this.flag3++;
+				local text = ::font.CreateSystemString(this.flag3);
+				this.flag4 = text;
+				this.flag4.ConnectRenderSlot(::graphics.slot.actor, 200);
+			}
+			else
+			{
+				this.flag4 = null;
+			}
+		}
+		else
+		{
+			this.flag2 = true;
+		}
+
+		if (this.flag4)
+		{
+			this.flag4.x = this.owner.team.current.x;
+			this.flag4.y = this.owner.team.current.y;
+		}
+	};
+}
+
 function EnableTimeStop( t )
 {
 	if (t)
@@ -1210,6 +1263,12 @@ function ChargeShot_Particle( t )
 
 function Occult_PowerCreatePoint( t )
 {
+	if (this.owner.target.team.current.IsAttack() == 5 || this.owner.target.team.op_stop > 0 || this.owner.target.team.current != this.owner.target.team.master)
+	{
+		this.ReleaseActor();
+		return;
+	}
+
 	this.stateLabel = function ()
 	{
 		if (this.initTable.num > 0 && this.team.slave_ban == 0)
@@ -1232,12 +1291,32 @@ function Occult_Power( t )
 	this.flag3 = this.Vector3();
 	this.flag4 = 12.00000000;
 	this.SetSpeed_Vec(this.flag2, this.flag1, this.direction);
+	this.func = function ()
+	{
+		this.SetMotion(190, 2);
+		this.keyAction = this.ReleaseActor;
+		this.SetSpeed_XY(0.00000000, 0.00000000);
+		this.stateLabel = function ()
+		{
+			if (this.flag5)
+			{
+				this.flag5.anime.length *= 0.80000001;
+				this.flag5.anime.radius0 *= 0.50000000;
+			}
+		};
+	};
 	this.keyAction = function ()
 	{
 		if (this.team.op_stop < 9999 && this.team.slave_ban == 0)
 		{
 			this.stateLabel = function ()
 			{
+				if (this.team.op_stop > 0 || this.team.current != this.team.master)
+				{
+					this.func();
+					return;
+				}
+
 				this.flag3.x = this.team.current.x - this.x;
 				this.flag3.y = this.team.current.y - this.y;
 				this.flag4 += 0.50000000;
@@ -1290,20 +1369,17 @@ function Occult_Power( t )
 		}
 		else
 		{
-			this.SetMotion(190, 2);
-			this.keyAction = this.ReleaseActor;
-			this.stateLabel = function ()
-			{
-				if (this.flag5)
-				{
-					this.flag5.anime.length *= 0.80000001;
-					this.flag5.anime.radius0 *= 0.50000000;
-				}
-			};
+			this.func();
 		}
 	};
 	this.stateLabel = function ()
 	{
+		if (this.team.op_stop > 0 || this.team.current != this.team.master)
+		{
+			this.func();
+			return;
+		}
+
 		this.Vec_Brake(0.50000000, 0.50000000);
 	};
 }

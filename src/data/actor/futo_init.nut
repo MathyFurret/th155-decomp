@@ -19,6 +19,7 @@ this.player_class.Init <- function ()
 	this.SetMotion(0, 0);
 	this.AI_PlayerCommon();
 	this.type = 4;
+	this.atkRange = 65;
 	this.baseGravity = 0.77999997;
 	this.baseSlideSpeed = 18.00000000;
 	this.slave_spell = 1;

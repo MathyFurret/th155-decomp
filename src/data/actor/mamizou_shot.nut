@@ -460,6 +460,17 @@ function Shot_Front( t )
 
 		if (this.count >= 40 || this.cancelCount <= 0 || this.hitCount >= 1 || this.grazeCount >= this.flag2 || this.Damage_ConvertOP(this.x, this.y, 1))
 		{
+			if (this.hitCount >= 1 || this.grazeCount >= this.flag2)
+			{
+				foreach( a in this.flag3 )
+				{
+					if (a != null && a.count < 35)
+					{
+						a.count = 35;
+					}
+				}
+			}
+
 			this.callbackGroup = 0;
 			this.SetMotion(2019, this.rand() % 4);
 			this.rz = this.rand() % 360 * 0.01745329;
@@ -1288,11 +1299,11 @@ function Shot_Change_Core( t )
 		if (this.count % 4 == 3)
 		{
 			local t_ = {};
-			t_.v <- 0.10000000;
+			t_.v <- 0.15000001;
 			t_.rot <- this.initTable.rot2;
 			this.SetShot(this.x, this.y, this.direction, this.Shot_Change, t_);
 			local t_ = {};
-			t_.v <- 0.20000000;
+			t_.v <- 0.22499999;
 			t_.rot <- this.initTable.rot2;
 			this.SetShot(this.x, this.y, this.direction, this.Shot_Change, t_);
 			local t_ = {};
@@ -1301,7 +1312,7 @@ function Shot_Change_Core( t )
 			this.SetShot(this.x, this.y, this.direction, this.Shot_Change, t_);
 			this.flag1++;
 
-			if (this.flag1 >= 6)
+			if (this.flag1 >= 3)
 			{
 				this.ReleaseActor();
 			}
@@ -1522,7 +1533,7 @@ function SPShot_B( t )
 			a_.SetParent(this, this.x - a_.x, this.y - a_.y);
 		}
 
-		if (this.IsScreen(275.00000000))
+		if (this.IsScreen(275.00000000) || this.y <= ::battle.scroll_top - 400.00000000)
 		{
 			this.ReleaseActor();
 			return;
@@ -2453,7 +2464,7 @@ function SPShot_TaikoShot( t )
 	this.SetMotion(3079, 3);
 	this.atk_id = 33554432;
 	this.rz = this.rand() % 360 * 0.01745329;
-	this.SetSpeed_Vec(20.00000000, (40 + this.rand() % 25) * 0.01745329, this.direction);
+	this.SetSpeed_Vec(20.00000000, t.rot, this.direction);
 	this.cancelCount = 1;
 	this.sx = this.sy = 0.80000001 + this.rand() % 41 * 0.01000000;
 	this.func = function ()

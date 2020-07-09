@@ -230,3 +230,322 @@ function TeamSkillChain_Input( input_ )
 	return false;
 }
 
+function InputMove()
+{
+	if (this.input.b4 > 0 && this.input.x == 0 && this.input.y == 0 && this.centerStop * this.centerStop <= 1 && !this.IsGuard())
+	{
+		if (this.cancelLV <= 1)
+		{
+			this.Guard_Stance(null);
+			return true;
+		}
+	}
+
+	if (this.disableDash == 0)
+	{
+		if (this.cancelLV <= 1)
+		{
+			if (this.input.b4 > 0 && this.input.x * this.direction > 0 && this.input.y == 0 || this.command.Check(this.N6N6))
+			{
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					if (this.motion != 40)
+					{
+						if (this.change_reserve)
+						{
+							this.Team_ChangeReserve_Common();
+							this.team.current.DashFront_Init(null);
+						}
+						else
+						{
+							this.DashFront_Init(null);
+						}
+
+						return true;
+					}
+				}
+				else if (this.dashCount <= 1 && this.motion != 42)
+				{
+					if (this.change_reserve)
+					{
+						this.Team_ChangeReserve_Common();
+						this.team.current.DashFront_Air_Init(null);
+					}
+					else
+					{
+						this.DashFront_Air_Init(null);
+					}
+
+					return true;
+				}
+			}
+
+			if (this.input.b4 > 0 && this.input.x * this.direction < 0 && this.input.y == 0 || this.command.Check(this.N4N4))
+			{
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					if (this.motion != 41)
+					{
+						if (this.change_reserve)
+						{
+							this.Team_ChangeReserve_Common();
+							this.team.current.DashBack_Init(null);
+						}
+						else
+						{
+							this.DashBack_Init(null);
+						}
+
+						return true;
+					}
+				}
+				else if (this.dashCount <= 1 && this.motion != 43)
+				{
+					if (this.change_reserve)
+					{
+						this.Team_ChangeReserve_Common();
+						this.team.current.DashBack_Air_Init(null);
+					}
+					else
+					{
+						this.DashBack_Air_Init(null);
+					}
+
+					return true;
+				}
+			}
+		}
+
+		if (this.flagState & 16384 || this.motion == 2020 && this.keyTake <= 1)
+		{
+			if (this.input.b4 > 0 && this.input.x * this.direction < 0 && this.input.y == 0 || this.command.Check(this.N4N4))
+			{
+				if (this.motion != 41 && this.centerStop * this.centerStop <= 1)
+				{
+					if (this.change_reserve)
+					{
+						this.Team_ChangeReserve_Common();
+						this.team.current.DashBack_Init(null);
+					}
+					else
+					{
+						this.DashBack_Init(null);
+					}
+
+					return true;
+				}
+
+				if (this.centerStop * this.centerStop >= 4)
+				{
+					if (this.dashCount <= 1 && this.motion != 43)
+					{
+						if (this.change_reserve)
+						{
+							this.Team_ChangeReserve_Common();
+							this.team.current.DashBack_Air_Init(null);
+						}
+						else
+						{
+							this.DashBack_Air_Init(null);
+						}
+
+						return true;
+					}
+				}
+			}
+
+			if (this.input.b4 > 0 && this.input.x * this.direction > 0 && this.input.y == 0 || this.command.Check(this.N6N6))
+			{
+				if (this.flagState & 16384 && this.centerStop * this.centerStop >= 4)
+				{
+					if (this.dashCount <= 1 && this.motion != 42)
+					{
+						if (this.change_reserve)
+						{
+							this.Team_ChangeReserve_Common();
+							this.team.current.DashFront_Air_Init(null);
+						}
+						else
+						{
+							this.DashFront_Air_Init(null);
+						}
+
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	if (this.cancelLV <= 1)
+	{
+		if (this.input.b4 > 0 && this.slideCount == 0)
+		{
+			if (this.input.y <= -1 && this.command.ban_slide >= 0)
+			{
+				this.command.ban_slide = -1;
+				this.SlideUp_Init(null);
+				return true;
+			}
+
+			if (this.input.y >= 1 && this.command.ban_slide <= 0)
+			{
+				this.command.ban_slide = 1;
+				this.SlideFall_Init(null);
+				return true;
+			}
+		}
+	}
+
+	if (this.cancelLV <= 0)
+	{
+		if (this.centerStop * this.centerStop <= 1)
+		{
+			if (this.input.y <= -3)
+			{
+				this.SlideUp_Init(null);
+				return true;
+			}
+
+			if (this.input.y >= 3)
+			{
+				this.SlideFall_Init(null);
+				return true;
+			}
+		}
+
+		if (this.input.x == 0)
+		{
+			if (this.centerStop * this.centerStop <= 1)
+			{
+				if (this.debuff_hate.time > 0)
+				{
+					if (this.stateLabel != this.MoveFront)
+					{
+						this.MoveFront_Init(null);
+					}
+				}
+
+				if (this.debuff_fear.time > 0)
+				{
+					if (this.stateLabel != this.MoveBack)
+					{
+						this.MoveBack_Init(null);
+					}
+				}
+			}
+		}
+		else if (this.centerStop * this.centerStop <= 1)
+		{
+			if (this.input.x * this.direction > 0.00000000)
+			{
+				if (this.motion != 40 && this.debuff_hyper.time > 0)
+				{
+					this.DashFront_Init(null);
+					return true;
+				}
+				else if (this.stateLabel != this.MoveFront)
+				{
+					this.MoveFront_Init(null);
+				}
+			}
+			else if (this.stateLabel != this.MoveBack)
+			{
+				this.MoveBack_Init(null);
+			}
+		}
+	}
+
+	if (this.hitResult & 1 && this.flagState & 16384 && this.cancelLV >= 10)
+	{
+		if (this.centerStop * this.centerStop <= 1)
+		{
+			if (this.input.y <= -1)
+			{
+				this.hitBackFlag = 0.00000000;
+
+				if (this.motion <= 49)
+				{
+					this.SlideUp_Init(null);
+				}
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
+				{
+					this.Team_ChangeReserve_Common();
+					this.team.current.C_SlideUp_Init(null);
+				}
+				else
+				{
+					this.C_SlideUp_Init(null);
+				}
+
+				return true;
+			}
+
+			if (this.input.y >= 1)
+			{
+				this.hitBackFlag = 0.00000000;
+
+				if (this.motion <= 49)
+				{
+					this.SlideFall_Init(null);
+				}
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
+				{
+					this.Team_ChangeReserve_Common();
+					this.team.current.C_SlideFall_Init(null);
+				}
+				else
+				{
+					this.C_SlideFall_Init(null);
+				}
+
+				return true;
+			}
+		}
+		else if (this.slideCount == 0)
+		{
+			if (this.input.y <= -1)
+			{
+				this.hitBackFlag = 0.00000000;
+
+				if (this.motion <= 49)
+				{
+					this.SlideUp_Init(null);
+				}
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
+				{
+					this.Team_ChangeReserve_Common();
+					this.team.current.C_SlideUp_Init(null);
+				}
+				else
+				{
+					this.C_SlideUp_Init(null);
+				}
+
+				return true;
+			}
+
+			if (this.input.y >= 1)
+			{
+				this.hitBackFlag = 0.00000000;
+
+				if (this.motion <= 49)
+				{
+					this.SlideFall_Init(null);
+				}
+				else if ((this.input.b3 >= 1 || this.command.rsv_k3_r > 0) && this.team.op_stop <= 0 && (this.IsAttack() == 2 || this.IsAttack() == 6) && this.team.slave_ban == 0 && this.team.slave.type != 19)
+				{
+					this.Team_ChangeReserve_Common();
+					this.team.current.C_SlideFall_Init(null);
+				}
+				else
+				{
+					this.C_SlideFall_Init(null);
+				}
+
+				return true;
+			}
+		}
+	}
+}
+

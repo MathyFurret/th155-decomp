@@ -30,6 +30,11 @@ this.player_class.Init <- function ()
 	this.alien = [];
 	this.Reset_PlayerCommon();
 	this.func_beginDemo = this.Func_BeginBattle;
+	this.func_beginDemoSkip = function ()
+	{
+		this.CommonBeginBattleSkip();
+		this.freeMap = false;
+	};
 	this.func_timeDemo = this.Func_Lose;
 	this.func_winDemo = this.Func_Win;
 	this.resetFunc = function ()
@@ -79,6 +84,7 @@ this.player_class.Init <- function ()
 	};
 	this.change_reset = function ()
 	{
+		this.event_getAttack = null;
 	};
 	this.practice_update = function ()
 	{

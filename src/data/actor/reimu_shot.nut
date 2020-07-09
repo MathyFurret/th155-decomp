@@ -893,8 +893,6 @@ function Shot_Charge( t )
 				}
 
 				this.rz += this.flag1.roll;
-				this.sx = this.sy += 0.00600000;
-				this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 
 				if (this.hitCount >= 1 || this.cancelCount <= 0 || this.owner.motion == 2020 && this.owner.keyTake == 0)
 				{
@@ -1528,6 +1526,7 @@ function Shot_SideOccult( t )
 	this.rx = 80 * 0.01745329;
 	this.rz = 0.52359873;
 	this.flag2 = this.SetFreeObject(this.x, this.y, this.direction, this.Shot_SideOccultShadow, {}).weakref();
+	this.flag3 = 0.05000000;
 	this.cancelCount = 3;
 	this.atk_id = 524288;
 	this.sx = this.sy = 0.85000002;
@@ -1546,7 +1545,6 @@ function Shot_SideOccult( t )
 			this.flag2.func[0].call(this.flag2);
 			this.stateLabel = function ()
 			{
-				this.sx = this.sy += 0.00500000;
 				this.alpha -= 0.05000000;
 
 				if (this.alpha <= 0.00000000)
@@ -1554,17 +1552,42 @@ function Shot_SideOccult( t )
 					this.ReleaseActor();
 				}
 			};
+		},
+		function ()
+		{
+			this.SetMotion(2508, 14);
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += (0.05000000 - this.sx) * 0.10000000;
+				this.SetCollisionScaling(this.sx, 1.00000000, 1.00000000);
+				this.flag2.sx = this.flag2.sy = this.sx;
+				this.HitCycleUpdate(1);
+
+				if (this.sx <= 0.10000000 || this.cancelCount <= 0 || this.hitCount >= 4 || this.grazeCount >= 6 || this.Damage_ConvertOP(this.x, this.y, 0))
+				{
+					this.func[0].call(this);
+					return;
+				}
+			};
 		}
 	];
 	this.stateLabel = function ()
 	{
-		this.sx = this.sy += 0.00500000;
+		this.flag3 += (0.00500000 - this.flag3) * 0.10000000;
+		this.sx = this.sy += this.flag3;
 		this.SetCollisionScaling(this.sx, 1.00000000, 1.00000000);
 		this.flag2.sx = this.flag2.sy = this.sx;
-		this.HitCycleUpdate(0);
+		this.HitCycleUpdate(10);
+
+		if (this.count >= 60 && this.abs(this.owner.target.x - this.x) <= 160 * this.sx && this.abs(this.owner.target.y - this.y) <= 35)
+		{
+			this.func[1].call(this);
+			return;
+		}
+
 		this.count++;
 
-		if (this.count >= 210 || this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount >= 6 || this.Damage_ConvertOP(this.x, this.y, 0))
+		if (this.count >= 150 || this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount >= 1 || this.Damage_ConvertOP(this.x, this.y, 0))
 		{
 			this.func[0].call(this);
 			return;
@@ -1975,12 +1998,14 @@ function SPShot_A( t )
 
 		if (this.hitResult)
 		{
+			this.count++;
+
 			if (this.hitResult & 31)
 			{
 				this.SetSpeed_Vec(1.00000000, this.rz, this.direction);
 				this.stateLabel = function ()
 				{
-					if (this.count >= 15 || this.hitCount >= 4 || this.hitResult & 8)
+					if (this.count >= 15 || this.hitCount >= 2 || this.hitResult & 8)
 					{
 						this.owner.SPShot_A_Exp.call(this, null);
 						return;
@@ -1993,8 +2018,6 @@ function SPShot_A( t )
 
 			this.HitCycleUpdate(4);
 		}
-
-		this.count++;
 	};
 }
 
@@ -2874,6 +2897,7 @@ function SpellShot_A_Bou( t )
 function SpellShot_C( t )
 {
 	this.SetMotion(4029, 0);
+	this.EnableTimeStop(false);
 	this.atk_id = 67108864;
 	this.sx = this.sy = 0.10000000;
 	this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
@@ -3009,6 +3033,51 @@ function SpellShot_C( t )
 					this.sx = this.sy += (1.25000000 - this.sx) * 0.15000001;
 					this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
 				}
+			};
+		},
+		function ()
+		{
+			this.PlaySE(1161);
+			this.EnableTimeStop(true);
+			this.SetMotion(this.motion, 1);
+			this.HitReset();
+			this.sx = this.sy = 1.25000000;
+			this.SetCollisionScaling(this.sx, this.sy, 1.00000000);
+			this.count = 0;
+			local r_ = this.atan2(this.owner.target.y - this.y, this.owner.target.x - this.x);
+			r_ = this.Math_MinMax(r_, -0.17453292, 0.78539813);
+			this.SetSpeed_Vec(20.00000000, r_, this.direction);
+			this.cancelCount = 30;
+			this.stateLabel = function ()
+			{
+				if (this.cancelCount <= 0)
+				{
+					this.team.spell_enable_end = true;
+					this.func[0].call(this);
+					return;
+				}
+
+				this.count++;
+
+				if (this.count % 15 == 1)
+				{
+					this.SetParent.call(this.SetFreeObject(this.x, this.y, this.direction, this.owner.SpellShot_C_Aura, {}, this.weakref()), this, 0, 0);
+				}
+
+				if (this.count % 9 == 1)
+				{
+					this.SetParent.call(this.SetFreeObject(this.x, this.y, this.direction, this.owner.SpellShot_C_AuraB, {}, this.weakref()), this, 0, 0);
+				}
+
+				if (this.IsScreen(300.00000000))
+				{
+					this.team.spell_enable_end = true;
+					this.ReleaseActor();
+					return;
+				}
+
+				this.rz += 0.05000000;
+				this.HitCycleUpdate(12);
 			};
 		}
 	];

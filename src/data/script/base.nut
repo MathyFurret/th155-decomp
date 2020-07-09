@@ -40,6 +40,12 @@ if (!this.CheckDirectoryExisted("replay"))
 	return;
 }
 
+if (!this.CheckDirectoryExisted("macro"))
+{
+	::libact.CloseMainWindow();
+	return;
+}
+
 ::manbow.CompileFile("data/script/const.nut", this.getroottable());
 ::manbow.CompileFile("data/script/const_key.nut", this.getroottable());
 ::manbow.CompileFile("data/script/version.nut", this.getroottable());

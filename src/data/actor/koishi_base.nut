@@ -600,6 +600,10 @@ function Update_Input()
 				this.command.ResetReserve();
 				return true;
 			}
+
+			this.Atk_Fake_Set(null);
+			this.command.ResetReserve();
+			return true;
 		}
 	}
 

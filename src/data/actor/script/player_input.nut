@@ -542,6 +542,11 @@ function Input_CommonAttack()
 			{
 				if (this.command.rsv_x * this.direction < 0 || this.atkRange > this.abs(this.target.x - this.x))
 				{
+					if (this.va.x * this.direction <= 0.00000000)
+					{
+						this.SetSpeed_XY(0.00000000, this.va.y);
+					}
+
 					this.Atk_Low_Init(null);
 					this.command.ResetReserve();
 					return true;
@@ -611,7 +616,7 @@ function Input_Master()
 		{
 			if (this.command.rsv_k12 > 0 && this.Cancel_Check(10, 0, 0))
 			{
-				if (this.IsFree())
+				if (this.IsFree() || this.motion >= 3940 && this.motion <= 3943)
 				{
 					this.SpellCall_Init(null);
 					this.command.ResetReserve();

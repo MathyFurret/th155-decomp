@@ -2508,7 +2508,7 @@ function SP_C_Init( t )
 					this.SetSpeed_XY(this.input.x > 0 ? 1.00000000 : -1.00000000, null);
 				}
 
-				if (this.input.b2 == 1 && !this.flag5.rush || this.input.b0 == 1 && this.flag5.rush)
+				if ((this.input.b2 == 1 && !this.flag5.rush || this.input.b0 == 1 && this.flag5.rush) && ::battle.state == 8)
 				{
 					this.flag5.b = 15;
 				}
@@ -3020,6 +3020,7 @@ function Spell_B_Init( t )
 		function ()
 		{
 			this.PlaySE(3455);
+			this.SetEffect(this.x + 46 * this.direction, this.y - 62, this.direction, this.EF_HitSmashA, {});
 		},
 		function ()
 		{
@@ -3052,6 +3053,9 @@ function Spell_B_End_Init( t )
 {
 	this.LabelClear();
 	this.HitReset();
+	this.flag2 = this.Vector3();
+	this.flag2.x = this.va.x;
+	this.flag2.y = this.va.y;
 	this.SetSpeed_XY(0.00000000, 0.00000000);
 	this.AjustCenterStop();
 	this.SetMotion(4011, 1);
@@ -3071,10 +3075,73 @@ function Spell_B_End_Init( t )
 
 			this.stateLabel = function ()
 			{
-				if (this.count == 22)
+				if (this.count == 5)
 				{
+					if (this.centerStop * this.centerStop >= 4)
+					{
+						this.SetSpeed_XY(this.flag2.x, this.flag2.y);
+					}
+
 					this.EndtoFreeMove();
 					return;
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+	};
+}
+
+function Spell_B_BigEnd_Init( t )
+{
+	this.LabelClear();
+	this.HitReset();
+	this.flag2 = this.Vector3();
+	this.flag2.x = this.va.x;
+	this.flag2.y = this.va.y;
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.AjustCenterStop();
+	this.SetMotion(4011, 3);
+	this.count = 0;
+	this.PlaySE(3456);
+	this.keyAction = [
+		null,
+		null,
+		null,
+		function ()
+		{
+			this.flag1 = this.SetFreeObject(this.x, this.y, this.direction, this.SpellShot_B2_SmallEnd, {}).weakref();
+			this.count = 0;
+
+			if (this.flag1)
+			{
+				this.flag1.func[1].call(this.flag1);
+			}
+
+			this.sx = this.sy = 0.10000000;
+			this.lavelClearEvent = function ()
+			{
+				this.sx = this.sy = 1.00000000;
+			};
+			this.stateLabel = function ()
+			{
+				this.sx = this.sy += 0.40000001;
+
+				if (this.sx >= 2.00000000)
+				{
+					this.stateLabel = function ()
+					{
+						this.sx = this.sy += (1.00000000 - this.sx) * 0.25000000;
+
+						if (this.sx <= 1.00000000)
+						{
+							this.sx = this.sy = 1.00000000;
+							this.stateLabel = function ()
+							{
+							};
+						}
+					};
 				}
 			};
 		}
@@ -3094,12 +3161,13 @@ function Spell_B_Mini( t )
 	this.count = 0;
 	this.flag1 = this.centerY;
 	this.flag2 = 0;
+	this.flag3 = 0;
 	this.subState = function ()
 	{
 		if (this.flag2 <= 697)
 		{
 			this.team.AddSP(-3);
-			this.flag2 += 3;
+			this.flag2 += 6;
 		}
 		else
 		{
@@ -3110,6 +3178,12 @@ function Spell_B_Mini( t )
 		if (this.flag2 >= 700 || this.target.team.life <= 0)
 		{
 			this.Spell_B_End_Init(null);
+			return true;
+		}
+
+		if (this.command.rsv_k0 > 0 || this.command.rsv_k1 > 0 || this.command.rsv_k2 > 0)
+		{
+			this.Spell_B_BigEnd_Init(null);
 			return true;
 		}
 

@@ -14,6 +14,8 @@ this.player_class.unzan <- true;
 this.player_class.unzanReload <- 0;
 this.player_class.unzanAura <- null;
 this.player_class.hassyaku <- null;
+this.player_class.occult_in <- true;
+this.player_class.skillB_air <- false;
 this.player_class.Init <- function ()
 {
 	this.SetMotion(0, 0);
@@ -32,6 +34,8 @@ this.player_class.Init <- function ()
 		this.unzanReload = 0;
 		this.unzanAura = this.SetFreeObject(this.x, this.y, this.direction, this.unzanAuraEffect, {}).weakref();
 		this.hassyaku = null;
+		this.occult_in = true;
+		this.skillB_air = false;
 	};
 	this.change_reset = function ()
 	{

@@ -259,27 +259,40 @@ function AtkLowDash_Effect( t )
 
 function Shot_Normal( t )
 {
-	this.SetMotion(2009, 0);
+	this.SetMotion(2009, t.type);
 	this.cancelCount = 3;
 	this.atk_id = 16384;
 	this.SetSpeed_Vec(t.v, t.rot, this.direction);
 	this.func = [
 		function ()
 		{
-			this.SetMotion(2009, 1);
-			this.SetSpeed_XY(this.va.x * -0.50000000, -10.00000000 + this.va.y);
+			this.SetMotion(2009, 4);
 			this.HitReset();
 			this.SetEnemyTeamShot();
 			this.attackTarget = this.owner.weakref();
 			this.hitCount = 0;
+			this.SetSpeed_XY(0.00000000, -15.00000000);
+			this.AddSpeed_XY((this.owner.x - this.x) / 60.00000000, (this.owner.y - this.y) / 60.00000000);
+
+			if (this.va.x > 12.50000000)
+			{
+				this.SetSpeed_XY(12.50000000, this.va.y);
+			}
+
+			if (this.va.x < -12.50000000)
+			{
+				this.SetSpeed_XY(-12.50000000, this.va.y);
+			}
+
 			this.stateLabel = function ()
 			{
+				this.count++;
 				this.AddSpeed_XY(0.00000000, 0.50000000);
 				this.rz += 22.50000000 * 0.01745329;
 
-				if (this.va.y >= 0.00000000)
+				if (this.count >= 15)
 				{
-					this.SetMotion(2009, 2);
+					this.SetMotion(2009, 3);
 					this.stateLabel = function ()
 					{
 						if (this.y > ::battle.scroll_bottom + 100)
@@ -1477,7 +1490,14 @@ function SPShot_G( t )
 		},
 		function ()
 		{
-			this.Warp(this.x + 200 * this.direction, ::battle.scroll_top - 392);
+			if (this.hitResult & 1)
+			{
+				this.Warp(this.owner.target.x, ::battle.scroll_top - 392);
+			}
+			else
+			{
+				this.Warp(this.x + 200 * this.direction, ::battle.scroll_top - 392);
+			}
 
 			if (this.x > ::battle.corner_right)
 			{

@@ -1984,6 +1984,11 @@ function Atk_Throw( t )
 				{
 					this.san += 83;
 
+					if (this.san > 9988)
+					{
+						this.san = 9988;
+					}
+
 					if (this.san_gauge)
 					{
 						this.san_gauge.func[2].call(this.san_gauge, 1.00000000);
@@ -2066,12 +2071,6 @@ function Shot_Normal_Init( t )
 		function ()
 		{
 			this.team.AddMP(-200, 90);
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 400;
-			}
-
 			this.PlaySE(3834);
 			this.count = 0;
 			local t = {};
@@ -2084,11 +2083,6 @@ function Shot_Normal_Init( t )
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 400;
-					}
-
 					this.PlaySE(3834);
 					local t = {};
 					t.san <- this.flag2;
@@ -2136,12 +2130,6 @@ function Shot_Normal_Air_Init( t )
 			this.team.AddMP(-200, 90);
 			this.PlaySE(3834);
 			this.count = 0;
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 400;
-			}
-
 			local t = {};
 			t.san <- this.flag2;
 			t.rot <- 0.00000000;
@@ -2154,12 +2142,6 @@ function Shot_Normal_Air_Init( t )
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
 					this.centerStop = 3 * this.flag3;
-
-					if (this.san_mode)
-					{
-						this.owner.san -= 400;
-					}
-
 					this.PlaySE(3834);
 					local t = {};
 					t.san <- this.flag2;
@@ -2209,12 +2191,6 @@ function Shot_Normal_Upper_Init( t )
 			this.team.AddMP(-200, 90);
 			this.PlaySE(3834);
 			this.count = 0;
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 400;
-			}
-
 			local t = {};
 			t.san <- this.flag2;
 			t.rot <- -40.00000000 * 0.01745329;
@@ -2225,11 +2201,6 @@ function Shot_Normal_Upper_Init( t )
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 400;
-					}
-
 					this.PlaySE(3834);
 					local t = {};
 					t.san <- this.flag2;
@@ -2277,12 +2248,6 @@ function Shot_Normal_Upper_Air_Init( t )
 			this.team.AddMP(-200, 90);
 			this.PlaySE(3834);
 			this.count = 0;
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 400;
-			}
-
 			local t = {};
 			t.san <- this.flag2;
 			t.rot <- -40.00000000 * 0.01745329;
@@ -2294,12 +2259,6 @@ function Shot_Normal_Upper_Air_Init( t )
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
 					this.PlaySE(3834);
-
-					if (this.san_mode)
-					{
-						this.owner.san -= 400;
-					}
-
 					local t = {};
 					t.san <- this.flag2;
 					t.rot <- -40.00000000 * 0.01745329;
@@ -2348,12 +2307,6 @@ function Shot_Normal_Under_Init( t )
 			this.team.AddMP(-200, 90);
 			this.PlaySE(3834);
 			this.count = 0;
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 400;
-			}
-
 			local t = {};
 			t.san <- this.flag2;
 			t.rot <- 40.00000000 * 0.01745329;
@@ -2365,11 +2318,6 @@ function Shot_Normal_Under_Init( t )
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 400;
-					}
-
 					this.PlaySE(3834);
 					local t = {};
 					t.san <- this.flag2;
@@ -2417,12 +2365,6 @@ function Shot_Normal_Under_Air_Init( t )
 			this.team.AddMP(-200, 90);
 			this.PlaySE(3834);
 			this.count = 0;
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 400;
-			}
-
 			local t = {};
 			t.san <- this.flag2;
 			t.rot <- 40.00000000 * 0.01745329;
@@ -2433,11 +2375,6 @@ function Shot_Normal_Under_Air_Init( t )
 			{
 				if (this.flag1 > 0 && this.count % 4 == 0)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 400;
-					}
-
 					local t = {};
 					t.san <- this.flag2;
 					this.PlaySE(3834);
@@ -2510,11 +2447,6 @@ function Shot_Front_Init( t )
 						t_.cancel <- this.flag1 == 3 ? 3 : 1;
 						this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t_);
 						this.flag1--;
-
-						if (this.san_mode)
-						{
-							this.owner.san -= 400;
-						}
 					}
 					else
 					{
@@ -2578,12 +2510,6 @@ function Shot_Front_Air_Init( t )
 						t_.san <- this.flag2;
 						t_.cancel <- this.flag1 == 3 ? 3 : 1;
 						this.SetShot(this.point0_x, this.point0_y, this.direction, this.Shot_Front, t_);
-
-						if (this.san_mode)
-						{
-							this.owner.san -= 200;
-						}
-
 						this.flag1--;
 					}
 					else
@@ -2759,12 +2685,6 @@ function Shot_Charge_Fire( t )
 			this.SetSpeed_XY(-7.50000000 * this.direction, 0.00000000);
 			this.AjustCenterStop();
 			this.PlaySE(3839);
-
-			if (this.san_mode)
-			{
-				this.owner.san -= 2000;
-			}
-
 			this.stateLabel = function ()
 			{
 				this.CenterUpdate(0.25000000, 2.50000000);
@@ -2861,6 +2781,12 @@ function Shot_Burrage_Init( t )
 
 function Okult_Init( t )
 {
+	if (this.centerStop * this.centerStop >= 2)
+	{
+		this.OkultAir_Init(t);
+		return true;
+	}
+
 	this.LabelClear();
 	this.GetFront();
 	this.HitReset();
@@ -2944,7 +2870,105 @@ function Okult_Init( t )
 
 			if (this.san_mode)
 			{
-				this.owner.san -= 2500;
+				this.SetSpeed_XY(-10.00000000 * this.direction, 0.00000000);
+			}
+			else
+			{
+				this.SetSpeed_XY(-15.00000000 * this.direction, 0.00000000);
+			}
+
+			this.stateLabel = function ()
+			{
+				this.VX_Brake(0.50000000);
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.VX_Brake(0.50000000);
+	};
+	return true;
+}
+
+function OkultAir_Init( t )
+{
+	this.LabelClear();
+	this.GetFront();
+	this.HitReset();
+	this.atk_id = 524288;
+	this.SetMotion(2500, 0);
+	this.SetSpeed_XY(0.00000000, 0.00000000);
+	this.count = 0;
+	this.flag1 = 10.00000000;
+	this.flag2 = -10.00000000;
+	this.flag3 = this.y;
+
+	if (t.k * this.direction >= 1.00000000)
+	{
+		this.flag1 = 11.00000000;
+		this.flag2 = -11.00000000;
+	}
+
+	if (t.k <= -1)
+	{
+		this.flag1 = 7.00000000;
+		this.flag2 = -9.00000000;
+	}
+
+	this.keyAction = [
+		function ()
+		{
+			this.PlaySE(3857);
+			this.SetSpeed_XY(this.flag1 * this.direction, this.flag2);
+			this.centerStop = -2;
+			this.team.AddMP(-200, 120);
+			this.team.op_stop = 300;
+			this.team.op_stop_max = 300;
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 1.00000000);
+
+				if (this.va.y > 0.00000000 && this.y >= this.flag3)
+				{
+					this.PlaySE(3858);
+					this.Warp(this.x, this.flag3);
+					this.SetMotion(this.motion, 3);
+
+					if (this.kune)
+					{
+						this.kune.func[0].call(this.kune);
+					}
+
+					local t_ = {};
+					t_.type <- this.team.index;
+					this.kune = this.SetObject(this.point0_x, this.point0_y, this.direction, this.Occult_Shot, t_).weakref();
+					this.lavelClearEvent = function ()
+					{
+						if (this.kune)
+						{
+							this.kune.SetParent(null, 0, 0);
+							this.kune.func[0].call(this.kune);
+						}
+					};
+					this.SetParent.call(this.kune, this, this.kune.x - this.x, this.kune.y - this.y);
+					this.SetSpeed_XY(0.00000000, 0.00000000);
+					this.stateLabel = function ()
+					{
+						this.VX_Brake(1.00000000);
+					};
+				}
+			};
+		},
+		null,
+		null,
+		function ()
+		{
+			this.lavelClearEvent = null;
+			this.PlaySE(3859);
+			this.kune.func[1].call(this.kune, this.san_mode);
+
+			if (this.san_mode)
+			{
 				this.SetSpeed_XY(-10.00000000 * this.direction, 0.00000000);
 			}
 			else
@@ -2996,11 +3020,6 @@ function SP_A_Init( t )
 
 					if (this.count % 4 == 1)
 					{
-						if (this.san_mode)
-						{
-							this.owner.san -= 500;
-						}
-
 						this.PlaySE(3842);
 						local t_ = {};
 						t_.san <- this.flag1;
@@ -3074,11 +3093,6 @@ function SP_A_Air_Init( t )
 
 				if (this.count % 4 == 1)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 500;
-					}
-
 					this.PlaySE(3842);
 					local t_ = {};
 					t_.san <- this.flag1;
@@ -3156,11 +3170,6 @@ function SP_B_Init( t )
 			{
 				if (this.count == 2)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					this.skillB_SE = true;
 					this.PlaySE(3896);
 					local t_ = {};
@@ -3171,11 +3180,6 @@ function SP_B_Init( t )
 
 				if (this.count == 6)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					local t_ = {};
 					t_.priority <- 191;
 					this.SetShot(this.x, this.y + 140, this.direction, this.SPShot_B_Udon, t_);
@@ -3183,11 +3187,6 @@ function SP_B_Init( t )
 
 				if (this.count == 10)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					local t_ = {};
 					t_.priority <- 188;
 					this.SetShot(this.x, this.y - 70, this.direction, this.SPShot_B_Udon, t_);
@@ -3195,11 +3194,6 @@ function SP_B_Init( t )
 
 				if (this.count == 14)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					local t_ = {};
 					t_.priority <- 192;
 					this.SetShot(this.x, this.y + 70, this.direction, this.SPShot_B_Udon, t_);
@@ -3219,7 +3213,6 @@ function SP_B_Init( t )
 			if (this.san_mode)
 			{
 				this.flag3 = true;
-				this.owner.san -= 600;
 			}
 
 			this.stateLabel = function ()
@@ -3341,11 +3334,6 @@ function SP_B_Air_Init( t )
 			{
 				if (this.count == 4)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					this.PlaySE(3896);
 					local t_ = {};
 					t_.priority <- 185;
@@ -3354,11 +3342,6 @@ function SP_B_Air_Init( t )
 
 				if (this.count == 8)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					local t_ = {};
 					t_.priority <- 186;
 					this.SetShot(this.x, this.y, this.direction, this.SPShot_B_Udon, t_);
@@ -3366,11 +3349,6 @@ function SP_B_Air_Init( t )
 
 				if (this.count == 12)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					local t_ = {};
 					t_.priority <- 187;
 					this.SetShot(this.x, this.y, this.direction, this.SPShot_B_Udon, t_);
@@ -3378,11 +3356,6 @@ function SP_B_Air_Init( t )
 
 				if (this.count == 16)
 				{
-					if (this.san_mode)
-					{
-						this.owner.san -= 600;
-					}
-
 					local t_ = {};
 					t_.priority <- 188;
 					this.SetShot(this.x, this.y, this.direction, this.SPShot_B_Udon, t_);
@@ -3402,7 +3375,6 @@ function SP_B_Air_Init( t )
 			if (this.san_mode)
 			{
 				this.flag3 = true;
-				this.owner.san -= 600;
 			}
 
 			this.stateLabel = function ()
@@ -3618,7 +3590,7 @@ function SP_C_Air_Init( t )
 					this.VX_Brake(0.75000000);
 				}
 
-				if (this.box && this.count >= 15 && this.count <= 30 && ((this.input.b2 > 0 || this.command.rsv_k2 > 0) || this.flag1 && (this.input.b0 > 0 || this.command.rsv_k0 > 0)))
+				if (::battle.state == 8 && this.box && this.count >= 15 && this.count <= 30 && ((this.input.b2 > 0 || this.command.rsv_k2 > 0) || this.flag1 && (this.input.b0 > 0 || this.command.rsv_k0 > 0)))
 				{
 					this.SP_C2_Init(null);
 					return;
@@ -3634,7 +3606,7 @@ function SP_C_Air_Init( t )
 					this.VX_Brake(0.75000000);
 				}
 
-				if (this.box && this.count >= 5 && ((this.input.b2 > 0 || this.command.rsv_k2 > 0) || this.flag1 && (this.input.b0 > 0 || this.command.rsv_k0 > 0)))
+				if (::battle.state == 8 && this.box && this.count >= 5 && ((this.input.b2 > 0 || this.command.rsv_k2 > 0) || this.flag1 && (this.input.b0 > 0 || this.command.rsv_k0 > 0)))
 				{
 					this.SP_C2_Init(null);
 					return;
@@ -3686,12 +3658,6 @@ function SP_D_Init( t )
 		function ()
 		{
 			this.team.AddMP(-200, 120);
-
-			if (this.san_mode)
-			{
-				this.san -= 5000;
-			}
-
 			this.PlaySE(3852);
 			this.count = 0;
 
@@ -3786,7 +3752,6 @@ function SP_E_Init( t )
 		{
 			if (this.flag4)
 			{
-				this.owner.san -= 5000;
 				local t_ = {};
 				t_.rot <- 0;
 				local a_ = [];
@@ -3927,14 +3892,9 @@ function Spell_A_Init( t )
 			{
 				if (this.count % 4 == 1)
 				{
-					if (this.san_mode)
-					{
-						this.san -= 500;
-					}
-
 					this.PlaySE(3862);
 					local t_ = {};
-					t_.rot <- (-55 + (this.keyTake - 2) * 25 + 7 - this.rand() % 15) * 0.01745329;
+					t_.rot <- (-55 + (this.keyTake - 2) * 25) * 0.01745329;
 					t_.rate <- this.atkRate_Pat;
 					t_.bound <- 3;
 
@@ -3945,7 +3905,7 @@ function Spell_A_Init( t )
 
 					this.SetShot(this.point0_x, this.point0_y, this.direction, this.SpellShot_A, t_);
 					local t_ = {};
-					t_.rot <- (-55 + (this.keyTake - 2) * 25 + 7 - this.rand() % 15) * 0.01745329;
+					t_.rot <- (-55 + (this.keyTake - 2) * 25) * 0.01745329;
 					t_.rate <- this.atkRate_Pat * 0.50000000;
 					t_.bound <- 4;
 
@@ -4070,15 +4030,26 @@ function Spell_C_Init( t )
 				}
 			};
 			this.flag2 = this.SetShot(this.point0_x, this.point0_y, this.direction, this.SpellShot_C_SonicCore, t_, this.weakref()).weakref();
+
+			if (this.input.y > 0)
+			{
+				this.rz = 30.00000000 * 0.01745329;
+			}
+
+			if (this.input.y < 0)
+			{
+				this.rz = -20.00000000 * 0.01745329;
+			}
+
 			this.stateLabel = function ()
 			{
 				if (this.input.y > 0)
 				{
 					this.rz += 1.50000000 * 0.01745329;
 
-					if (this.rz > 20 * 0.01745329)
+					if (this.rz > 30 * 0.01745329)
 					{
-						this.rz = 20.00000000 * 0.01745329;
+						this.rz = 30.00000000 * 0.01745329;
 					}
 				}
 
@@ -4740,7 +4711,7 @@ function Climax_FinishB( t )
 
 	if (!this.san_mode)
 	{
-		this.san = 10000;
+		this.owner.san = 9988;
 
 		if (this.san_gauge)
 		{

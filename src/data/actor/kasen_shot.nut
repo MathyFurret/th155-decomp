@@ -1416,6 +1416,7 @@ function Shot_Change( t )
 		{
 			this.count = 0;
 			this.SetMotion(this.motion, 1);
+			this.HitReset();
 			this.stateLabel = function ()
 			{
 				this.sx = this.sy += (3.00000000 - this.sx) * 0.10000000;

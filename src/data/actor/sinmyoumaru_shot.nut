@@ -814,14 +814,15 @@ function SPShot_E( t )
 	};
 	this.stateLabel = function ()
 	{
-		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.count >= 75 || this.Damage_ConvertOP(this.x, this.y, 1))
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount > 0 || this.count >= 40 || this.Damage_ConvertOP(this.x, this.y, 1))
 		{
 			this.func();
 			return;
 		}
 
 		this.count++;
-		this.Vec_Brake(0.10000000, 5.00000000);
+		this.Vec_Brake(0.15000001);
+		this.AddSpeed_XY(0.00000000, 0.44999999);
 	};
 }
 
@@ -1116,7 +1117,7 @@ function SpellShot_B_SmallEnd( t )
 				this.sx = this.sy += (1.00000000 - this.sx) * 0.25000000;
 				this.count++;
 
-				if (this.count >= 20)
+				if (this.count >= 6)
 				{
 					this.alpha -= 0.20000000;
 
@@ -1158,6 +1159,61 @@ function SpellShot_B_SmallEndB( t )
 		if (this.alpha <= 0.00000000)
 		{
 			this.ReleaseActor();
+		}
+	};
+}
+
+function SpellShot_B2_SmallEnd( t )
+{
+	this.SetMotion(4018, 0);
+	this.SetParent(this.owner, 0, 0);
+	this.alpha = 0.00000000;
+	this.sx = this.sy = 0.10000000;
+	this.func = [
+		function ()
+		{
+			this.ReleaseActor();
+		},
+		function ()
+		{
+			this.alpha = 1.00000000;
+			this.stateLabel = function ()
+			{
+				this.count++;
+
+				if (this.count >= 10)
+				{
+					this.sx = this.sy += 0.15000001;
+					this.alpha -= 0.05000000;
+
+					if (this.alpha <= 0.00000000)
+					{
+						this.ReleaseActor();
+					}
+				}
+				else
+				{
+					this.sx = this.sy += 0.40000001;
+					this.alpha -= 0.05000000;
+
+					if (this.count % 2 == 1)
+					{
+						local t_ = {};
+						t_.scale <- this.sx;
+						local a_ = this.SetFreeObject(this.x, this.y, this.direction, this.owner.SpellShot_B_SmallEndB, t_);
+						a_.SetParent(this, 0, 0);
+					}
+				}
+			};
+		}
+	];
+	this.stateLabel = function ()
+	{
+		this.alpha += 0.20000000;
+
+		if (this.alpha > 1.00000000)
+		{
+			this.sx = this.sy += 0.40000001;
 		}
 	};
 }
@@ -1250,6 +1306,7 @@ function Spell_C_Shot( t )
 function Spell_C_ShotB( t )
 {
 	this.SetMotion(4029, 3);
+	this.flag1 = 0;
 	this.stateLabel = function ()
 	{
 		if (this.count >= 240)
@@ -1272,7 +1329,9 @@ function Spell_C_ShotB( t )
 			{
 				local t_ = {};
 				t_.rate <- this.initTable.rate;
+				t_.count <- this.flag1;
 				this.SetShot(this.x, ::battle.scroll_bottom + 125, -this.direction, this.Spell_C_ShotB_Fish, t_);
+				this.flag1++;
 			}
 		}
 	};
@@ -1286,7 +1345,7 @@ function Spell_C_ShotB_Fish( t )
 	this.rz = this.rand() % 360 * 0.01745329;
 	this.sx = this.sy = 1.00000000 + this.rand() % 61 * 0.01000000;
 	this.flag1 = 9.50000000 * 0.01745329;
-	this.SetSpeed_XY((3.00000000 + this.rand() % 4) * this.direction, -25.00000000 - this.rand() % 4);
+	this.SetSpeed_XY((4.00000000 + this.initTable.count * 3 % 5) * this.direction, -25.00000000 - this.initTable.count % 4);
 	this.cancelCount = 3;
 	this.func = [
 		function ()

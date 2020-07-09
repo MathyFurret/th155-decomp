@@ -179,6 +179,7 @@ function Initialize()
 	this.page <- [
 		{},
 		{},
+		{},
 		{}
 	];
 

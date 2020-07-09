@@ -998,6 +998,25 @@ function Atk_HighUpper_Air_Init( t )
 		},
 		function ()
 		{
+			this.count = 0;
+			this.stateLabel = function ()
+			{
+				if (this.centerStop * this.centerStop <= 1)
+				{
+					if (this.count >= 6)
+					{
+						this.SetMotion(this.motion, 4);
+						this.stateLabel = function ()
+						{
+							this.VX_Brake(0.50000000);
+						};
+					}
+					else
+					{
+						this.VX_Brake(0.50000000);
+					}
+				}
+			};
 		},
 		function ()
 		{
@@ -1014,11 +1033,7 @@ function Atk_HighUpper_Air_Init( t )
 	{
 		if (this.centerStop * this.centerStop <= 1)
 		{
-			this.SetMotion(this.motion, 4);
-			this.stateLabel = function ()
-			{
-				this.VX_Brake(0.50000000);
-			};
+			this.VX_Brake(0.10000000);
 		}
 	};
 	return true;
@@ -1343,7 +1358,7 @@ function Atk_HighDash_Init( t )
 		this.SetMotion(1310, 0);
 	}
 
-	this.SetSpeed_XY(10.00000000 * this.direction, null);
+	this.SetSpeed_XY(15.00000000 * this.direction, null);
 	this.flag1 = 0;
 	this.keyAction = [
 		function ()
@@ -2193,7 +2208,7 @@ function SP_A_Init( t )
 			function ()
 			{
 				this.flag1.x = this.x - 300 * this.direction;
-				this.flag1.y = this.y;
+				this.flag1.y = this.centerY;
 
 				if (this.input.y < 0)
 				{
@@ -2210,11 +2225,6 @@ function SP_A_Init( t )
 				if (this.input.x * this.direction > 0)
 				{
 					this.flag1.x = this.x + 300 * this.direction;
-				}
-
-				if (this.input.x * this.direction < 0)
-				{
-					this.flag1.x = this.x - 300 * this.direction;
 				}
 
 				if (this.input.x * this.direction < 0)
@@ -2261,7 +2271,7 @@ function SP_A_Init( t )
 			function ()
 			{
 				this.flag1.x = this.x - 300 * this.direction;
-				this.flag1.y = this.y;
+				this.flag1.y = this.centerY;
 
 				if (this.input.y < 0)
 				{
@@ -2278,11 +2288,6 @@ function SP_A_Init( t )
 				if (this.input.x * this.direction > 0)
 				{
 					this.flag1.x = this.x + 300 * this.direction;
-				}
-
-				if (this.input.x * this.direction < 0)
-				{
-					this.flag1.x = this.x - 300 * this.direction;
 				}
 
 				if (this.input.x * this.direction < 0)
@@ -2663,7 +2668,7 @@ function SP_F_Init( t )
 
 				this.CenterUpdate(0.05000000, 1.00000000);
 
-				if (this.count == 26)
+				if (this.count == 20)
 				{
 					if (this.flag1)
 					{
@@ -2685,6 +2690,13 @@ function SP_F_Init( t )
 		},
 		function ()
 		{
+			this.stateLabel = function ()
+			{
+				if (this.centerStop == 0)
+				{
+					this.VX_Brake(0.50000000);
+				}
+			};
 		}
 	];
 	return true;

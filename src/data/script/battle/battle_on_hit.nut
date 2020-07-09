@@ -75,15 +75,6 @@ function OnHit_PlayerActor( atk, def, pos )
 
 	atk.hitOwner.hitTarget[def.team.master.id] <- 0;
 
-	if (atk.atkOwner)
-	{
-		def.damageTarget = atk.atkOwner.weakref();
-	}
-	else
-	{
-		def.damageTarget = atk.weakref();
-	}
-
 	if (atk.actorType == 1)
 	{
 		atk.DrawActorPriority(atk.drawPriority);
@@ -171,13 +162,13 @@ function SetHitState( t, atk_, def_ )
 	{
 		t.direction <- -atk_.temp_atk_data.direction;
 	}
-	else if (atk_.owner.x == def_.x)
+	else if (atk_.team.current.x == def_.x)
 	{
 		t.direction <- def_.temp_atk_data.direction;
 	}
 	else
 	{
-		t.direction <- atk_.owner.x > def_.x ? 1.00000000 : -1.00000000;
+		t.direction <- atk_.team.current.x > def_.x ? 1.00000000 : -1.00000000;
 	}
 
 	if (atk_.actorType & (1 | 4))
@@ -212,7 +203,7 @@ function HitPlayer( atk, def, pos )
 {
 	if (atk.attack_state & def.catch_state)
 	{
-		if (atk.attack_state & 1)
+		if (atk.attack_state & 1 && !(atk.attack_state & 4))
 		{
 			atk.hitOwner.hitResult = atk.hitOwner.hitResult | 16;
 			def.hitOwner.hitResult = def.hitOwner.hitResult | 16;
@@ -231,6 +222,12 @@ function HitPlayer( atk, def, pos )
 	{
 		atk.hitOwner.hitResult = atk.hitOwner.hitResult | 32;
 		atk.hitOwner.grazeCount++;
+
+		if (atk.temp_frame_data.flagAttack & 268435456)
+		{
+			def.vx_slow = 10;
+		}
+
 		this.PlaySE(803);
 		::effect.Create(1006, pos, null, ::graphics.slot.actor, 200, 4096);
 		return;
@@ -258,6 +255,15 @@ function HitPlayer( atk, def, pos )
 
 	if (guard_result)
 	{
+		if (atk.atkOwner)
+		{
+			def.damageTarget = atk.atkOwner.weakref();
+		}
+		else
+		{
+			def.damageTarget = atk.weakref();
+		}
+
 		atk.hitOwner.hitResult = atk.hitOwner.hitResult | 8;
 		def.damageStopTime = atk.guardStopE;
 		atk.hitOwner.hitStopTime = atk.guardStopP;
@@ -301,9 +307,18 @@ function HitPlayer( atk, def, pos )
 	if (atk.temp_frame_data.atkType == 0)
 	{
 		atk.hitOwner.hitResult = atk.hitOwner.hitResult | 1;
-		def.damageStopTime = atk.temp_frame_data.hitStopE;
-		atk.hitStopTime = atk.temp_frame_data.hitStopP;
-		atk.hitOwner.hitStopTime = atk.temp_frame_data.hitStopP;
+
+		if (atk.temp_frame_data.hitStopE > 0)
+		{
+			def.damageStopTime = atk.temp_frame_data.hitStopE;
+		}
+
+		if (atk.temp_frame_data.hitStopP > 0)
+		{
+			atk.hitStopTime = atk.temp_frame_data.hitStopP;
+			atk.hitOwner.hitStopTime = atk.temp_frame_data.hitStopP;
+		}
+
 		return;
 	}
 
@@ -505,6 +520,15 @@ function HitPlayer( atk, def, pos )
 			}
 		}
 
+		if (atk.atkOwner)
+		{
+			def.damageTarget = atk.atkOwner.weakref();
+		}
+		else
+		{
+			def.damageTarget = atk.weakref();
+		}
+
 		atk.hitOwner.hitResult = atk.hitOwner.hitResult | 1;
 
 		if (atk.flagAttack & 33554432)
@@ -527,6 +551,15 @@ function HitPlayer( atk, def, pos )
 	}
 	else
 	{
+		if (atk.atkOwner)
+		{
+			def.damageTarget = atk.atkOwner.weakref();
+		}
+		else
+		{
+			def.damageTarget = atk.weakref();
+		}
+
 		atk.hitOwner.hitResult = atk.hitOwner.hitResult | 4;
 
 		if (atk.flagAttack & 33554432)

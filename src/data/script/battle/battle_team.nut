@@ -15,6 +15,8 @@ class this.PlayerTeamData
 	start_y = 0;
 	life = 9999;
 	regain_life = 9999;
+	life_limit = 0;
+	enable_regain = true;
 	damage_life = 9999;
 	life_max = 9999;
 	shield_life = 0;
@@ -199,6 +201,8 @@ class this.PlayerTeamData
 		this.slave_ban = 0;
 		this.life = this.life_max;
 		this.regain_life = this.life_max;
+		this.life_limit = 0;
+		this.enable_regain = true;
 		this.damage_life = this.life_max;
 		this.shield_life = 0;
 		this.mp = 1000;
@@ -262,6 +266,8 @@ class this.PlayerTeamData
 		this.slave_ban = 0;
 		this.life = this.life_max;
 		this.regain_life = this.life_max;
+		this.life_limit = 0;
+		this.enable_regain = true;
 		this.damage_life = this.life_max;
 		this.shield_life = 0;
 		this.mp = 1000;
@@ -296,6 +302,11 @@ class this.PlayerTeamData
 	SetDamage = null;
 	function SetDamageBase( damage, disable_ko )
 	{
+		if (::battle.state != 8)
+		{
+			return;
+		}
+
 		if (this.combo_count == 0)
 		{
 			this.damage_life = this.life;
@@ -423,6 +434,11 @@ class this.PlayerTeamData
 
 	function SetDamageBoss( damage, disable_ko )
 	{
+		if (::battle.state != 8)
+		{
+			return;
+		}
+
 		if (this.combo_count == 0)
 		{
 			this.damage_life = this.life;
@@ -432,6 +448,16 @@ class this.PlayerTeamData
 		{
 			if (damage > 0)
 			{
+				if (this.life <= this.life_limit)
+				{
+					damage = (damage * 0.20000000).tointeger();
+				}
+				else if (this.life - damage.tointeger() < this.life_limit)
+				{
+					local d_ = this.life - this.life_limit;
+					damage = d_ + ((damage - d_) * 0.20000000).tointeger();
+				}
+
 				this.life -= damage.tointeger();
 				this.regain_life -= damage.tointeger();
 
@@ -515,6 +541,11 @@ class this.PlayerTeamData
 	SetDamage_FullRegain = null;
 	function SetDamage_FullRegain_Base( damage, disable_ko )
 	{
+		if (::battle.state != 8)
+		{
+			return;
+		}
+
 		if (this.combo_count == 0)
 		{
 			this.damage_life = this.life;
@@ -568,6 +599,11 @@ class this.PlayerTeamData
 
 	function SetDamage_FullRegain_Story( damage, disable_ko )
 	{
+		if (::battle.state != 8)
+		{
+			return;
+		}
+
 		if (this.combo_count == 0)
 		{
 			this.damage_life = this.life;
@@ -684,24 +720,30 @@ class this.PlayerTeamData
 
 	function ResetCombo()
 	{
-		this.combo.Deactivate();
-		this.base_scale = 1.00000000;
-		this.counter_scale = 1.00000000;
-		this.combo_count = 0;
-		this.combo_damage = 0;
-		this.damage_scale = 1.00000000;
-		this.kaiki_scale = 1.00000000;
-		this.combo_reset_count = 0;
-		this.combo_stun = 0;
-		this.combo_wall = 0;
-		this.combo_ground = 0;
-		this.combo_hit_id = 0;
-		this.target.team.sp_rate = 1.00000000;
-		this.target.team.master.hit_id = 0;
-
-		if (this.target.team.slave)
+		if (this.combo_reset_count <= 0)
 		{
-			this.target.team.slave.hit_id = 0;
+			this.combo.Deactivate();
+			this.base_scale = 1.00000000;
+			this.counter_scale = 1.00000000;
+			this.combo_count = 0;
+			this.combo_damage = 0;
+			this.damage_scale = 1.00000000;
+			this.kaiki_scale = 1.00000000;
+			this.combo_reset_count = 0;
+			this.combo_stun = 0;
+			this.combo_wall = 0;
+			this.combo_ground = 0;
+			this.combo_hit_id = 0;
+			this.target.team.sp_rate = 1.00000000;
+			this.target.team.master.hit_id = 0;
+
+			if (this.target.team.slave)
+			{
+				this.target.team.slave.hit_id = 0;
+			}
+		}
+		else
+		{
 		}
 	}
 
@@ -781,7 +823,7 @@ class this.PlayerTeamData
 
 	function AddOP( v, stop )
 	{
-		if (this.op_stop > 0)
+		if (this.op_stop > 0 && v > 0)
 		{
 			return;
 		}

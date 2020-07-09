@@ -36,6 +36,16 @@ function IsScreen( r_ )
 	return false;
 }
 
+function IsScreenB( r_ )
+{
+	if (this.x <= ::battle.scroll_left - r_ || this.x >= ::battle.scroll_right + r_ || this.y >= ::battle.scroll_bottom + r_)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 function IsCamera( r_ )
 {
 	if (this.x <= ::camera.camera2d.left - r_ || this.x >= ::camera.camera2d.right + r_ || this.y <= ::camera.camera2d.top - r_ || this.y >= ::camera.camera2d.bottom + r_)

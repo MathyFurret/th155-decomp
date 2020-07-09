@@ -3188,7 +3188,7 @@ function SP_D_Flight( t )
 
 		this.CenterUpdate(this.baseGravity, 1.50000000);
 
-		if (this.y >= this.centerY)
+		if (this.centerStop * this.centerStop <= 1)
 		{
 			this.lavelClearEvent = null;
 
@@ -3197,7 +3197,6 @@ function SP_D_Flight( t )
 				this.flag2.func[0].call(this.flag2);
 			}
 
-			this.centerStop = 1;
 			this.SetSpeed_XY(null, 3.00000000);
 			this.SetMotion(this.motion, 3);
 			this.stateLabel = function ()
@@ -3260,7 +3259,7 @@ function SP_D_Flight( t )
 			return;
 		}
 
-		if (this.count >= 120 || this.input.b2 > 0 && this.count >= 6)
+		if (this.count >= 120 || (this.input.b2 > 0 || ::battle.state != 8) && this.count >= 6)
 		{
 			this.SetMotion(this.motion, 3);
 			this.lavelClearEvent = null;

@@ -2460,6 +2460,7 @@ function Okult_InitB( t )
 	this.GetFront();
 	this.HitReset();
 	this.hitResult = 1;
+	this.faceMask = true;
 	this.count = 0;
 	this.flag1 = ::manbow.Actor2DProcGroup();
 
@@ -2531,6 +2532,7 @@ function Okult_InitB_Air( t )
 	this.GetFront();
 	this.HitReset();
 	this.hitResult = 1;
+	this.faceMask = true;
 	this.count = 0;
 	this.flag1 = ::manbow.Actor2DProcGroup();
 
@@ -3085,7 +3087,7 @@ function SP_G_Init( t )
 
 				if (this.count >= 25)
 				{
-					if (this.count >= 120 || this.input.b2 == 0)
+					if (this.count >= 120 || this.input.b2 == 0 || ::battle.state != 8)
 					{
 						this.SetMotion(this.motion, 2);
 						this.stateLabel = function ()

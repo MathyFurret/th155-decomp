@@ -2326,6 +2326,37 @@ function SPShot_F( t )
 
 	this.flag1 = 100 + 20 * t.type;
 	this.atk_id = 33554432;
+	this.func = [
+		function ()
+		{
+			this.callbackGroup = 0;
+			this.stateLabel = function ()
+			{
+				this.AddSpeed_XY(0.00000000, 0.20000000);
+				this.alpha -= 0.05000000;
+
+				if (this.alpha <= 0.00000000)
+				{
+					this.ReleaseActor();
+				}
+			};
+		},
+		function ()
+		{
+			this.callbackGroup = 0;
+			this.stateLabel = function ()
+			{
+				if (this.owner.motion == 3050 && (this.owner.keyTake == 4 || this.owner.keyTake == 5))
+				{
+					this.Warp(this.owner.x, this.owner.y + this.owner.va.y);
+				}
+				else
+				{
+					this.func[0].call(this);
+				}
+			};
+		}
+	];
 	this.stateLabel = function ()
 	{
 		if (this.owner.motion == 3050 && (this.owner.keyTake == 4 || this.owner.keyTake == 5))
@@ -2346,15 +2377,10 @@ function SPShot_F( t )
 					if (this.abs(this.x - a.x) <= this.flag1 && this.abs(this.y + 100 - a.y) <= 40)
 					{
 						this.owner.BreakDishCount.call(a, this.owner.DelDish.call(a));
-
-						for( local i = 0; i < 5; i++ )
-						{
-							local t_ = {};
-							t_.rot <- (-25 + 10 * i + this.rand() % 10) * 0.01745329 + this.initTable.rot;
-							t_.v <- 26.00000000 + this.rand() % 4;
-							this.SetShot(a.x, a.y, this.direction, this.SPShot_F_Shard, t_);
-						}
-
+						local t_ = {};
+						t_.rot <- -1.04719746;
+						t_.v <- 26.00000000;
+						this.SetShot(a.x, a.y, this.direction, this.SPShot_F_Shard_Core, t_);
 						a.ReleaseActor();
 						this.PlaySE(1920);
 						i--;
@@ -2364,10 +2390,113 @@ function SPShot_F( t )
 		}
 		else
 		{
+			this.func[0].call(this);
+		}
+	};
+}
+
+function SPShot_F_Shard_Core( t )
+{
+	this.SetMotion(6053, this.rand() % 4);
+	this.SetSpeed_Vec(t.v, t.rot, this.direction);
+	this.rz = this.rand() % 360 * 0.01745329;
+	this.cancelCount = 2;
+	this.atk_id = 33554432;
+	this.flag1 = (8 - this.rand() % 17) * 0.01745329;
+	this.flag2 = ::manbow.Actor2DProcGroup();
+	local a_;
+
+	for( local i = 0; i < 6; i++ )
+	{
+		a_ = this.SetShot(this.x, this.y, this.direction, this.SPShot_F_Sub, {});
+		a_.hitOwner = this.weakref();
+		a_.SetParent(this, 0, 0);
+		this.flag2.Add(a_);
+	}
+
+	this.func = function ()
+	{
+		this.callbackGroup = 0;
+		this.flag2.Foreach(function ()
+		{
+			this.func[0].call(this);
+		});
+		this.stateLabel = function ()
+		{
+			this.rz -= this.flag1;
+			this.AddSpeed_XY(0.00000000, 1.00000000);
+			this.alpha -= 0.05000000;
+
+			if (this.alpha <= 0.00000000)
+			{
+				this.ReleaseActor();
+			}
+		};
+	};
+	this.subState = function ()
+	{
+		this.rz += this.flag1;
+		this.AddSpeed_XY(0.00000000, 1.00000000);
+
+		if (this.y > ::battle.scroll_bottom + 100)
+		{
+			this.func();
+			return;
+		}
+
+		if (this.cancelCount <= 0 || this.hitCount > 0 || this.grazeCount >= 10)
+		{
+			this.func();
+			return;
+		}
+
+		if (this.motion == 6051 && this.va.y > 0.00000000)
+		{
+			this.SetMotion(6052, this.keyTake);
+			this.flag2.Foreach(function ()
+			{
+				this.SetMotion(6052, this.keyTake);
+			});
+		}
+	};
+	this.stateLabel = function ()
+	{
+		this.count++;
+
+		if (this.count == 7)
+		{
+			this.SetMotion(6051, this.keyTake);
+			this.flag2.Foreach(function ()
+			{
+				this.func[1].call(this);
+			});
+			this.stateLabel = function ()
+			{
+				this.VX_Brake(0.10000000);
+				this.subState();
+			};
+		}
+
+		this.subState();
+	};
+}
+
+function SPShot_F_Sub( t )
+{
+	this.SetMotion(6053, this.rand() % 4);
+	this.SetSpeed_XY(14 - this.rand() % 29, 10 - this.rand() % 21);
+	this.rz = this.rand() % 360 * 0.01745329;
+	this.cancelCount = 2;
+	this.atk_id = 33554432;
+	this.flag1 = (8 - this.rand() % 17) * 0.01745329;
+	this.func = [
+		function ()
+		{
 			this.callbackGroup = 0;
 			this.stateLabel = function ()
 			{
-				this.AddSpeed_XY(0.00000000, 0.20000000);
+				this.rz -= this.flag1;
+				this.SetSpeed_XY(this.va.x * 0.92000002, this.va.y * 0.92000002);
 				this.alpha -= 0.05000000;
 
 				if (this.alpha <= 0.00000000)
@@ -2375,7 +2504,16 @@ function SPShot_F( t )
 					this.ReleaseActor();
 				}
 			};
+		},
+		function ()
+		{
+			this.SetMotion(6051, this.keyTake);
 		}
+	];
+	this.stateLabel = function ()
+	{
+		this.rz += this.flag1;
+		this.SetSpeed_XY(this.va.x * 0.92000002, this.va.y * 0.92000002);
 	};
 }
 

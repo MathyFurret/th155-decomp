@@ -46,6 +46,13 @@ function SAN_Aria( t )
 			this.ReleaseActor();
 		}
 	];
+	this.stateLabel = function ()
+	{
+		if (this.owner.IsDamage())
+		{
+			this.ReleaseActor();
+		}
+	};
 }
 
 function SAN_AddFont( t )
@@ -220,7 +227,10 @@ function SAN_Gauge( t )
 
 		if (this.owner.san_mode == false)
 		{
-			this.owner.san -= 10;
+			if (this.owner.target.IsDamage() <= 1 && this.owner.target.IsRecover() == 0)
+			{
+				this.owner.san -= 10;
+			}
 
 			if (this.owner.san <= 0)
 			{
@@ -742,6 +752,21 @@ function Shot_Front( t )
 
 		if (this.cancelCount <= 0 || this.hitCount > 0 || this.hitResult & 32)
 		{
+			if (this.hitResult & 1 && this.owner.san_mode == false)
+			{
+				this.owner.san += 300;
+
+				if (this.owner.san > 9988)
+				{
+					this.owner.san = 9988;
+				}
+
+				if (this.owner.san_gauge)
+				{
+					this.owner.san_gauge.func[2].call(this.owner.san_gauge, 1.00000000);
+				}
+			}
+
 			this.func();
 			return true;
 		}
@@ -834,6 +859,14 @@ function Shot_Charge_FireFlash( t )
 	this.SetMotion(2029, 6);
 	this.cancelCount = 3;
 	this.keyAction = this.ReleaseActor;
+	this.stateLabel = function ()
+	{
+		if (this.Damage_ConvertOP.call(this, this.x, this.y, 0))
+		{
+			this.ReleaseActor();
+			return;
+		}
+	};
 }
 
 function Shot_Charge( t )
@@ -1516,6 +1549,7 @@ function Occult_Shot( t )
 	this.target = this.owner.target.weakref();
 	this.life = 1000;
 	this.atk_id = 524288;
+	this.flag4 = null;
 	this.flag5 = {};
 	this.flag5.pos <- this.Vector3();
 	this.flag5.level <- 3;
@@ -1745,6 +1779,32 @@ function Occult_Shot( t )
 					this.flag3.Update();
 				}
 
+				this.flag5.pos.x = this.owner.target.x - this.x;
+				this.flag5.pos.y = this.owner.target.y - this.y;
+				local x_ = this.flag5.pos.Length();
+
+				if (::battle.state == 8 && !this.owner.IsDamage())
+				{
+					if (this.flag5.pos.x * this.owner.target.direction > 0)
+					{
+						this.owner.san -= 20;
+
+						if (this.owner.san < 0)
+						{
+							this.owner.san = 0;
+						}
+					}
+					else
+					{
+						this.owner.san -= 10;
+
+						if (this.owner.san < 0)
+						{
+							this.owner.san = 0;
+						}
+					}
+				}
+
 				if (this.owner.san_mode == false)
 				{
 					this.func[0].call(this);
@@ -1864,10 +1924,6 @@ function Occult_Shot( t )
 		null,
 		function ()
 		{
-			local t_ = {};
-			t_.type <- this.flag5.level + 8;
-			this.flag4 = this.SetFreeObject(this.x, this.y, this.direction, this.SAN_Aria, t_);
-			this.flag4.SetParent(this, 0, 0);
 			this.SetTeamCheckTarget();
 			this.stateLabel = function ()
 			{
@@ -1880,6 +1936,18 @@ function Occult_Shot( t )
 				this.subState();
 				this.VX_Brake(0.50000000);
 
+				if (this.owner.IsDamage())
+				{
+					return;
+				}
+				else if (this.flag4 == null && this.owner.san_mode == false)
+				{
+					local t_ = {};
+					t_.type <- this.flag5.level + 8;
+					this.flag4 = this.SetFreeObject(this.x, this.y, this.direction, this.SAN_Aria, t_).weakref();
+					this.flag4.SetParent(this, 0, 0);
+				}
+
 				if (this.va.x > 0 && this.x > ::battle.corner_right - 80 || this.va.x < 0 && this.x < ::battle.corner_left + 80)
 				{
 					this.SetSpeed_XY(0.00000000, this.va.y);
@@ -1887,22 +1955,25 @@ function Occult_Shot( t )
 
 				if (this.owner.san_mode == false)
 				{
-					this.flag5.pos.x = this.owner.target.x - this.x;
-					this.flag5.pos.y = this.owner.target.y - this.y;
-					local x_ = this.flag5.pos.Length();
-
-					if (this.flag5.pos.x * this.owner.target.direction < 0 && x_ < this.flag5.rangeBase * this.flag5.range && ::battle.state == 8)
+					if (this.owner.target.IsDamage() <= 1 && this.owner.target.IsRecover() == 0)
 					{
-						if (this.keyTake == 3 || this.keyTake == 17)
-						{
-							local s_ = 50 * (1.00000000 - x_ / (this.flag5.rangeBase * this.flag5.range)) * this.flag5.range;
+						this.flag5.pos.x = this.owner.target.x - this.x;
+						this.flag5.pos.y = this.owner.target.y - this.y;
+						local x_ = this.flag5.pos.Length();
 
-							if (s_ >= 1.00000000)
+						if (this.flag5.pos.x * this.owner.target.direction < 0 && x_ < this.flag5.rangeBase * this.flag5.range && ::battle.state == 8)
+						{
+							if (this.keyTake == 3 || this.keyTake == 17)
 							{
-								if (this.owner.san_gauge && this.owner.san_gauge.func[2].call(this.owner.san_gauge, s_))
+								local s_ = 50 * (1.00000000 - x_ / (this.flag5.rangeBase * this.flag5.range)) * this.flag5.range;
+
+								if (s_ >= 1.00000000)
 								{
-									this.func[8].call(this);
-									return;
+									if (this.owner.san_gauge && this.owner.san_gauge.func[2].call(this.owner.san_gauge, s_))
+									{
+										this.func[8].call(this);
+										return;
+									}
 								}
 							}
 						}
@@ -2574,6 +2645,8 @@ function SPShot_C( t )
 		},
 		function ()
 		{
+			this.hitStopTime = 0;
+
 			if (this.owner.box == this)
 			{
 				this.owner.box = null;
@@ -2600,7 +2673,6 @@ function SPShot_C( t )
 
 			if (this.owner.san_mode)
 			{
-				this.owner.san -= 5000;
 				this.SetMotion(3027, 7);
 				this.count = 0;
 				this.stateLabel = function ()
@@ -3007,6 +3079,7 @@ function SPShot_D( t )
 	local t_ = {};
 	t_.rot <- this.rz;
 	this.option = this.SetShot(this.x, this.y, this.direction, this.SPShot_D_Self, t_, this).weakref();
+	this.flag1 = true;
 	this.keyAction = this.ReleaseActor;
 	this.func = function ()
 	{
@@ -3037,6 +3110,22 @@ function SPShot_D( t )
 		if (this.hitCount <= 3)
 		{
 			this.HitCycleUpdate(6);
+		}
+
+		if (this.flag1 && this.hitResult & 1 && this.owner.san_mode == false)
+		{
+			this.flag1 = false;
+			this.owner.san += 1500;
+
+			if (this.owner.san > 9988)
+			{
+				this.owner.san = 9988;
+			}
+
+			if (this.owner.san_gauge)
+			{
+				this.owner.san_gauge.func[2].call(this.owner.san_gauge, 1.00000000);
+			}
 		}
 
 		if (this.cancelCount <= 0 || this.hitCount >= 4 || this.Damage_ConvertOP.call(this, this.x, this.y, 10) || this.owner.motion != 3030)
@@ -3729,8 +3818,28 @@ function SpellShot_C_Sonic( t )
 			};
 		}
 	];
+	this.subState = function ()
+	{
+		if (this.hitResult & 1 && this.owner.san_mode == false)
+		{
+			this.owner.san += 300;
+
+			if (this.owner.san > 9988)
+			{
+				this.owner.san = 9988;
+			}
+
+			this.owner.san_gauge && this.owner.san_gauge.func[2].call(this.owner.san_gauge, 1.00000000);
+			this.subState = null;
+		}
+	};
 	this.stateLabel = function ()
 	{
+		if (this.subState)
+		{
+			this.subState();
+		}
+
 		this.count += 25.00000000 * 0.01745329;
 		this.HitCycleUpdate(-1);
 		this.flag5 += 0.15000001;

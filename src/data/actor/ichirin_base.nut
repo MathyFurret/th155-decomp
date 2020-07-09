@@ -29,6 +29,11 @@ function Update_Normal()
 
 	if (::battle.state == 8)
 	{
+		if (this.skillB_air && this.motion != 3012 && this.centerStop * this.centerStop <= 1)
+		{
+			this.skillB_air = false;
+		}
+
 		if (this.cpuState)
 		{
 			this.cpuState();
@@ -82,9 +87,17 @@ function Update_Input()
 		{
 			if (this.command.rsv_y < 0)
 			{
-				if (this.centerStop * this.centerStop >= 4 && this.y < this.centerY)
+				if (this.centerStop * this.centerStop >= 4)
 				{
-					if (this.SP_RingFlight_Init(null))
+					if (this.y < this.centerY)
+					{
+						if (this.SP_RingFlight_Init(null))
+						{
+							this.command.ResetReserve();
+							return true;
+						}
+					}
+					else if (this.skillB_air == false && this.SP_B_Air_Init(null))
 					{
 						this.command.ResetReserve();
 						return true;

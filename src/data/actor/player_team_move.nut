@@ -45,7 +45,7 @@ function Team_Update_Master()
 		}
 		else if (this.op_leak == 0)
 		{
-			if (this.op < 1000 && this.slave_ban == 0)
+			if (this.op < 1000 && this.slave_ban == 0 && this.current.IsAttack() <= 4)
 			{
 				this.AddOP(2, 0);
 
@@ -1021,7 +1021,12 @@ function Team_Change_Counter( t )
 	this.LabelClear();
 	this.ResetSpeed();
 	this.SetMotion(3912, 0);
-	this.BackColorFilter(0.50000000, 0.00000000, 0.00000000, 0.00000000, 2);
+	local t_ = {};
+	t_.init <- this.EF_FadeBackScreen;
+	t_.pare <- this.weakref();
+	this.flag1 = ::actor.effect_mgr.CreateActor2D(this.effect_class, 0, 0, 1.00000000, this.effect_class.EF_CommonInit, t_).weakref();
+	this.EF_Set_FadeColor.call(this.flag1, 0.50000000, 0.00000000, 0.00000000, 0.00000000);
+	this.EF_BeginFadeOut.call(this.flag1, 0, 2);
 	this.SetEffect(this.x, this.y - 20, this.direction, this.EF_GuardCancel, {});
 	this.SetTimeStop(15);
 	this.keyAction = [
@@ -1030,7 +1035,7 @@ function Team_Change_Counter( t )
 		},
 		function ()
 		{
-			this.BackColorFilterOut(0.50000000, 0.00000000, 0.00000000, 0.00000000, 2);
+			this.EF_BeginBackFadeIn.call(this.flag1, 0, 2);
 			this.Team_Change_Common();
 			this.Team_Bench_In();
 			this.team.current.Team_Change_CounterB.call(this.team.current, this.direction);
@@ -1133,6 +1138,9 @@ function Team_Change_MasterB( t )
 function Team_ChangeRecover_Init( t, leak_ )
 {
 	this.LabelClear();
+	this.flag1 = this.Vector3();
+	this.flag1.x = this.va.x;
+	this.flag1.y = this.va.y;
 	this.ResetSpeed();
 	this.team.op_stop = 240;
 	this.team.op_stop_max = this.team.op_stop;
@@ -1141,6 +1149,7 @@ function Team_ChangeRecover_Init( t, leak_ )
 	this.PlaySE(900);
 	this.SetEffect(this.x, this.y - 20, this.direction, this.EF_Team_ChangeB, {}, this.weakref());
 	this.team.current.stanCount = 0;
+	this.team.current.SetSpeed_XY(this.flag1.x, this.flag1.y);
 	this.team.current.Recover_Init(t);
 }
 
@@ -1171,6 +1180,7 @@ function Team_Change_Attack( t )
 	if (this.team.master == this)
 	{
 		this.Team_Master_Out();
+		this.team.op_stop_max = this.team.op_stop;
 	}
 	else
 	{
@@ -1201,6 +1211,7 @@ function Team_Change_Attack_Air( t )
 	if (this.team.master == this)
 	{
 		this.Team_Master_Out();
+		this.team.op_stop_max = this.team.op_stop;
 	}
 	else
 	{
@@ -1234,6 +1245,7 @@ function Team_Change_Shot( t )
 	if (this.team.master == this)
 	{
 		this.Team_Master_Out();
+		this.team.op_stop_max = this.team.op_stop;
 	}
 	else
 	{
@@ -1327,11 +1339,16 @@ function Team_Change_Skill()
 			this.target.team.kaiki_scale = scale_;
 		}
 
-		this.team.op_leak += 1000;
+		this.team.op_leak += 500;
 
 		if (this.team.current == this.team.master)
 		{
 			this.team.op_stop = 120;
+			this.team.op_stop_max = this.team.op_stop;
+		}
+		else
+		{
+			this.team.op_stop = 60;
 			this.team.op_stop_max = this.team.op_stop;
 		}
 

@@ -66,6 +66,16 @@ function Game_BeginUpdate()
 
 	if (this.demoCount >= 60)
 	{
+		if (this.team[0].current.command)
+		{
+			this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+		}
+
+		if (this.team[1].current.command)
+		{
+			this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+		}
+
 		local c0 = this.team[0].current.command;
 		local c1 = this.team[1].current.command;
 
@@ -134,6 +144,16 @@ function Round_Ready()
 
 function Game_BattleReady()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	this.demoCount++;
 
 	if (this.demoCount == 20)
@@ -172,6 +192,16 @@ function Round_Fight()
 
 function Game_BattleUpdate()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	if (this.team[0].CheckKO() || this.team[1].CheckKO())
 	{
 		this.Round_KO();
@@ -259,7 +289,7 @@ function Game_KoUpdate()
 
 	if (this.demoCount >= 180)
 	{
-		if (this.team[0].current.IsFree() || this.team[1].current.IsFree())
+		if (this.team[0].current.IsFree() && this.team[0].current.centerStop == 0 || this.team[1].current.IsFree() && this.team[0].current.centerStop == 0)
 		{
 			this.Round_Win();
 		}
@@ -351,7 +381,7 @@ function Round_TimeUP()
 
 function Game_TimeUpUpdate()
 {
-	if (this.team[0].current.IsFree() && this.team[1].current.IsFree())
+	if ((this.team[0].current.IsFree() && this.team[0].current.centerStop == 0) && this.team[1].current.IsFree() && this.team[1].current.centerStop == 0)
 	{
 		this.battleUpdate = function ()
 		{
@@ -548,6 +578,16 @@ function Round_TimeUpCall()
 
 function Game_TimeUpCallUpdate()
 {
+	if (this.team[0].current.command)
+	{
+		this.team[0].current.command.Update(this.team[0].current.direction, this.team[0].current.hitStopTime <= 0 && this.team[0].current.damageStopTime <= 0);
+	}
+
+	if (this.team[1].current.command)
+	{
+		this.team[1].current.command.Update(this.team[1].current.direction, this.team[1].current.hitStopTime <= 0 && this.team[1].current.damageStopTime <= 0);
+	}
+
 	this.demoCount++;
 
 	if (this.demoCount > 30)
